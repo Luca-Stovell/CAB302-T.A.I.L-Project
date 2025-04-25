@@ -32,10 +32,6 @@ public class LessonGenController {
 
     @FXML
     public void initialize() {
-        // Initialising the left side dashboard list
-        dashboardListView.getItems().addAll("Generate", "Review", "Analysis", "AI Assistance", "Library");
-        dashboardListView.getSelectionModel().selectFirst();
-
         // Initialise toggling for radio buttons
         worksheetRadioButton.setToggleGroup(generateToggleGroup);
         worksheetRadioButton.setToggleGroup(generateToggleGroup);

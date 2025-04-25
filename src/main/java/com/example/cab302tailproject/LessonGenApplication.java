@@ -12,14 +12,14 @@ import java.io.IOException;
 
 public class LessonGenApplication extends Application {
     public static final String TITLE = "Worksheet and Lesson Plan Generator";
-    public static final int WIDTH = 640;
-    public static final int HEIGHT = 360;
+    public static final int WIDTH = 900;
+    public static final int HEIGHT = 600;
 
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(LessonGenApplication.class.getResource(
                 "lesson-gen-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
+        Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle(TITLE);
         stage.setScene(scene);
         stage.show();

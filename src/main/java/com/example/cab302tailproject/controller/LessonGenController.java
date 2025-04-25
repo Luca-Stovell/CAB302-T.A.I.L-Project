@@ -33,8 +33,9 @@ public class LessonGenController {
     @FXML
     public void initialize() {
         // Initialise toggling for radio buttons
+        generateToggleGroup = new ToggleGroup();
         worksheetRadioButton.setToggleGroup(generateToggleGroup);
-        worksheetRadioButton.setToggleGroup(generateToggleGroup);
+        lessonPlanRadioButton.setToggleGroup(generateToggleGroup);
 
         // Default radio button
         worksheetRadioButton.setSelected(true);

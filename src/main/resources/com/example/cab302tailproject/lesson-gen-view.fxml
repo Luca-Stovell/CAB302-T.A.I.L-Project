@@ -10,6 +10,7 @@
 
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.shape.Circle?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             maxHeight = "-Infinity"
             prefHeight = "420"
@@ -26,6 +27,9 @@
                     <!-- Placeholder user avatar -->
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
                         <Image url="@../../../images/tail_logo.png" />
+                        <clip>
+                            <Circle radius="20" centerX="20" centerY="20"/>
+                        </clip>
                     </ImageView>
 
                     <VBox alignment="CENTER_LEFT" prefWidth="80">
@@ -118,11 +122,14 @@
 
                     <HBox alignment="CENTER" spacing="50" prefWidth="510">
                         <VBox prefWidth="175">
-                            <RadioButton text="Worksheet" fx:id="worksheetRadioButton" style="-fx-font-size: 16;" selected="true"/>
+                            <RadioButton text="Worksheet" fx:id="worksheetRadioButton"
+                                         style="-fx-font-size: 16;" toggleGroup="$generateToggleGroup"
+                                         selected="true"/>
                             <Label text="Create a worksheet for your students" style="-fx-text-fill: #757575; -fx-font-size: 16; -fx-padding: 0 0 0 27;" wrapText="true"/>
                         </VBox>
                         <VBox prefWidth="175">
-                            <RadioButton text="Lesson Plan" fx:id="lessonPlanRadioButton" style="-fx-font-size: 16;"/>
+                            <RadioButton text="Lesson Plan" fx:id="lessonPlanRadioButton"
+                                         style="-fx-font-size: 16;" toggleGroup="$generateToggleGroup" />
                             <Label text="Create a lesson plan" style="-fx-text-fill: #757575; -fx-font-size: 16; -fx-padding: 0 0 0 27;"/>
                         </VBox>
                     </HBox>

@@ -1,4 +1,4 @@
-package com.example.cab302tailproject;
+package com.example.cab302tailproject.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

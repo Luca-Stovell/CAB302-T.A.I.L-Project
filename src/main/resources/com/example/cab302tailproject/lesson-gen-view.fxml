@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.BorderPane ?>
+<?import javafx.scene.text.Font ?>
+
+
+<?import javafx.scene.control.RadioButton?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.cab302tailproject.controller.LessonGenController">
+
+    <!-- Left sidebar -->
+    <left>
+        <VBox spacing = "10" prefWidth="150">
+            <Label text = "Welcome, Mrs. Liat!" style="-fx-font-weight: bold">
+                <font> <Font size="16" /> </font> </Label>            <!-- change when user DB is implemented -->
+            <Label text = "Class 9C" style="-fx-text-fill: #707070">
+                <font> <Font size="14" /> </font> </Label>
+            <Label text = "Week 5" style="-fx-text-fill: #707070">
+                <font> <Font size="12" /> </font> </Label>
+            <Label text = "12:34pm" style="-fx-text-fill: #707070">
+                <font> <Font size="12" /> </font> </Label>
+
+            <!-- Navigation sidebar -->
+
+            <Button text="Generate" fx:id="sidebarGenerateButton"
+                    style="-fx-background-color: #3498db; -fx-text-fill:white; -fx-font-weight: bold;"
+                    prefWidth="150" prefHeight="60"
+            />
+
+            <Button text="Review" fx:id="sidebarReviewButton"
+                    style="-fx-background-color: #3498db; -fx-text-fill:white; -fx-font-weight: bold;"
+                    prefWidth="150" prefHeight="60"
+            />
+
+            <Button text="Analysis" fx:id="sidebarAnalysisButton"
+                    style="-fx-background-color: #3498db; -fx-text-fill:white; -fx-font-weight: bold;"
+                    prefWidth="150" prefHeight="60"
+            />
+
+            <Button text="A.I. Assistance" fx:id="sidebarAiAssistanceButton"
+                    style="-fx-background-color: #3498db; -fx-text-fill:white; -fx-font-weight: bold;"
+                    prefWidth="150" prefHeight="60"
+            />
+
+            <Button text="Library" fx:id="sidebarLibraryButton"
+                    style="-fx-background-color: #3498db; -fx-text-fill:white; -fx-font-weight: bold;"
+                    prefWidth="150" prefHeight="60"
+            />
+
+
+            <ListView fx:id = "dashboardListView" />    <!-- list is placeholder only -->
+        </VBox>
+    </left>
+
+    <!-- Top Navigation Bar -->
+    <top>
+        <HBox spacing = "10">
+            <Button text="Files" fx:id="filesButton" />
+            <Button text="Students" fx:id="studentsButton" />
+            <HBox HBox.hgrow="ALWAYS" /> <!-- spacer -->
+            <Button text="Home" fx:id="homeButton" onAction="#onHomeClicked"/>
+            <Button text="Settings" fx:id="settingsButton" />
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10" />
+            </padding>
+        </HBox>
+    </top>
+
+
+    <!-- Main content/current program window -->
+    <center>
+        <GridPane hgap="5.0" vgap="5.0" >
+            <columnConstraints>
+                <ColumnConstraints minWidth="70" />
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+            <Label text="What would you like to generate?" GridPane.columnIndex="0" GridPane.rowIndex="0"
+                   GridPane.columnSpan="2"/>
+            <RadioButton text="Worksheet" fx:id="worksheetRadioButton" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <RadioButton text="Lesson Plan" fx:id="lessonPlanRadioButton" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField promptText="Enter prompt here..." fx:id="generatorTextField"
+                       GridPane.columnIndex="0" GridPane.rowIndex="2" GridPane.columnSpan="2" />
+            <Button text="Generate" fx:id = "generateButton" GridPane.columnIndex="0"
+                    GridPane.rowIndex="3" GridPane.columnSpan="2"/>
+        </GridPane>
+    </center>
+
+
+
+</BorderPane>

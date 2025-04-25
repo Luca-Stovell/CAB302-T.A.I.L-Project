@@ -1,3 +1,63 @@
 # Default ignored files
 /shelf/
 /workspace.xml
+
+# IntelliJ IDEA
+.idea/
+/jarRepositories.xml
+/vcs.xml
+# But keep these files for easier setup
+!.idea/misc.xml
+!.idea/compiler.xml
+!.idea/encodings.xml
+*.iml
+*.iws
+*.ipr
+out/
+
+# Maven build directory
+target/
+# Keep Maven wrapper files
+!.mvn/
+!.mvn/wrapper/
+!mvnw
+!mvnw.cmd
+
+# Logs
+logs/
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Miscellaneous
+*.tmp
+*.swp
+*.bak
+
+# Test results and reports????
+#/test_output/
+#reports/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/

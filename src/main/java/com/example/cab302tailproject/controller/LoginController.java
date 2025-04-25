@@ -1,6 +1,6 @@
-package com.example.cab302tailproject;
+package com.example.cab302tailproject.controller;
 
-import javafx.application.Application;
+import com.example.cab302tailproject.HelloApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.event.ActionEvent;

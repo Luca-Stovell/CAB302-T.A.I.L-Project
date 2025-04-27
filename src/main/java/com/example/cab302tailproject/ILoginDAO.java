@@ -24,7 +24,7 @@ public interface ILoginDAO {
      * @param password account password
      * @return true if successful, false if email already exists
      */
-    public boolean AddAccount(String email, String password);
+    public boolean AddAccount(String email, String password, int role);
 
     /**
      * changes the password of an existing account

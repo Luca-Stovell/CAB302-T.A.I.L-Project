@@ -9,7 +9,7 @@ import java.io.IOException;
 
 
 
-public class HelloApplication extends Application {
+public class TailApplication extends Application {
 
     public static final String TITLE = "TAIL";
     public static final int WIDTH = 550;
@@ -17,7 +17,7 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("LoginPage.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
         stage.setTitle(TITLE);
         stage.setScene(scene);

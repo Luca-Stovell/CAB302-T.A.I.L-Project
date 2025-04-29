@@ -60,7 +60,7 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <TextField fx:id="setEmailTextField" layoutX="64.0" layoutY="222.0" prefHeight="25.0" prefWidth="336.0" promptText="Email" />
+      <TextField fx:id="emailTextField" layoutX="64.0" layoutY="222.0" prefHeight="25.0" prefWidth="336.0" promptText="Email" />
       <PasswordField fx:id="registrationPasswordField" layoutX="64.0" layoutY="274.0" prefHeight="26.0" prefWidth="336.0" promptText="Password" />
       <PasswordField fx:id="registrationConfirmPasswordField" layoutX="64.0" layoutY="328.0" prefHeight="26.0" prefWidth="336.0" promptText="Confirm Password" />
    </children>

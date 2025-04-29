@@ -1,6 +1,6 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.HelloApplication;
+import com.example.cab302tailproject.TailApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -36,16 +36,16 @@ public class LoginController {
     @FXML
     protected void onRegistrationButtonClick() throws IOException {
         Stage stage = (Stage) registerPageButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("RegistrationPage.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), HelloApplication.WIDTH, HelloApplication.HEIGHT);
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("RegistrationPage.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         stage.setScene(scene);
     }
 
     @FXML
     protected void onLoginButtonClick() throws IOException {
         Stage stage = (Stage) loginButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("Main.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), HelloApplication.WIDTH, HelloApplication.HEIGHT);
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson-gen-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         stage.setScene(scene);
     }
 

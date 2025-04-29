@@ -11,60 +11,97 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="461.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.RegistrationController">
+<AnchorPane prefHeight="435.0" prefWidth="818.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.RegistrationController">
    <children>
-      <AnchorPane layoutY="-6.0" prefHeight="60.0" prefWidth="727.0" style="-fx-background-color: #111d29;">
+      <AnchorPane layoutY="-6.0" prefHeight="442.0" prefWidth="494.0" style="-fx-background-color: #111d29;">
          <children>
-            <Label layoutX="223.0" layoutY="27.0" prefHeight="25.0" prefWidth="154.0" text="User Registration" textFill="WHITE">
+            <Label alignment="CENTER" layoutX="112.0" layoutY="14.0" prefHeight="47.0" prefWidth="279.0" style="-fx-font-weight: Bold;" text="Welcome" textFill="WHITE">
                <font>
-                  <Font size="20.0" />
+                  <Font size="48.0" />
                </font>
             </Label>
-            <ImageView fitHeight="107.0" fitWidth="154.0">
-               <image>
-                  <Image url="@../../../images/tail_logo.png" />
-               </image>
-            </ImageView>
+            <Label layoutX="67.0" layoutY="67.0" prefHeight="45.0" prefWidth="91.0" text="First Name" textFill="WHITE">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+            <TextField fx:id="firstNameTextField" alignment="CENTER" layoutX="52.0" layoutY="112.0" prefHeight="25.0" prefWidth="400.0" promptText="First Name">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="lastNameTextField" alignment="CENTER" layoutX="52.0" layoutY="172.0" prefHeight="25.0" prefWidth="400.0" promptText="Last Name">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <Label layoutX="68.0" layoutY="144.0" text="Last Name" textFill="WHITE">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+            <Label layoutX="52.0" layoutY="214.0" text="Email" textFill="WHITE">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+            <TextField fx:id="setEmailTextField" alignment="CENTER" layoutX="52.0" layoutY="242.0" prefHeight="25.0" prefWidth="400.0" promptText="Email">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <PasswordField fx:id="registrationPasswordField" alignment="CENTER" layoutX="52.0" layoutY="311.0" prefHeight="26.0" prefWidth="400.0" promptText="Password">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </PasswordField>
+            <PasswordField fx:id="registrationConfirmPasswordField" alignment="CENTER" layoutX="52.0" layoutY="384.0" prefHeight="26.0" prefWidth="400.0" promptText="Re-enter Password">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </PasswordField>
+            <Label layoutX="52.0" layoutY="356.0" text="Confirm Password" textFill="WHITE">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+            <Label layoutX="52.0" layoutY="283.0" text="Password" textFill="WHITE">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
-      <Label layoutX="65.0" layoutY="99.0" text="First Name">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <TextField fx:id="firstNameTextField" layoutX="64.0" layoutY="118.0" prefHeight="25.0" prefWidth="336.0" promptText="P" />
-      <Label layoutX="65.0" layoutY="153.0" text="Last Name">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <TextField fx:id="lastNameTextField" layoutX="64.0" layoutY="172.0" prefHeight="25.0" prefWidth="336.0" promptText="Last Name" />
-      <Label layoutX="64.0" layoutY="255.0" text="Password">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <Label layoutX="65.0" layoutY="309.0" text="Confirm Password">
-         <font>
-            <Font size="13.0" />
-         </font>
-      </Label>
-      <CheckBox fx:id="termsAndConditionsButton" layoutX="64.0" layoutY="415.0" mnemonicParsing="false" text="Agree to Terms and Conditions" />
-      <RadioButton fx:id="setStudentButton" layoutX="65.0" layoutY="376.0" mnemonicParsing="false" text="Student">
+      <RadioButton fx:id="setStudentButton" layoutX="540.0" layoutY="206.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="129.0" text="Student">
          <toggleGroup>
             <ToggleGroup fx:id="userType" />
          </toggleGroup>
-      </RadioButton>
-      <RadioButton fx:id="setTeacherButton" layoutX="169.0" layoutY="376.0" mnemonicParsing="false" text="Teacher" toggleGroup="$userType" />
-      <Label layoutX="65.0" layoutY="203.0" text="Email">
          <font>
-            <Font size="13.0" />
+            <Font size="18.0" />
          </font>
-      </Label>
-      <TextField fx:id="setEmailTextField" layoutX="64.0" layoutY="222.0" prefHeight="25.0" prefWidth="336.0" promptText="Email" />
-      <PasswordField fx:id="registrationPasswordField" layoutX="64.0" layoutY="274.0" prefHeight="26.0" prefWidth="336.0" promptText="Password" />
-      <PasswordField fx:id="registrationConfirmPasswordField" layoutX="64.0" layoutY="328.0" prefHeight="26.0" prefWidth="336.0" promptText="Confirm Password" />
-      <Button fx:id="registerButton" layoutX="573.0" layoutY="351.0" onAction="#onRegisterButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
+      </RadioButton>
+      <RadioButton fx:id="setTeacherButton" layoutX="669.0" layoutY="219.0" mnemonicParsing="false" text="Teacher" toggleGroup="$userType">
+         <font>
+            <Font size="18.0" />
+         </font></RadioButton>
+      <Button fx:id="registerButton" layoutX="562.0" layoutY="345.0" onAction="#onRegisterButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
+      <CheckBox fx:id="termsAndConditionsButton" layoutX="567.0" layoutY="281.0" mnemonicParsing="false" text="Agree to Terms and Conditions" />
+      <ImageView fitHeight="109.0" fitWidth="129.0" layoutX="676.0" layoutY="14.0">
+         <image>
+            <Image url="@../../../images/tail_logo.png" />
+         </image>
+      </ImageView>
+      <Text fill="#111d29" layoutX="510.0" layoutY="108.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="User" wrappingWidth="129.0">
+         <font>
+            <Font size="52.0" />
+         </font>
+      </Text>
+      <Text layoutX="508.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="Registration" wrappingWidth="304.357421875">
+         <font>
+            <Font size="52.0" />
+         </font>
+      </Text>
    </children>
 </AnchorPane>

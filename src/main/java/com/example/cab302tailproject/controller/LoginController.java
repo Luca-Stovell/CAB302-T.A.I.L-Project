@@ -44,7 +44,7 @@ public class LoginController {
     @FXML
     protected void onLoginButtonClick() throws IOException {
         Stage stage = (Stage) loginButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("Main.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson-gen-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         stage.setScene(scene);
     }

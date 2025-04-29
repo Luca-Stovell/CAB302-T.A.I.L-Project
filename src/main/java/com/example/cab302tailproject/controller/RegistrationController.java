@@ -1,5 +1,7 @@
 package com.example.cab302tailproject.controller;
 
+import com.example.cab302tailproject.ILoginDAO;
+import com.example.cab302tailproject.SqliteLoginDAO;
 import com.example.cab302tailproject.TailApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -7,6 +9,8 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javafx.fxml.FXML;
 
@@ -24,6 +28,14 @@ public class RegistrationController {
     private PasswordField registrationConfirmPasswordField;
     @FXML
     private Button registerButton;
+    @FXML
+    private RadioButton setStudentButton;
+
+
+    private ILoginDAO registerDao;
+    public RegistrationController() {
+        registerDao = new SqliteLoginDAO();
+    }
 
 
     // Handles the register button click by switching the current stage to the login page scene.
@@ -33,11 +45,26 @@ public class RegistrationController {
     @FXML
     protected void onRegisterButtonClick() throws IOException {
         if (isRegistrationValid()) {
+            addToDatabase();
             Stage stage = (Stage) registerButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
         }
+    }
+
+    private void addToDatabase() {
+        //TODO fix the way username and email are labeled. Also add names to the database
+        String email = emailTextField.getText();
+        String hashedPassword  = computeHash(registrationPasswordField.getText());
+        int role;
+        if (setStudentButton.isSelected()) {role = 1;} else {role = 2;} // Should probably change this
+        registerDao.AddAccount(email, hashedPassword, role);
+    }
+
+    private String computeHash(String password) {
+        // TODO Decide how to do this properly
+        return password;
     }
 
     //Validation function that is used to compile all other validation logic into one function.

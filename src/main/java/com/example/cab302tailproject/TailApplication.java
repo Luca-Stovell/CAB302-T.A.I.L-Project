@@ -12,8 +12,8 @@ import java.io.IOException;
 public class TailApplication extends Application {
 
     public static final String TITLE = "TAIL";
-    public static final int WIDTH = 900;
-    public static final int HEIGHT = 600;
+    public static final int WIDTH = 818;
+    public static final int HEIGHT = 435;
 
     @Override
     public void start(Stage stage) throws IOException {

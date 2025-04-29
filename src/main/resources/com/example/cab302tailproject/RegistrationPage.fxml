@@ -7,21 +7,24 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="461.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.RegistrationController">
    <children>
-      <AnchorPane layoutY="-6.0" prefHeight="83.0" prefWidth="600.0" style="-fx-background-color: #111d29;">
+      <AnchorPane layoutY="-6.0" prefHeight="60.0" prefWidth="727.0" style="-fx-background-color: #111d29;">
          <children>
             <Label layoutX="223.0" layoutY="27.0" prefHeight="25.0" prefWidth="154.0" text="User Registration" textFill="WHITE">
                <font>
                   <Font size="20.0" />
                </font>
             </Label>
-            <ImageView fx:id="imageView" fitHeight="74.0" fitWidth="84.0" layoutX="14.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
-
+            <ImageView fitHeight="107.0" fitWidth="154.0">
+               <image>
+                  <Image url="@../../../images/tail_logo.png" />
+               </image>
             </ImageView>
          </children>
       </AnchorPane>
@@ -30,7 +33,7 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <TextField fx:id="firstNameTextField" layoutX="64.0" layoutY="118.0" prefHeight="25.0" prefWidth="336.0" promptText="First Name" />
+      <TextField fx:id="firstNameTextField" layoutX="64.0" layoutY="118.0" prefHeight="25.0" prefWidth="336.0" promptText="P" />
       <Label layoutX="65.0" layoutY="153.0" text="Last Name">
          <font>
             <Font size="13.0" />
@@ -48,7 +51,6 @@
          </font>
       </Label>
       <CheckBox fx:id="termsAndConditionsButton" layoutX="64.0" layoutY="415.0" mnemonicParsing="false" text="Agree to Terms and Conditions" />
-      <Button fx:id="registerButton" layoutX="467.0" layoutY="411.0" mnemonicParsing="false" onAction="#onRegisterButtonClick" text="Register" />
       <RadioButton fx:id="setStudentButton" layoutX="65.0" layoutY="376.0" mnemonicParsing="false" text="Student">
          <toggleGroup>
             <ToggleGroup fx:id="userType" />
@@ -63,5 +65,6 @@
       <TextField fx:id="setEmailTextField" layoutX="64.0" layoutY="222.0" prefHeight="25.0" prefWidth="336.0" promptText="Email" />
       <PasswordField fx:id="registrationPasswordField" layoutX="64.0" layoutY="274.0" prefHeight="26.0" prefWidth="336.0" promptText="Password" />
       <PasswordField fx:id="registrationConfirmPasswordField" layoutX="64.0" layoutY="328.0" prefHeight="26.0" prefWidth="336.0" promptText="Confirm Password" />
+      <Button fx:id="registerButton" layoutX="573.0" layoutY="351.0" onAction="#onRegisterButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
    </children>
 </AnchorPane>

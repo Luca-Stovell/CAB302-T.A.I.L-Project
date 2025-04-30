@@ -30,12 +30,13 @@ public class RegistrationController {
     private CheckBox termsAndConditionsButton;
     @FXML
     private Label errorText;
-
+    @FXML
+    public void initialize() {
+        registrationButton.setDisable(true); // Start with register button disabled
+    }
 
     // Handles the register button click by switching the current stage to the login page scene.
     // This is typically called after a successful registration to redirect the user back to login.
-
-    //Validation for the registration needs to be completed
     @FXML
     protected void onRegisterButtonClick() throws IOException {
         if (isRegistrationValid()) {
@@ -46,40 +47,32 @@ public class RegistrationController {
         }
     }
 
-    //Validation function that is used to compile all other validation logic into one function.
     private boolean isRegistrationValid() {
         // Verify first name
         if (!verifyFirstName(firstNameTextField)) {
-            return false;
-        }
-        else{
             errorText.setText("Please enter a valid First Name");
+            return false;
         }
 
         // Verify last name
         if (!verifyLastName(lastNameTextField)) {
-            return false;
-        }
-        else{
             errorText.setText("Please enter a valid Last Name");
-        }
-
-        // Verify password and confirm password
-        if (!verifyPassword(registrationPasswordField, registrationConfirmPasswordField)) {
             return false;
         }
 
         // Verify email
         if (!verifyEmail(emailTextField)) {
+            errorText.setText("Please enter a valid Email Address");
             return false;
         }
-        else{
-            errorText.setText("Please enter a valid Email Address");
+        if (!verifyPassword(registrationPasswordField, registrationConfirmPasswordField)) {
+            // Error message is already set inside verifyPassword()
+            return false;
         }
-
-        // If all validations pass
+        // All validations passed
         return true;
     }
+
 
     //Validation Logic for Name TextFields which can be applied to first and last name text fields.
     public boolean verifyName(TextField nameField){
@@ -96,27 +89,25 @@ public class RegistrationController {
         return verifyName(lastNameTextField);
     }
     // Validation logic that confirms that passwords in both fields are correct and match
-    public boolean confirmPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
+    public boolean verifyPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        if (password.equals(confirmPassword)) {
-            return true;
-        } else {
-            errorText.setText("Please enter the same password.");
+        if (!password.equals(confirmPassword)) {
+            errorText.setText("Passwords do not match.");
             return false;
         }
+
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+
+        if (!password.matches(passwordRegex)) {
+            errorText.setText("Password must be at least 8 characters and include uppercase, lowercase, and a number.");
+            return false;
+        }
+
+        return true;
     }
 
-    //Validates that the passwords is strong enough.
-    public boolean verifyPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
-        if (!confirmPassword(passwordField, confirmPasswordField)) {
-            return false;
-        }
-        String password = passwordField.getText();
-        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
-        return password.matches(passwordRegex);
-    }
 
     //Handles the validation of the email in the registration form.
     public boolean verifyEmail(TextField emailTextField) {

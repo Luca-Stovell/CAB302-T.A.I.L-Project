@@ -17,7 +17,7 @@ public class RegistrationController {
     @FXML
     private TextField lastNameTextField;
     @FXML
-    private TextField setEmailTextField;
+    private TextField emailTextField;
     @FXML
     private PasswordField registrationPasswordField;
     @FXML
@@ -32,28 +32,80 @@ public class RegistrationController {
     //Validation for the registration needs to be completed
     @FXML
     protected void onRegisterButtonClick() throws IOException {
-        Stage stage = (Stage) registerButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+        if (isRegistrationValid()) {
+            Stage stage = (Stage) registerButton.getScene().getWindow();
+            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+            stage.setScene(scene);
+        }
     }
 
-    public boolean isFieldEmpty(TextInputControl field) {
-        return field.getText() == null || field.getText().trim().isEmpty();
+    //Validation function that is used to compile all other validation logic into one function.
+    private boolean isRegistrationValid() {
+        // Verify first name
+        if (!verifyFirstName(firstNameTextField)) {
+
+            return false;
+        }
+
+        // Verify last name
+        if (!verifyLastName(lastNameTextField)) {
+            return false;
+        }
+
+        // Verify password and confirm password
+        if (!verifyPassword(registrationPasswordField, registrationConfirmPasswordField)) {
+            return false;
+        }
+
+        // Verify email
+        if (!verifyEmail(emailTextField)) {
+            return false;
+        }
+
+        // If all validations pass
+        return true;
     }
+
+    //Validation Logic for Name TextFields which can be applied to first and last name text fields.
+    public boolean verifyName(TextField nameField){
+        String name = nameField.getText();
+        String nameRegex = "^[A-Za-z]+$";
+        return name.matches(nameRegex);
+    }
+
+    private boolean verifyFirstName(TextField firstNameTextField){
+        return verifyName(firstNameTextField);
+    }
+
+    private boolean verifyLastName(TextField lastNameTextField){
+        return verifyName(lastNameTextField);
+    }
+    // Validation logic that confirms that passwords in both fields are correct and match
+    public boolean confirmPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
+        String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+        return password.equals(confirmPassword);
+    }
+    //Validates that the passwords is strong enough.
+    public boolean verifyPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
+        if (!confirmPassword(passwordField, confirmPasswordField)) {
+            return false;
+        }
+        String password = passwordField.getText();
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        return password.matches(passwordRegex);
+    }
+
 
 
     //Handles the validation of the email in the registration form.
 
-    public boolean verifyEmail() {
-        String email = setEmailTextField.getText();
+    public boolean verifyEmail(TextField emailTextField) {
+        String email = emailTextField.getText();
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
         return email.matches(emailRegex);
     }
-
-    /*public boolean verifyName() {
-        String Name = firstNameTextField.getText();
-    }*/
 
 }

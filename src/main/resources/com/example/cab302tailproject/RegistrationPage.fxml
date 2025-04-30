@@ -15,93 +15,90 @@
 
 <AnchorPane prefHeight="435.0" prefWidth="818.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.RegistrationController">
    <children>
-      <AnchorPane layoutY="-6.0" prefHeight="442.0" prefWidth="494.0" style="-fx-background-color: #111d29;">
+      <AnchorPane layoutY="-6.0" prefHeight="445.0" prefWidth="451.0" style="-fx-background-color: #111d29;">
          <children>
-            <Label alignment="CENTER" layoutX="112.0" layoutY="14.0" prefHeight="47.0" prefWidth="279.0" style="-fx-font-weight: Bold;" text="Welcome" textFill="WHITE">
+            <ImageView fx:id="imageView" fitHeight="74.0" fitWidth="84.0" layoutX="14.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
+
+            </ImageView>
+            <Text fill="WHITE" layoutX="132.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="WELCOME">
                <font>
-                  <Font size="48.0" />
+                  <Font size="40.0" />
                </font>
-            </Label>
-            <Label layoutX="67.0" layoutY="67.0" prefHeight="45.0" prefWidth="91.0" text="First Name" textFill="WHITE">
-               <font>
-                  <Font size="19.0" />
-               </font>
-            </Label>
-            <TextField fx:id="firstNameTextField" alignment="CENTER" layoutX="52.0" layoutY="112.0" prefHeight="25.0" prefWidth="400.0" promptText="First Name">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </TextField>
-            <TextField fx:id="lastNameTextField" alignment="CENTER" layoutX="52.0" layoutY="172.0" prefHeight="25.0" prefWidth="400.0" promptText="Last Name">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </TextField>
-            <Label layoutX="68.0" layoutY="144.0" text="Last Name" textFill="WHITE">
-               <font>
-                  <Font size="19.0" />
-               </font>
-            </Label>
-            <Label layoutX="52.0" layoutY="214.0" text="Email" textFill="WHITE">
-               <font>
-                  <Font size="19.0" />
-               </font>
-            </Label>
-            <TextField fx:id="setEmailTextField" alignment="CENTER" layoutX="52.0" layoutY="242.0" prefHeight="25.0" prefWidth="400.0" promptText="Email">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </TextField>
-            <PasswordField fx:id="registrationPasswordField" alignment="CENTER" layoutX="52.0" layoutY="311.0" prefHeight="26.0" prefWidth="400.0" promptText="Password">
+            </Text>
+            <PasswordField fx:id="registrationConfirmPasswordField" alignment="CENTER" layoutX="59.0" layoutY="369.0" prefHeight="26.0" prefWidth="336.0" promptText="Confirm Password">
                <font>
                   <Font size="14.0" />
                </font>
             </PasswordField>
-            <PasswordField fx:id="registrationConfirmPasswordField" alignment="CENTER" layoutX="52.0" layoutY="384.0" prefHeight="26.0" prefWidth="400.0" promptText="Re-enter Password">
+            <Label layoutX="57.0" layoutY="338.0" text="Confirm Password" textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <PasswordField fx:id="registrationPasswordField" alignment="CENTER" layoutX="59.0" layoutY="297.0" prefHeight="26.0" prefWidth="336.0" promptText="Password">
                <font>
                   <Font size="14.0" />
                </font>
             </PasswordField>
-            <Label layoutX="52.0" layoutY="356.0" text="Confirm Password" textFill="WHITE">
+            <Label layoutX="59.0" layoutY="272.0" text="Password" textFill="WHITE">
                <font>
-                  <Font size="19.0" />
+                  <Font size="16.0" />
                </font>
             </Label>
-            <Label layoutX="52.0" layoutY="283.0" text="Password" textFill="WHITE">
+            <TextField fx:id="setEmailTextField" alignment="CENTER" layoutX="59.0" layoutY="233.0" prefHeight="25.0" prefWidth="336.0" promptText="Email">
                <font>
-                  <Font size="19.0" />
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="lastNameTextField" alignment="CENTER" layoutX="59.0" layoutY="169.0" prefHeight="25.0" prefWidth="336.0" promptText="Last Name">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <Label layoutX="61.0" layoutY="68.0" text="First Name" textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="firstNameTextField" alignment="CENTER" layoutX="59.0" layoutY="101.0" prefHeight="25.0" prefWidth="336.0" promptText="First Name">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </TextField>
+            <Label layoutX="62.0" layoutY="144.0" text="Last Name" textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label layoutX="64.0" layoutY="213.0" text="Email" textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
                </font>
             </Label>
          </children>
       </AnchorPane>
-      <RadioButton fx:id="setStudentButton" layoutX="540.0" layoutY="206.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="129.0" text="Student">
+      <CheckBox fx:id="termsAndConditionsButton" layoutX="547.0" layoutY="279.0" mnemonicParsing="false" onAction="#onAgreeToTermsAndConditions" text="Agree to Terms and Conditions" />
+      <RadioButton fx:id="setStudentButton" layoutX="533.0" layoutY="226.0" mnemonicParsing="false" text="Student">
          <toggleGroup>
             <ToggleGroup fx:id="userType" />
          </toggleGroup>
-         <font>
-            <Font size="18.0" />
-         </font>
       </RadioButton>
-      <RadioButton fx:id="setTeacherButton" layoutX="669.0" layoutY="219.0" mnemonicParsing="false" text="Teacher" toggleGroup="$userType">
+      <RadioButton fx:id="setTeacherButton" layoutX="687.0" layoutY="226.0" mnemonicParsing="false" text="Teacher" toggleGroup="$userType" />
+      <Button fx:id="registerButton" layoutX="564.0" layoutY="328.0" onAction="#onRegisterButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
+      <Text fill="#111d29" layoutX="468.0" layoutY="133.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="USER">
          <font>
-            <Font size="18.0" />
-         </font></RadioButton>
-      <Button fx:id="registerButton" layoutX="562.0" layoutY="345.0" onAction="#onRegisterButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
-      <CheckBox fx:id="termsAndConditionsButton" layoutX="567.0" layoutY="281.0" mnemonicParsing="false" text="Agree to Terms and Conditions" />
-      <ImageView fitHeight="109.0" fitWidth="129.0" layoutX="676.0" layoutY="14.0">
+            <Font size="40.0" />
+         </font>
+      </Text>
+      <Text fill="#111d29" layoutX="468.0" layoutY="188.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="REGISTRATION">
+         <font>
+            <Font size="40.0" />
+         </font>
+      </Text>
+      <ImageView fitHeight="112.0" fitWidth="126.0" layoutX="629.0" layoutY="14.0">
          <image>
             <Image url="@../../../images/tail_logo.png" />
          </image>
       </ImageView>
-      <Text fill="#111d29" layoutX="510.0" layoutY="108.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="User" wrappingWidth="129.0">
-         <font>
-            <Font size="52.0" />
-         </font>
-      </Text>
-      <Text layoutX="508.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: Bold;" text="Registration" wrappingWidth="304.357421875">
-         <font>
-            <Font size="52.0" />
-         </font>
-      </Text>
    </children>
 </AnchorPane>

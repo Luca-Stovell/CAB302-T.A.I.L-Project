@@ -28,6 +28,8 @@ public class RegistrationController {
     private Button registrationButton;
     @FXML
     private CheckBox termsAndConditionsButton;
+    @FXML
+    private Label errorText;
 
 
     // Handles the register button click by switching the current stage to the login page scene.
@@ -48,13 +50,18 @@ public class RegistrationController {
     private boolean isRegistrationValid() {
         // Verify first name
         if (!verifyFirstName(firstNameTextField)) {
-
             return false;
+        }
+        else{
+            errorText.setText("Please enter a valid First Name");
         }
 
         // Verify last name
         if (!verifyLastName(lastNameTextField)) {
             return false;
+        }
+        else{
+            errorText.setText("Please enter a valid Last Name");
         }
 
         // Verify password and confirm password
@@ -65,6 +72,9 @@ public class RegistrationController {
         // Verify email
         if (!verifyEmail(emailTextField)) {
             return false;
+        }
+        else{
+            errorText.setText("Please enter a valid Email Address");
         }
 
         // If all validations pass
@@ -89,8 +99,15 @@ public class RegistrationController {
     public boolean confirmPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
-        return password.equals(confirmPassword);
+
+        if (password.equals(confirmPassword)) {
+            return true;
+        } else {
+            errorText.setText("Please enter the same password.");
+            return false;
+        }
     }
+
     //Validates that the passwords is strong enough.
     public boolean verifyPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
         if (!confirmPassword(passwordField, confirmPasswordField)) {
@@ -109,7 +126,7 @@ public class RegistrationController {
         return email.matches(emailRegex);
     }
     @FXML
-    protected void agreeToTermsAndConditions() {
+    protected void onAgreeToTermsAndConditions() {
         boolean accepted = termsAndConditionsButton.isSelected();
         registrationButton.setDisable(!accepted);
     }

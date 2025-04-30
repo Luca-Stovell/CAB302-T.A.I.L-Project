@@ -75,31 +75,27 @@
                   <Font size="16.0" />
                </font>
             </Label>
+            <Label fx:id="errorText" layoutX="187.0" layoutY="404.0" prefHeight="17.0" prefWidth="77.0" textFill="RED">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
-      <CheckBox fx:id="termsAndConditionsButton" layoutX="504.0" layoutY="285.0" mnemonicParsing="false" onAction="#agreeToTermsAndConditions" text="Agree to Terms and Conditions">
-         <font>
-            <Font size="16.0" />
-         </font></CheckBox>
-      <RadioButton fx:id="setStudentButton" layoutX="487.0" layoutY="220.0" mnemonicParsing="false" text="Student">
+      <CheckBox fx:id="termsAndConditionsButton" layoutX="547.0" layoutY="279.0" mnemonicParsing="false" onAction="#onAgreeToTermsAndConditions" text="Agree to Terms and Conditions" />
+      <RadioButton fx:id="setStudentButton" layoutX="533.0" layoutY="226.0" mnemonicParsing="false" text="Student">
          <toggleGroup>
             <ToggleGroup fx:id="userType" />
          </toggleGroup>
-         <font>
-            <Font size="23.0" />
-         </font>
       </RadioButton>
-      <RadioButton fx:id="setTeacherButton" layoutX="658.0" layoutY="220.0" mnemonicParsing="false" text="Teacher" textFill="#111d29" toggleGroup="$userType">
-         <font>
-            <Font size="23.0" />
-         </font></RadioButton>
-      <Button fx:id="registrationButton" layoutX="552.0" layoutY="342.0" onAction="#onRegisterButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
-      <Text fill="#111d29" layoutX="468.0" layoutY="113.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="USER">
+      <RadioButton fx:id="setTeacherButton" layoutX="687.0" layoutY="226.0" mnemonicParsing="false" text="Teacher" toggleGroup="$userType" />
+      <Button fx:id="registerButton" layoutX="564.0" layoutY="328.0" onAction="#onRegisterButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
+      <Text fill="#111d29" layoutX="468.0" layoutY="133.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="USER">
          <font>
             <Font size="40.0" />
          </font>
       </Text>
-      <Text fill="#111d29" layoutX="468.0" layoutY="178.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="REGISTRATION">
+      <Text fill="#111d29" layoutX="468.0" layoutY="188.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="REGISTRATION">
          <font>
             <Font size="40.0" />
          </font>

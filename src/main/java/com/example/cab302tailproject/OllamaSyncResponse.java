@@ -3,9 +3,8 @@ package com.example.cab302tailproject;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.response.OllamaResult;
-import io.github.ollama4j.utils.OptionsBuilder; // Assuming default options are okay
+import io.github.ollama4j.utils.OptionsBuilder;
 
-// Removed SLF4J imports
 
 import java.io.IOException;
 import java.net.ConnectException;

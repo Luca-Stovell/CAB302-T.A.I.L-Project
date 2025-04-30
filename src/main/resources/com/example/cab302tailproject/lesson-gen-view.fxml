@@ -137,7 +137,7 @@
                             />
                         </VBox>
                         <VBox prefWidth="100" prefHeight="30" alignment="CENTER" style="-fx-padding: 0 0 20 0">
-                            <Button text="Generate" fx:id = "generateButton"
+                            <Button text="Generate" fx:id = "generateButton" onAction="#onGenerateClicked"
                                     style="-fx-background-color: #E3E3E3;
                                     -fx-text-fill:black; -fx-font-size: 16;
                                     -fx-border-color: #767676; -fx-border-radius: 10;

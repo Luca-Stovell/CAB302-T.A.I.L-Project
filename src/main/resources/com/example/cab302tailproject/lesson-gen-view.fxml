@@ -127,16 +127,21 @@
                     </HBox>
 
                     <VBox alignment="CENTER" spacing="15" prefWidth="510" style="-fx-padding: 20 0 0 0;">
-                        <VBox prefWidth="400" alignment="CENTER">
+                        <VBox prefWidth="440" alignment="CENTER">
                             <TextField promptText="Enter topic or description here..."
                                        fx:id="generatorTextField"
                                        prefWidth="350"
-                                       prefHeight="150" style="-fx-alignment: top-left; -fx-font-size: 16; -fx-background-color: #E3E3E3;"
+                                       prefHeight="180"
+                                       maxWidth="440"
+                                       style="-fx-alignment: top-left; -fx-font-size: 16; -fx-background-color: #E3E3E3;"
                             />
                         </VBox>
-                        <VBox prefWidth="100" prefHeight="30" alignment="CENTER">
-                            <Button text="Generate" fx:id = "generateButton" onAction="#onGenerateClicked"
-                                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1;"
+                        <VBox prefWidth="100" prefHeight="30" alignment="CENTER" style="-fx-padding: 0 0 20 0">
+                            <Button text="Generate" fx:id = "generateButton"
+                                    style="-fx-background-color: #E3E3E3;
+                                    -fx-text-fill:black; -fx-font-size: 16;
+                                    -fx-border-color: #767676; -fx-border-radius: 10;
+                                    -fx-border-width: 1; -fx-background-radius: 10;"
                             />
                         </VBox>
                     </VBox>

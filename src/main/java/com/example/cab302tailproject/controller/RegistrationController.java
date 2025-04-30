@@ -5,8 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 
 import java.io.IOException;
 
@@ -65,12 +63,9 @@ public class RegistrationController {
             errorText.setText("Please enter a valid Email Address");
             return false;
         }
-        if (!verifyPassword(registrationPasswordField, registrationConfirmPasswordField)) {
-            // Error message is already set inside verifyPassword()
-            return false;
-        }
+        // Error message is already set inside verifyPassword()
+        return verifyPassword(registrationPasswordField, registrationConfirmPasswordField);
         // All validations passed
-        return true;
     }
 
 

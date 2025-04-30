@@ -88,11 +88,14 @@ Note: in SQLite, ENUM doesn't exist. Neither does varchar (makes no difference, 
 ```
 CREATE TABLE IF NOT EXISTS "user" (
 userID INTEGER PRIMARY KEY AUTOINCREMENT, /* Possibly redundant, email is unique */
-userName TEXT UNIQUE,
+email TEXT UNIQUE,
+firstName TEXT,
+lastName TEXT,
 password TEXT,
 role INTEGER /* substitute for enum, could also use TEXT. Also TODO decide if this actually exists*/
 );
 ```
+Amendment: added first and last name, changed "userName" to "email"
 ```
 CREATE TABLE IF NOT EXISTS "materials" (
 materialID INTEGER PRIMARY KEY AUTOINCREMENT,

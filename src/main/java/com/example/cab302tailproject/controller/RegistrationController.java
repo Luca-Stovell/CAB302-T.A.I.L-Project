@@ -44,7 +44,7 @@ public class RegistrationController {
     //Validation for the registration needs to be completed
     @FXML
     protected void onRegisterButtonClick() throws IOException {
-        if (isRegistrationValid()) {
+        if (!isRegistrationValid()) {
             addToDatabase();
             Stage stage = (Stage) registerButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
@@ -54,18 +54,18 @@ public class RegistrationController {
     }
 
     private void addToDatabase() {
-        //TODO fix the way username and email are labeled. Also add names to the database
+        //TODO fix the way username and email are labeled
         String email = emailTextField.getText();
-        String hashedPassword  = computeHash(registrationPasswordField.getText());
+        String fName = firstNameTextField.getText();
+        String lName = lastNameTextField.getText();
+        String Password  = registrationPasswordField.getText();
         int role;
         if (setStudentButton.isSelected()) {role = 1;} else {role = 2;} // Should probably change this
-        registerDao.AddAccount(email, hashedPassword, role);
+        if (!registerDao.CheckEmail(email)) {
+            registerDao.AddAccount(email, fName, lName, Password, role);
+        }
     }
 
-    private String computeHash(String password) {
-        // TODO Decide how to do this properly
-        return password;
-    }
 
     //Validation function that is used to compile all other validation logic into one function.
     private boolean isRegistrationValid() {

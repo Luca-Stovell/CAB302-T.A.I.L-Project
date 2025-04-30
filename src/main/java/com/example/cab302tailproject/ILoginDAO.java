@@ -19,12 +19,19 @@ public interface ILoginDAO {
     public String GetPassword(String email);
 
     /**
+     * Checks an input password against the stored password of an account
+     * @param email email of the account being checked
+     * @param password the input password
+     * @return true if passwords match, false if not
+     */
+    public boolean checkPassword(String email ,String password);
+    /**
      * Registers a new account to the database
      * @param email account email
      * @param password account password
      * @return true if successful, false if email already exists
      */
-    public boolean AddAccount(String email, String password, int role);
+    public boolean AddAccount(String email, String firstName, String lastName, String password, int role);
 
     /**
      * changes the password of an existing account

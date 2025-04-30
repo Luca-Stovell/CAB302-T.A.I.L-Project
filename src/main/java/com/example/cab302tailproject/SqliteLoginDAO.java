@@ -15,7 +15,9 @@ public class SqliteLoginDAO implements ILoginDAO{
         String query =
                   "CREATE TABLE IF NOT EXISTS user ("
                 + "userID INTEGER PRIMARY KEY AUTOINCREMENT, /* Possibly redundant, email is unique */"
-                + "userName TEXT UNIQUE,"
+                + "email TEXT UNIQUE,"
+                + "firstName TEXT,"
+                + "lastName TEXT,"
                 + "password TEXT,"
                 + "role INTEGER /* substitute for enum, could also use TEXT. Also TODO decide if this actually exists*/"
                 + ");";
@@ -30,15 +32,13 @@ public class SqliteLoginDAO implements ILoginDAO{
     @Override
     public boolean CheckEmail(String email) {
         try {
-            String query =  "SELECT COUNT(1) AS check" +
-                            "FROM user" +
-                            "WHERE userName = ?;";
+            String query =  "SELECT COUNT(1) FROM user WHERE email = ?;";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next())
             {
-                int result = resultSet.getInt("check");
+                int result = resultSet.getInt("COUNT(1)");
                 return result == 1;
             }
 
@@ -53,9 +53,7 @@ public class SqliteLoginDAO implements ILoginDAO{
     @Override
     public String GetPassword(String email) {
             try {
-                String query =  "SELECT password" +
-                        "FROM user" +
-                        "WHERE userName = ?;";
+                String query =  "SELECT password FROM user WHERE email = ?;";
                 PreparedStatement statement = connection.prepareStatement(query);
                 statement.setString(1, email);
                 ResultSet resultSet = statement.executeQuery();
@@ -67,17 +65,24 @@ public class SqliteLoginDAO implements ILoginDAO{
                 e.printStackTrace(); // TODO: fix this warning
             }
             return "null"; // not sure if this will cause problems TODO: fix this
-
+    }
+    public boolean checkPassword(String email ,String password){
+        String actualPassword = GetPassword(email);
+        String HPassword = hashPassword(password);
+        return actualPassword.equals(HPassword);
     }
 
     @Override
-    public boolean AddAccount(String email, String password, int role) {
+    public boolean AddAccount(String email, String firstName, String lastName, String password, int role) {
+        String hashedPassword = hashPassword(password);
         try {
-            String query = "INSERT INTO user (userName, password, role) VALUES (?, ?, ?)";
+            String query = "INSERT INTO user (email, firstName, lastName, password, role) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
-            statement.setString(2, password);
-            statement.setInt(3, role);
+            statement.setString(2, firstName);
+            statement.setString(3, lastName);
+            statement.setString(4, hashedPassword);
+            statement.setInt(5, role);
             statement.executeUpdate();
             return true;
         } catch (Exception e) {
@@ -95,10 +100,11 @@ public class SqliteLoginDAO implements ILoginDAO{
      */
     @Override
     public boolean ChangePassword(String email, String newPassword) {
+        String hashedPassword = hashPassword(newPassword);
         try {
             String query  = "UPDATE user SET password = ? WHERE email = ?";
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, newPassword);
+            statement.setString(1, hashedPassword);
             statement.setString(2, email);
             int linesChanged = statement.executeUpdate();
             if (linesChanged == 1) {
@@ -108,5 +114,9 @@ public class SqliteLoginDAO implements ILoginDAO{
             e.printStackTrace();
         }
         return false;
+    }
+    private static String hashPassword(String password){
+        // TODO implement hashing
+        return password;
     }
 }

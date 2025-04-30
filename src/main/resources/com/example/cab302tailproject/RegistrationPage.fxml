@@ -35,9 +35,9 @@
                   <Font size="16.0" />
                </font>
             </Label>
-            <PasswordField fx:id="registrationPasswordField" alignment="CENTER" layoutX="59.0" layoutY="297.0" prefHeight="26.0" prefWidth="336.0" promptText="Password">
+            <PasswordField fx:id="registrationPasswordField" alignment="CENTER" layoutX="59.0" layoutY="297.0" prefHeight="26.0" prefWidth="336.0" promptText="Must be 8+ characters with an uppercase letter and a number.">
                <font>
-                  <Font size="14.0" />
+                  <Font size="11.0" />
                </font>
             </PasswordField>
             <Label layoutX="59.0" layoutY="272.0" text="Password" textFill="WHITE">

@@ -101,7 +101,7 @@ public class RegistrationController {
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$";
 
         if (!password.matches(passwordRegex)) {
-            errorText.setText("Password must be at least 8 characters and include uppercase, lowercase, and a number.");
+            errorText.setText("Invalid Password");
             return false;
         }
 

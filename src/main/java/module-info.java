@@ -4,6 +4,8 @@ module com.example.cab302tailproject {
     requires java.desktop;
     requires java.sql;
 
+    requires java.net.http;
+    requires ollama4j;
 
     opens com.example.cab302tailproject to javafx.fxml;
     exports com.example.cab302tailproject;

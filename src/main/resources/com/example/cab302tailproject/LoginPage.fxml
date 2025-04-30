@@ -4,36 +4,49 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="900" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.LoginController">
+<AnchorPane prefHeight="435.0" prefWidth="818.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.LoginController">
    <children>
-      <PasswordField fx:id="loginPasswordField" layoutX="131.0" layoutY="254.0" prefHeight="26.0" prefWidth="336.0" promptText="Password" />
-      <AnchorPane layoutY="-6.0" prefHeight="83.0" prefWidth="600.0" style="-fx-background-color: #111d29;">
+      <PasswordField fx:id="loginPasswordField" layoutX="238.0" layoutY="266.0" prefHeight="44.0" prefWidth="336.0" promptText="Password">
+         <font>
+            <Font size="18.0" />
+         </font></PasswordField>
+      <AnchorPane prefHeight="90.0" prefWidth="818.0" style="-fx-background-color: #111d29;">
          <children>
-            <Label alignment="CENTER" layoutX="223.0" layoutY="27.0" prefHeight="25.0" prefWidth="154.0" text="Login" textFill="WHITE">
+            <Label alignment="CENTER" contentDisplay="CENTER" graphicTextGap="10.0" layoutX="241.0" layoutY="10.0" prefHeight="105.0" prefWidth="336.0" style="-fx-font-weight: BOLD;" text="Login" textFill="WHITE">
                <font>
-                  <Font size="20.0" />
+                  <Font size="72.0" />
                </font>
             </Label>
-            <ImageView fx:id="imageView" fitHeight="74.0" fitWidth="84.0" layoutX="14.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="124.0" fitWidth="160.0">
+               <image>
+                  <Image url="@../../../images/tail_logo.png" />
+               </image>
             </ImageView>
          </children>
       </AnchorPane>
-      <Label layoutX="132.0" layoutY="235.0" text="Password">
+      <Label layoutX="250.0" layoutY="231.0" prefHeight="35.0" prefWidth="107.0" text="Password" textFill="#111d29">
          <font>
-            <Font size="13.0" />
+            <Font size="24.0" />
          </font>
       </Label>
-      <Button fx:id="registerPageButton" layoutX="72.0" layoutY="393.0" mnemonicParsing="false" onAction="#onRegistrationButtonClick" text="Register" />
-      <Label layoutX="133.0" layoutY="183.0" text="Email">
+      <Label layoutX="250.0" layoutY="135.0" text="Email" textFill="#111d29">
          <font>
-            <Font size="13.0" />
+            <Font size="24.0" />
          </font>
       </Label>
-      <TextField fx:id="loginEmailTextField" layoutX="132.0" layoutY="202.0" prefHeight="25.0" prefWidth="336.0" promptText="Email" />
-      <Button fx:id="loginButton" layoutX="468.0" layoutY="393.0" mnemonicParsing="false" onAction="#onLoginButtonClick" text="Login" />
+      <TextField fx:id="loginEmailTextField" layoutX="238.0" layoutY="170.0" prefHeight="44.0" prefWidth="336.0" promptText="Email">
+         <font>
+            <Font size="18.0" />
+         </font></TextField>
+      <Button fx:id="loginButton" layoutX="574.0" layoutY="337.0" onAction="#onLoginButtonClick" prefHeight="70.0" prefWidth="160.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Login">
+         <font>
+            <Font size="22.0" />
+         </font></Button>
+      <Button fx:id="registerPageButton" layoutX="84.0" layoutY="337.0" onAction="#onRegistrationButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
    </children>
 </AnchorPane>

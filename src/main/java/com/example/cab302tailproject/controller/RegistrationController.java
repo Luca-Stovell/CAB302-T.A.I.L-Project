@@ -1,5 +1,7 @@
 package com.example.cab302tailproject.controller;
 
+import com.example.cab302tailproject.ILoginDAO;
+import com.example.cab302tailproject.SqliteLoginDAO;
 import com.example.cab302tailproject.TailApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import javafx.fxml.FXML;
 
@@ -80,16 +84,40 @@ public class RegistrationController {
     public void initialize() {
         registrationButton.setDisable(true); // Start with register button disabled
     }
+    @FXML
+    private RadioButton setStudentButton;
+
+    private ILoginDAO registerDao;
+    public RegistrationController() {
+        registerDao = new SqliteLoginDAO();
+    }
+
 
     // Handles the register button click by switching the current stage to the login page scene.
     // This is typically called after a successful registration to redirect the user back to login.
     @FXML
     protected void onRegisterButtonClick() throws IOException {
         if (isRegistrationValid()) {
+            addToDatabase();
             Stage stage = (Stage) registrationButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
+        }
+
+
+    }
+
+    private void addToDatabase() {
+        //TODO fix the way username and email are labeled
+        String email = emailTextField.getText();
+        String fName = firstNameTextField.getText();
+        String lName = lastNameTextField.getText();
+        String Password  = registrationPasswordField.getText();
+        int role;
+        if (setStudentButton.isSelected()) {role = 1;} else {role = 2;} // Should probably change this
+        if (!registerDao.CheckEmail(email)) {
+            registerDao.AddAccount(email, fName, lName, Password, role);
         }
     }
 

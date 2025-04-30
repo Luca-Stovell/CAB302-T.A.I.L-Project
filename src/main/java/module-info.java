@@ -1,6 +1,9 @@
 module com.example.cab302tailproject {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.desktop;
+    requires java.sql;
+
     requires java.net.http;
     requires ollama4j;
 

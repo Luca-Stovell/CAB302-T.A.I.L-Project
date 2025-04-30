@@ -1,52 +1,97 @@
 import com.example.cab302tailproject.controller.RegistrationController;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import javafx.application.Platform;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.lang.reflect.Field;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 // Currently overcomplicated by using javafx stuff - might be worth updating the controller
 public class RegistrationTest {
 
+    private static final String VALID_FIRST_NAME = "John";
+    private static final String INVALID_FIRST_NAME = "12345";
     private static final String VALID_EMAIL = "user@example.com";
-    private static final String VALID_PASSWORD = "<PASSWORD>";
-    private static final String INVALID_EMAIL = "invalidEmail";
-    private static final String INVALID_PASSWORD = "<PASSWORD>";
-    private static final String EMPTY_STRING = "";
+    private static final String INVALID_EMAIL = "invalid-email";
+    private static final String VALID_PASSWORD = "Password123";
+    private static final String MISMATCHED_PASSWORD = "Password456";
 
     private RegistrationController controller;
 
-    private TextField firstNameTextField;
-    private TextField lastNameTextField;
-    private TextField setEmailTextField;
-    private PasswordField registrationPasswordField;
-    private PasswordField registrationConfirmPasswordField;
+    @BeforeAll
+    static void initToolkit() {
+        // Initialize the JavaFX toolkit to avoid "Toolkit not initialized" errors
+        Platform.startup(() -> {});
+    }
+
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         controller = new RegistrationController();
-
-        setEmailTextField = new TextField();
-        registrationPasswordField = new PasswordField();
-        registrationConfirmPasswordField = new PasswordField();
-
-        // Get private fields from the controller
-        Field emailfield = RegistrationController.class.getDeclaredField("setEmailTextField");
-        emailfield.setAccessible(true); // Allow access to private fields
-        // assign to controller's fields
-        emailfield.set(controller, setEmailTextField); // Assign mock textfield
     }
 
     @Test
-    void testVerifyEmail_validEmail() {
-        setEmailTextField.setText(VALID_EMAIL);
-        assertTrue(controller.verifyEmail(), "Valid email should return true"); // TODO: update tests when database is fully functional
+    void testVerifyName_withValidName() {
+        // Set a valid name
+        controller.setFirstName(VALID_FIRST_NAME);
+        // Verify name validation logic works
+        assertTrue(controller.verifyName(new TextField(controller.getFirstName())),
+                "Name validation failed for valid input");
     }
+
+    @Test
+    void testVerifyName_withInvalidName() {
+        // Set an invalid name
+        controller.setFirstName(INVALID_FIRST_NAME);
+        // Verify name validation logic works
+        assertFalse(controller.verifyName(new TextField(controller.getFirstName())),
+                "Name validation passed for invalid input (numbers)");
+    }
+
+    @Test
+    void testVerifyPassword_withMatchingPasswords() {
+        // Set matching passwords
+        controller.setPassword(VALID_PASSWORD);
+        controller.setConfirmPassword(VALID_PASSWORD);
+        // Verify password validation logic works
+        assertTrue(controller.verifyPassword(
+                new PasswordField() {{ setText(controller.getPassword()); }},
+                new PasswordField() {{ setText(controller.getConfirmPassword()); }}
+        ), "Password verification failed for matching passwords");
+    }
+
+    @Test
+    void testVerifyPassword_withNonMatchingPasswords() {
+        // Set non-matching passwords
+        controller.setPassword(VALID_PASSWORD);
+        controller.setConfirmPassword(MISMATCHED_PASSWORD);
+        // Verify password validation logic works
+        assertFalse(controller.verifyPassword(
+                new PasswordField() {{ setText(controller.getPassword()); }},
+                new PasswordField() {{ setText(controller.getConfirmPassword()); }}
+        ), "Password verification passed for non-matching passwords");
+    }
+
+    @Test
+    void testVerifyEmail_withValidEmail() {
+        // Set a valid email
+        controller.setEmail(VALID_EMAIL);
+        // Verify email validation logic works
+        assertTrue(controller.verifyEmail(new TextField(controller.getEmail())),
+                "Email validation failed for valid input");
+    }
+
+    @Test
+    void testVerifyEmail_withInvalidEmail() {
+        // Set an invalid email
+        controller.setEmail(INVALID_EMAIL);
+        // Verify email validation logic works
+        assertFalse(controller.verifyEmail(new TextField(controller.getEmail())),
+                "Email validation passed for invalid input");
+    }
+
 
 }

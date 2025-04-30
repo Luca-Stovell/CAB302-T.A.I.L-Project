@@ -15,21 +15,67 @@ import javafx.fxml.FXML;
 public class RegistrationController {
     //Makes the components in the Registration.FXML readable to the program
     @FXML
-    private TextField firstNameTextField;
+    private TextField firstNameTextField = new TextField();
     @FXML
-    private TextField lastNameTextField;
+    private TextField lastNameTextField = new TextField();
     @FXML
-    private TextField emailTextField;
+    private TextField emailTextField = new TextField();
     @FXML
-    private PasswordField registrationPasswordField;
+    private PasswordField registrationPasswordField = new PasswordField();
     @FXML
-    private PasswordField registrationConfirmPasswordField;
+    private PasswordField registrationConfirmPasswordField = new PasswordField();
     @FXML
     private Button registrationButton;
     @FXML
     private CheckBox termsAndConditionsButton;
     @FXML
     private Label errorText;
+
+    // --- Getters --- //
+
+    public String getFirstName() {
+        return firstNameTextField != null ? firstNameTextField.getText() : null;
+    }
+
+    public String getLastName() {
+        return lastNameTextField.getText();
+    }
+
+    public String getEmail() {
+        return emailTextField.getText();
+    }
+
+    public String getPassword() {
+        return registrationPasswordField.getText();
+    }
+
+    public String getConfirmPassword() {
+        return registrationConfirmPasswordField.getText();
+    }
+
+    // ---- Setters ---- //
+
+    public void setFirstName(String firstName) {
+        firstNameTextField.setText(firstName); // Access initialized component
+    }
+
+    public void setLastName(String lastName) {
+        lastNameTextField.setText(lastName);
+    }
+
+    public void setEmail(String email) {
+        emailTextField.setText(email);
+    }
+
+    public void setPassword(String password) {
+        registrationPasswordField.setText(password);
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        registrationConfirmPasswordField.setText(confirmPassword);
+    }
+
+    // ---- Program --- //
     @FXML
     public void initialize() {
         registrationButton.setDisable(true); // Start with register button disabled
@@ -92,6 +138,8 @@ public class RegistrationController {
     public boolean verifyPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
+
+        if (errorText == null) { errorText = new Label(); } // Just to figure out the JUnit testing for now
 
         if (!password.equals(confirmPassword)) {
             errorText.setText("Passwords do not match.");

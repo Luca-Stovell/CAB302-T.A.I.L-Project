@@ -1,7 +1,7 @@
-package com.example.cab302tailproject.controller; // Adjust if your package structure is different
+package com.example.cab302tailproject.controller;
 
-// Core JavaFX imports
-import javafx.application.Platform; // Import Platform for runLater
+
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,16 +9,12 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-// IO Imports for file writing
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-// --- IMPORT YOUR OLLAMA CLASS ---
-// Ensure this package matches the location of OllamaSyncResponse.java
 import com.example.cab302tailproject.OllamaSyncResponse;
-// Import specific exceptions your service might throw
 import io.github.ollama4j.exceptions.OllamaBaseException;
 
 /**
@@ -72,15 +68,13 @@ public class LessonGenController {
      * Handles the action event when the "Generate" button is clicked.
      * Validates input, constructs a prompt, runs the Ollama generation
      * in a background task, and handles success (saving file) or failure (alert).
-     *
-     * @param event The action event triggered by the button click.
      */
     @FXML
     private void onGenerateClicked(ActionEvent event) {
         Toggle selectedToggle = generateToggleGroup.getSelectedToggle();
         String userInput = generatorTextField.getText();
 
-        // --- 1. Input Validation ---
+        // --- Input Validation ---
         if (selectedToggle == null) {
             showAlert(Alert.AlertType.WARNING, "Selection Missing", "Please select 'Worksheet' or 'Lesson Plan'.");
             return;
@@ -93,7 +87,7 @@ public class LessonGenController {
             return;
         }
 
-        // --- 2. Prepare for Generation ---
+        // --- Prepare for Generation ---
         String prompt = String.format("Generate a %s based on the following topic: %s",
                 selectedGeneratorType, userInput.trim());
 
@@ -101,7 +95,7 @@ public class LessonGenController {
         generateButton.setDisable(true);
         generatorTextField.setDisable(true);
 
-        // --- 3. Run Ollama Call in Background Task ---
+        // --- Run Ollama Call in Background Task ---
         Task<String> generateTask = new Task<>() {
             @Override
             protected String call() throws OllamaBaseException, IOException, InterruptedException {
@@ -125,7 +119,7 @@ public class LessonGenController {
             }
         };
 
-        // --- 4. Handle Task Completion (on JavaFX Application Thread) ---
+        // --- Handle Task Completion (on JavaFX Application Thread) ---
         generateTask.setOnSucceeded(workerStateEvent -> {
             String generatedContent = generateTask.getValue(); // Get result from background task
 
@@ -137,7 +131,7 @@ public class LessonGenController {
             saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
         });
 
-        // --- 5. Handle Task Failure (on JavaFX Application Thread) ---
+        // --- Handle Task Failure (on JavaFX Application Thread) ---
         generateTask.setOnFailed(workerStateEvent -> {
             Throwable exception = generateTask.getException(); // Get the exception from the background task
             // Log the essential error details
@@ -167,17 +161,13 @@ public class LessonGenController {
             generatorTextField.setDisable(false);
         });
 
-        // --- 6. Start the Background Task ---
+        // --- Start the Background Task ---
         new Thread(generateTask).start();
     }
 
     /**
      * Prompts the user to select a file location using FileChooser and saves
      * the provided content to the selected text file.
-     *
-     * @param content The string content to save.
-     * @param type    The type of content generated (e.g., "Worksheet"), used for suggested filename.
-     * @param topic   The topic of the content, used for suggested filename.
      */
     private void saveContentToFile(String content, String type, String topic) {
         if (content == null) {
@@ -240,10 +230,6 @@ public class LessonGenController {
     /**
      * Helper method to display a standard JavaFX Alert dialog.
      * Ensures the alert is shown on the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert (e.g., INFORMATION, WARNING, ERROR).
-     * @param title     The title of the alert window.
-     * @param message   The main message content of the alert.
      */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         // Ensure alerts run on the correct thread

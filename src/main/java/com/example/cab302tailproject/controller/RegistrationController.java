@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 
 import java.io.IOException;
 
@@ -23,7 +25,9 @@ public class RegistrationController {
     @FXML
     private PasswordField registrationConfirmPasswordField;
     @FXML
-    private Button registerButton;
+    private Button registrationButton;
+    @FXML
+    private CheckBox termsAndConditionsButton;
 
 
     // Handles the register button click by switching the current stage to the login page scene.
@@ -33,7 +37,7 @@ public class RegistrationController {
     @FXML
     protected void onRegisterButtonClick() throws IOException {
         if (isRegistrationValid()) {
-            Stage stage = (Stage) registerButton.getScene().getWindow();
+            Stage stage = (Stage) registrationButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
@@ -97,15 +101,17 @@ public class RegistrationController {
         return password.matches(passwordRegex);
     }
 
-
-
     //Handles the validation of the email in the registration form.
-
     public boolean verifyEmail(TextField emailTextField) {
         String email = emailTextField.getText();
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
         return email.matches(emailRegex);
+    }
+    @FXML
+    protected void agreeToTermsAndConditions() {
+        boolean accepted = termsAndConditionsButton.isSelected();
+        registrationButton.setDisable(!accepted);
     }
 
 }

@@ -82,11 +82,11 @@
             </Label>
          </children>
       </AnchorPane>
-      <CheckBox fx:id="termsAndConditionsButton" layoutX="515.0" layoutY="278.0" mnemonicParsing="false" onAction="#onAgreeToTermsAndConditions" text="Agree to Terms and Conditions">
+      <CheckBox fx:id="termsAndConditionsButton" layoutX="515.0" layoutY="278.0" mnemonicParsing="false" onAction="#updateRegisterButtonState" text="Agree to Terms and Conditions">
          <font>
             <Font size="15.0" />
          </font></CheckBox>
-      <RadioButton fx:id="setStudentButton" layoutX="487.0" layoutY="226.0" mnemonicParsing="false" text="Student">
+      <RadioButton fx:id="setStudentButton" layoutX="487.0" layoutY="226.0" mnemonicParsing="false" onAction="#updateRegisterButtonState" text="Student" toggleGroup="$userType">
          <toggleGroup>
             <ToggleGroup fx:id="userType" />
          </toggleGroup>
@@ -94,7 +94,7 @@
             <Font size="23.0" />
          </font>
       </RadioButton>
-      <RadioButton fx:id="setTeacherButton" layoutX="658.0" layoutY="226.0" mnemonicParsing="false" text="Teacher" toggleGroup="$userType">
+      <RadioButton fx:id="setTeacherButton" layoutX="658.0" layoutY="226.0" mnemonicParsing="false" onAction="#updateRegisterButtonState" text="Teacher" toggleGroup="$userType">
          <font>
             <Font size="23.0" />
          </font></RadioButton>

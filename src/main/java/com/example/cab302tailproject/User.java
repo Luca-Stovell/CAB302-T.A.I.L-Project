@@ -13,7 +13,7 @@ public class User {
         this.email = email;
         this.password = password;
     }
-
+    // Getter methods
     public String getFirstName() {
         return firstName;
     }
@@ -22,7 +22,6 @@ public class User {
         return lastName;
     }
 
-    // Getter methods
     public String getEmail() {
         return email;
     }

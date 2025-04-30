@@ -29,6 +29,13 @@ public class RegistrationController {
     @FXML
     private Label errorText;
     @FXML
+    private RadioButton setStudentButton;
+    @FXML
+    private RadioButton setTeacherButton;
+    @FXML
+    private ToggleGroup userType;
+
+    @FXML
     public void initialize() {
         registrationButton.setDisable(true); // Start with register button disabled
     }
@@ -102,8 +109,6 @@ public class RegistrationController {
 
         return true;
     }
-
-
     //Handles the validation of the email in the registration form.
     public boolean verifyEmail(TextField emailTextField) {
         String email = emailTextField.getText();
@@ -111,10 +116,23 @@ public class RegistrationController {
 
         return email.matches(emailRegex);
     }
+
+    @FXML
+    protected void updateRegisterButtonState() {
+        boolean accepted = termsAndConditionsButton.isSelected();
+        boolean userTypeSelected = userType.getSelectedToggle() != null;
+        registrationButton.setDisable(!(accepted && userTypeSelected));
+    }
+
     @FXML
     protected void onAgreeToTermsAndConditions() {
         boolean accepted = termsAndConditionsButton.isSelected();
         registrationButton.setDisable(!accepted);
     }
 
+    @FXML
+    protected void onUserSelected() {
+        Toggle selected = userType.getSelectedToggle();
+        registrationButton.setDisable(selected == null); // disable if nothing is selected
+    }
 }

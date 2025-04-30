@@ -1,6 +1,8 @@
 package com.example.cab302tailproject.controller;
 
+import com.example.cab302tailproject.Student;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.Teacher;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -45,6 +47,7 @@ public class RegistrationController {
     @FXML
     protected void onRegisterButtonClick() throws IOException {
         if (isRegistrationValid()) {
+            createUser();
             Stage stage = (Stage) registrationButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
@@ -120,19 +123,38 @@ public class RegistrationController {
     @FXML
     protected void updateRegisterButtonState() {
         boolean accepted = termsAndConditionsButton.isSelected();
-        boolean userTypeSelected = userType.getSelectedToggle() != null;
-        registrationButton.setDisable(!(accepted && userTypeSelected));
+        Toggle selectedToggle = userType.getSelectedToggle(); // Get the selected radio button
+
+        // Store the selected user type
+        if (selectedToggle != null) {
+            String selectedUserType = ((RadioButton) selectedToggle).getText(); // "Student" or "Teacher"
+        }
+
+        boolean userTypeSelected = selectedToggle != null;
+        registrationButton.setDisable(!(accepted && userTypeSelected)); // Disable button if either condition fails
     }
 
-    @FXML
-    protected void onAgreeToTermsAndConditions() {
-        boolean accepted = termsAndConditionsButton.isSelected();
-        registrationButton.setDisable(!accepted);
+    public void createUser() {
+        // Check if the student button is selected
+        if (setStudentButton.isSelected()) {
+            // Create a new student user (you can customize the User creation as needed)
+            String firstName = firstNameTextField.getText();
+            String lastName = lastNameTextField.getText();
+            String email = emailTextField.getText();
+            String password = registrationPasswordField.getText();
+
+            // Create a new student with the details
+            Student student = new Student(firstName, lastName, email, password);
+        } else if (setTeacherButton.isSelected()) {
+            // Create a new teacher user
+            String firstName = firstNameTextField.getText();
+            String lastName = lastNameTextField.getText();
+            String email = emailTextField.getText();
+            String password = registrationPasswordField.getText();
+
+            // Create a new Teacher with the details
+            Teacher teacher = new Teacher(firstName, lastName, email, password);
+        }
     }
 
-    @FXML
-    protected void onUserSelected() {
-        Toggle selected = userType.getSelectedToggle();
-        registrationButton.setDisable(selected == null); // disable if nothing is selected
-    }
 }

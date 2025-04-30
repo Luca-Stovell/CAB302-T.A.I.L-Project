@@ -24,7 +24,7 @@ public class OllamaSyncResponse {
     // Standard HTTP OK status code
     private static final int HTTP_OK = 200;
     // Define the timeout in seconds
-    private static final int REQUEST_TIMEOUT_SECONDS = 300; // 5 minutes
+    private static final int REQUEST_TIMEOUT_SECONDS = 90; // 5 minutes
 
     // The user's prompt
     private final String prompt;

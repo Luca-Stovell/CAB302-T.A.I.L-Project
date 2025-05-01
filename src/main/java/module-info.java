@@ -3,6 +3,7 @@ module com.example.cab302tailproject {
     requires javafx.fxml;
     requires java.net.http;
     requires ollama4j;
+    requires java.sql;
 
     opens com.example.cab302tailproject to javafx.fxml;
     exports com.example.cab302tailproject;

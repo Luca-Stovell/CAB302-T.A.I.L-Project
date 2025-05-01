@@ -7,6 +7,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import java.io.IOException;
 
@@ -50,7 +54,7 @@ public class RegistrationController {
             createUser();
             Stage stage = (Stage) registrationButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+            Scene scene = new Scene(fxmlLoader.load(), TailApplicatio.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
         }
     }

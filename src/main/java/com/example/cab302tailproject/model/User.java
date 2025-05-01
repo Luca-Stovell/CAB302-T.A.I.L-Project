@@ -1,4 +1,4 @@
-package com.example.cab302tailproject;
+package com.example.cab302tailproject.model;
 
 public class User {
     // Define Attributes for a user

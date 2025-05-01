@@ -1,16 +1,12 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.Student;
+import com.example.cab302tailproject.model.Student;
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.Teacher;
+import com.example.cab302tailproject.model.Teacher;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import java.io.IOException;
 

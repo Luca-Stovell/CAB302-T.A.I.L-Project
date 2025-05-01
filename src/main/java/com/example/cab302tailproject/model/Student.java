@@ -1,4 +1,4 @@
-package com.example.cab302tailproject;
+package com.example.cab302tailproject.model;
 
 public class Student extends User {
     public Student(String firstName, String lastName, String email, String password) {

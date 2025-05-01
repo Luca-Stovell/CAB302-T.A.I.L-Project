@@ -54,7 +54,7 @@ public class RegistrationController {
             createUser();
             Stage stage = (Stage) registrationButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), TailApplicatio.WIDTH, TailApplication.HEIGHT);
+            Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
         }
     }

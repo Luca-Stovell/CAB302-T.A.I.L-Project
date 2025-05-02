@@ -82,11 +82,11 @@
             </Label>
          </children>
       </AnchorPane>
-      <CheckBox fx:id="termsAndConditionsButton" layoutX="515.0" layoutY="278.0" mnemonicParsing="false" onAction="#onAgreeToTermsAndConditions" text="Agree to Terms and Conditions">
+      <CheckBox fx:id="termsAndConditionsButton" layoutX="515.0" layoutY="278.0" mnemonicParsing="false" onAction="#updateRegisterButtonState" text="Agree to Terms and Conditions">
          <font>
             <Font size="15.0" />
          </font></CheckBox>
-      <RadioButton fx:id="setStudentButton" layoutX="487.0" layoutY="226.0" mnemonicParsing="false" text="Student">
+      <RadioButton fx:id="setStudentButton" layoutX="487.0" layoutY="226.0" mnemonicParsing="false" onAction="#updateRegisterButtonState" text="Student" toggleGroup="$userType">
          <toggleGroup>
             <ToggleGroup fx:id="userType" />
          </toggleGroup>
@@ -94,22 +94,22 @@
             <Font size="23.0" />
          </font>
       </RadioButton>
-      <RadioButton fx:id="setTeacherButton" layoutX="658.0" layoutY="226.0" mnemonicParsing="false" text="Teacher" toggleGroup="$userType">
+      <RadioButton fx:id="setTeacherButton" layoutX="658.0" layoutY="226.0" mnemonicParsing="false" onAction="#updateRegisterButtonState" text="Teacher" toggleGroup="$userType">
          <font>
             <Font size="23.0" />
          </font></RadioButton>
       <Button fx:id="registrationButton" layoutX="564.0" layoutY="328.0" onAction="#onRegisterButtonClick" prefHeight="70.0" prefWidth="154.0" style="-fx-background-color: #111d29; -fx-text-fill: white; -fx-font-size: 22; -fx-background-radius: 10; -fx-font-weight: BOLD;" text="Register" />
-      <Text fill="#111d29" layoutX="468.0" layoutY="133.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="USER">
+      <Text fill="#111d29" layoutX="476.0" layoutY="142.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="USER">
          <font>
             <Font size="46.0" />
          </font>
       </Text>
-      <Text fill="#111d29" layoutX="468.0" layoutY="188.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="REGISTRATION">
+      <Text fill="#111d29" layoutX="476.0" layoutY="204.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: BOLD;" text="REGISTRATION">
          <font>
             <Font size="46.0" />
          </font>
       </Text>
-      <ImageView fitHeight="134.0" fitWidth="154.0" layoutX="641.0" layoutY="14.0">
+      <ImageView fitHeight="134.0" fitWidth="154.0" layoutX="650.0" layoutY="14.0">
          <image>
             <Image url="@../../../images/tail_logo.png" />
          </image>

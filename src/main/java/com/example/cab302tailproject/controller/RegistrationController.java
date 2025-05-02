@@ -3,6 +3,7 @@ package com.example.cab302tailproject.controller;
 import com.example.cab302tailproject.ILoginDAO;
 import com.example.cab302tailproject.SqliteLoginDAO;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.Teacher;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -35,11 +36,16 @@ public class RegistrationController {
     @FXML
     private Label errorText;
     @FXML
+    private RadioButton setStudentButton;
+    @FXML
+    private RadioButton setTeacherButton;
+    @FXML
+    private ToggleGroup userType;
+
+    @FXML
     public void initialize() {
         registrationButton.setDisable(true); // Start with register button disabled
     }
-    @FXML
-    private RadioButton setStudentButton;
 
     private ILoginDAO registerDao;
     public RegistrationController() {
@@ -52,7 +58,6 @@ public class RegistrationController {
     @FXML
     protected void onRegisterButtonClick() throws IOException {
         if (isRegistrationValid()) {
-            addToDatabase();
             Stage stage = (Stage) registrationButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
@@ -61,7 +66,6 @@ public class RegistrationController {
 
 
     }
-
     private void addToDatabase() {
         //TODO fix the way username and email are labeled
         String email = emailTextField.getText();
@@ -93,12 +97,9 @@ public class RegistrationController {
             errorText.setText("Please enter a valid Email Address");
             return false;
         }
-        if (!verifyPassword(registrationPasswordField, registrationConfirmPasswordField)) {
-            // Error message is already set inside verifyPassword()
-            return false;
-        }
+        // Error message is already set inside verifyPassword()
+        return verifyPassword(registrationPasswordField, registrationConfirmPasswordField);
         // All validations passed
-        return true;
     }
 
 
@@ -136,9 +137,6 @@ public class RegistrationController {
         return true;
     }
 
-
-
-
     //Handles the validation of the email in the registration form.
     public boolean verifyEmail(TextField emailTextField) {
         String email = emailTextField.getText();
@@ -146,10 +144,42 @@ public class RegistrationController {
 
         return email.matches(emailRegex);
     }
+
     @FXML
-    protected void onAgreeToTermsAndConditions() {
+    protected void updateRegisterButtonState() {
         boolean accepted = termsAndConditionsButton.isSelected();
-        registrationButton.setDisable(!accepted);
+        Toggle selectedToggle = userType.getSelectedToggle(); // Get the selected radio button
+
+        // Store the selected user type
+        if (selectedToggle != null) {
+            String selectedUserType = ((RadioButton) selectedToggle).getText(); // "Student" or "Teacher"
+        }
+
+        boolean userTypeSelected = selectedToggle != null;
+        registrationButton.setDisable(!(accepted && userTypeSelected)); // Disable button if either condition fails
+    }
+
+    public void createUser() {
+        // Check if the student button is selected
+        if (setStudentButton.isSelected()) {
+            // Create a new student user (you can customize the User creation as needed)
+            String firstName = firstNameTextField.getText();
+            String lastName = lastNameTextField.getText();
+            String email = emailTextField.getText();
+            String password = registrationPasswordField.getText();
+
+            // Create a new student with the details
+            Student student = new Student(firstName, lastName, email, password);
+        } else if (setTeacherButton.isSelected()) {
+            // Create a new teacher user
+            String firstName = firstNameTextField.getText();
+            String lastName = lastNameTextField.getText();
+            String email = emailTextField.getText();
+            String password = registrationPasswordField.getText();
+
+            // Create a new Teacher with the details
+            Teacher teacher = new Teacher(firstName, lastName, email, password);
+        }
     }
 
 }

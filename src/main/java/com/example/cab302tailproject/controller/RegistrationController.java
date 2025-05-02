@@ -3,6 +3,7 @@ package com.example.cab302tailproject.controller;
 import com.example.cab302tailproject.ILoginDAO;
 import com.example.cab302tailproject.SqliteLoginDAO;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.Student;
 import com.example.cab302tailproject.model.Teacher;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -58,13 +59,13 @@ public class RegistrationController {
     @FXML
     protected void onRegisterButtonClick() throws IOException {
         if (isRegistrationValid()) {
+            addToDatabase();
+
             Stage stage = (Stage) registrationButton.getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
         }
-
-
     }
     private void addToDatabase() {
         //TODO fix the way username and email are labeled
@@ -73,6 +74,8 @@ public class RegistrationController {
         String lName = lastNameTextField.getText();
         String Password  = registrationPasswordField.getText();
         int role;
+
+        //TODO Create two new tables student and teacher and have a PK be teacher over student e.i multiple students can belong to one teacher.
         if (setStudentButton.isSelected()) {role = 1;} else {role = 2;} // Should probably change this
         if (!registerDao.CheckEmail(email)) {
             registerDao.AddAccount(email, fName, lName, Password, role);

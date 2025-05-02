@@ -59,6 +59,7 @@ public class RegistrationController {
     @FXML
     protected void onRegisterButtonClick() throws IOException {
         if (isRegistrationValid()) {
+            createUser();
             addToDatabase();
 
             Stage stage = (Stage) registrationButton.getScene().getWindow();
@@ -76,9 +77,8 @@ public class RegistrationController {
         int role;
 
         //TODO Create two new tables student and teacher and have a PK be teacher over student e.i multiple students can belong to one teacher.
-        if (setStudentButton.isSelected()) {role = 1;} else {role = 2;} // Should probably change this
         if (!registerDao.CheckEmail(email)) {
-            registerDao.AddAccount(email, fName, lName, Password, role);
+            registerDao.AddAccount(email, fName, lName, Password);
         }
     }
 

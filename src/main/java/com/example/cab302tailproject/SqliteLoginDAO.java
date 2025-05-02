@@ -12,16 +12,24 @@ public class SqliteLoginDAO implements ILoginDAO{
 
     }
     private void createTable() {
-        String query =
-                  "CREATE TABLE IF NOT EXISTS user ("
-                + "userID INTEGER PRIMARY KEY AUTOINCREMENT, /* Possibly redundant, email is unique */"
-                + "email TEXT UNIQUE,"
-                + "firstName TEXT,"
-                + "lastName TEXT,"
-                + "password TEXT,"
-                + "role INTEGER /* substitute for enum, could also use TEXT. Also TODO decide if this actually exists*/"
-                + ");";
+            createTeacherTable();
+            createStudentTable();
+        try {
+            Statement createTable = connection.createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    private void createTeacherTable() {
+        String query =
+                "CREATE TABLE IF NOT EXISTS Teacher ("
+                        + "TeacherID INTEGER PRIMARY KEY AUTOINCREMENT, /* Possibly redundant, email is unique */"
+                        + "email TEXT UNIQUE,"
+                        + "firstName TEXT,"
+                        + "lastName TEXT,"
+                        + "password TEXT"
+                        + ")";
         try {
             Statement createTable = connection.createStatement();
             createTable.execute(query);
@@ -29,10 +37,29 @@ public class SqliteLoginDAO implements ILoginDAO{
             e.printStackTrace();
         }
     }
+    private void createStudentTable() {
+        String query =
+                "CREATE TABLE IF NOT EXISTS Student ("
+                        + "StudentID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + "email TEXT UNIQUE NOT NULL, "
+                        + "firstName TEXT NOT NULL, "
+                        + "lastName TEXT NOT NULL, "
+                        + "password TEXT NOT NULL, "
+                        + "teacherID INTEGER, "
+                        + "FOREIGN KEY (teacherID) REFERENCES Teacher(TeacherID)"
+                        + ")";
+        try {
+            Statement createTable = connection.createStatement();
+            createTable.execute(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public boolean CheckEmail(String email) {
         try {
-            String query =  "SELECT COUNT(1) FROM user WHERE email = ?;";
+            String query =  "SELECT COUNT(1) FROM Teacher WHERE email = ?;";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
@@ -53,7 +80,7 @@ public class SqliteLoginDAO implements ILoginDAO{
     @Override
     public String GetPassword(String email) {
             try {
-                String query =  "SELECT password FROM user WHERE email = ?;";
+                String query =  "SELECT password FROM Teacher WHERE email = ?;";
                 PreparedStatement statement = connection.prepareStatement(query);
                 statement.setString(1, email);
                 ResultSet resultSet = statement.executeQuery();
@@ -73,16 +100,15 @@ public class SqliteLoginDAO implements ILoginDAO{
     }
 
     @Override
-    public boolean AddAccount(String email, String firstName, String lastName, String password, int role) {
+    public boolean AddAccount(String email, String firstName, String lastName, String password) {
         String hashedPassword = hashPassword(password);
         try {
-            String query = "INSERT INTO user (email, firstName, lastName, password, role) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO Teacher (email, firstName, lastName, password) VALUES (?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             statement.setString(2, firstName);
             statement.setString(3, lastName);
             statement.setString(4, hashedPassword);
-            statement.setInt(5, role);
             statement.executeUpdate();
             return true;
         } catch (Exception e) {
@@ -102,7 +128,7 @@ public class SqliteLoginDAO implements ILoginDAO{
     public boolean ChangePassword(String email, String newPassword) {
         String hashedPassword = hashPassword(newPassword);
         try {
-            String query  = "UPDATE user SET password = ? WHERE email = ?";
+            String query  = "UPDATE Teacher SET password = ? WHERE email = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, hashedPassword);
             statement.setString(2, email);

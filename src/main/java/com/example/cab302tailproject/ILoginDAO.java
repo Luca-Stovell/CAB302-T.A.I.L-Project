@@ -27,11 +27,16 @@ public interface ILoginDAO {
     public boolean checkPassword(String email ,String password);
     /**
      * Registers a new account to the database
-     * @param email account email
+     *
+     * @param email    account email
      * @param password account password
      * @return true if successful, false if email already exists
      */
     public boolean AddAccount(String email, String firstName, String lastName, String password);
+
+    public boolean AddStudent(String email, String firstName, String lastName, String password);
+
+    public boolean AddTeacher(String email, String firstName, String lastName, String password);
 
     /**
      * changes the password of an existing account
@@ -40,4 +45,6 @@ public interface ILoginDAO {
      * @return true if successful, false if account doesn't exist
      */
     public  boolean ChangePassword(String email, String newPassword);
+
+
 }

@@ -101,6 +101,33 @@ public class SqliteLoginDAO implements ILoginDAO{
 
     @Override
     public boolean AddAccount(String email, String firstName, String lastName, String password) {
+        try {
+            AddStudent(email, firstName, lastName, password);
+            AddTeacher(email, firstName, lastName, password);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    @Override
+    public boolean AddStudent(String email, String firstName, String lastName, String password){
+        String hashedPassword = hashPassword(password);
+        try {
+            String query = "INSERT INTO Student (email, firstName, lastName, password) VALUES (?, ?, ?, ?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            statement.setString(2, firstName);
+            statement.setString(3, lastName);
+            statement.setString(4, hashedPassword);
+            statement.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    @Override
+    public boolean AddTeacher(String email, String firstName, String lastName, String password){
         String hashedPassword = hashPassword(password);
         try {
             String query = "INSERT INTO Teacher (email, firstName, lastName, password) VALUES (?, ?, ?, ?)";
@@ -110,7 +137,6 @@ public class SqliteLoginDAO implements ILoginDAO{
             statement.setString(3, lastName);
             statement.setString(4, hashedPassword);
             statement.executeUpdate();
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }

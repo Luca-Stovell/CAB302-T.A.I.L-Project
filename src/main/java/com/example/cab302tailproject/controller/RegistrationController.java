@@ -69,16 +69,28 @@ public class RegistrationController {
         }
     }
     private void addToDatabase() {
-        //TODO fix the way username and email are labeled
         String email = emailTextField.getText();
         String fName = firstNameTextField.getText();
         String lName = lastNameTextField.getText();
-        String Password  = registrationPasswordField.getText();
-        int role;
+        String password = registrationPasswordField.getText();
 
-        //TODO Create two new tables student and teacher and have a PK be teacher over student e.i multiple students can belong to one teacher.
-        if (!registerDao.CheckEmail(email)) {
-            registerDao.AddAccount(email, fName, lName, Password);
+        // Check if student is selected
+        if (setTeacherButton.isSelected()) {
+            if (!registerDao.CheckEmail(email)) {
+                registerDao.AddTeacher(email, fName, lName, password);
+            } else {
+                System.out.println("Email already in use.");
+            }
+        }
+        // Check if teacher is selected
+        else if (setStudentButton.isSelected()) {
+            if (!registerDao.CheckEmail(email)) {
+                registerDao.AddStudent(email, fName, lName, password);
+            } else {
+                System.out.println("Email already in use.");
+            }
+        } else {
+            System.out.println("Please select a role (Student or Teacher).");
         }
     }
 

@@ -118,7 +118,9 @@
                             <RadioButton text="Worksheet" fx:id="worksheetRadioButton"
                                          style="-fx-font-size: 16;" toggleGroup="$generateToggleGroup"
                                          selected="true"/>
-                            <Label text="Create a worksheet for your students" style="-fx-text-fill: #757575; -fx-font-size: 16; -fx-padding: 0 0 0 27;" wrapText="true"/>
+                            <Label text="Create a worksheet for your students"
+                                   style="-fx-text-fill: #757575; -fx-font-size: 16;
+                                    -fx-padding: 0 0 0 27;" wrapText="true" minHeight="40"/>
                         </VBox>
                         <VBox prefWidth="175">
                             <RadioButton text="Lesson Plan" fx:id="lessonPlanRadioButton"
@@ -133,11 +135,13 @@
                                        fx:id="generatorTextField"
                                        prefWidth="350"
                                        prefHeight="180"
+                                       minHeight="110"
+                                       minWidth="440"
                                        maxWidth="440"
                                        style="-fx-alignment: top-left; -fx-font-size: 16; -fx-background-color: #E3E3E3;"
                             />
                         </VBox>
-                        <VBox prefWidth="100" prefHeight="30" alignment="CENTER" style="-fx-padding: 0 0 20 0">
+                        <VBox prefWidth="100" prefHeight="30" alignment="CENTER" style="-fx-padding: 8 0 8 0">
                             <Button text="Generate" fx:id = "generateButton" onAction="#onGenerateClicked"
                                     style="-fx-background-color: #E3E3E3;
                                     -fx-text-fill:black; -fx-font-size: 16;

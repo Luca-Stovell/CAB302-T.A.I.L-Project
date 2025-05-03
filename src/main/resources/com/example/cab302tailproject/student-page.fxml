@@ -7,8 +7,13 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" prefHeight="420" prefWidth="710" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.LessonGenController">
-    <!-- Left sidebar -->
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight = "-Infinity"
+            prefHeight = "420"
+            prefWidth="710"
+            fx:controller="com.example.cab302tailproject.controller.LessonGenController"
+            style= "-fx-background-color: white;">    <!-- Left sidebar -->
     <left>
         <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 2;">
             <!-- user info -->

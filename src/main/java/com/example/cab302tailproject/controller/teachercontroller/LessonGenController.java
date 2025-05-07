@@ -1,16 +1,14 @@
-package com.example.cab302tailproject.controller.teachercontroller; // Ensure this package is correct
+package com.example.cab302tailproject.controller.teachercontroller;
 
-// Assuming OllamaSyncResponse is in com.example.cab302tailproject.ollama4j as per your module-info
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 
-import com.example.cab302tailproject.TailApplication; // Assuming your main app class is TailApplication for getResource
+import com.example.cab302tailproject.TailApplication;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node; // For getting stage from event source
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -20,7 +18,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URL;
+
 
 /**
  * Controller for the Teacher's Lesson Generation view.

@@ -200,6 +200,7 @@ public class RegistrationController {
         return true;
     }
 
+
     //Handles the validation of the email in the registration form.
     public boolean verifyEmail(TextField emailTextField) {
         String email = emailTextField.getText();

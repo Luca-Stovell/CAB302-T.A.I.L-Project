@@ -9,7 +9,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="435.0" prefWidth="818.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.LoginController">
+<AnchorPane prefHeight="435.0" prefWidth="818.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.cab302tailproject.controller.LoginController">
    <children>
       <TextField fx:id="loginEmailTextField" layoutX="238.0" layoutY="170.0" prefHeight="44.0" prefWidth="336.0" promptText="Email">
          <font>

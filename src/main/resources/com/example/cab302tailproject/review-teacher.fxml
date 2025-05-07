@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight = "-Infinity"
+            prefHeight = "420"
+            prefWidth="710"
+            fx:controller="com.example.cab302tailproject.controller.LessonGenController"
+            style= "-fx-background-color: white;">    <!-- Left sidebar -->
+    <left>
+        <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 2;">
+            <!-- user info -->
+            <VBox prefHeight="120" style="-fx-padding: 25 0 0 30;">
+                <HBox alignment="CENTER_LEFT" prefWidth="200" spacing="20">
+                    <!-- Placeholder user avatar -->
+                    <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                        <Image url="@../../../images/tail_logo.png" />
+                    </ImageView>
+
+                    <VBox alignment="CENTER_LEFT" prefWidth="80">
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #757575" text="Mrs. Liat">
+                            <font> <Font size="16" /> </font> </Label>            <!-- change when user DB is implemented -->
+                        <Label style="-fx-text-fill: #B3B3B3" text="Class 9C">
+                            <font> <Font size="16" /> </font> </Label>
+                    </VBox>
+                </HBox>
+
+
+                <!-- Week / time -->
+                <VBox>
+                    <padding>
+                        <Insets bottom="10" left="5" right="5" top="10" />
+                    </padding>
+
+                    <Label style="-fx-text-fill: #B3B3B3" text="Week 5">
+                        <font> <Font size="12" /> </font> </Label>
+                    <Label style="-fx-text-fill: #B3B3B3" text="Time 12:34pm">
+                        <font> <Font size="12" /> </font>
+                    </Label>
+                </VBox>
+            </VBox>
+
+            <!-- Navigation sidebar -->
+
+            <Button fx:id="sidebarGenerateButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Generate" />
+
+            <Button fx:id="sidebarReviewButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
+
+            <Button fx:id="sidebarAnalysisButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" />
+
+            <Button fx:id="sidebarAiAssistanceButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" />
+
+            <Button fx:id="sidebarLibraryButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;-fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Library" />
+        </VBox>
+    </left>
+
+
+    <center>
+        <BorderPane>
+            <!-- Top Navigation Bar -->
+            <top>
+                <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
+                    <Button fx:id="filesButton" layoutX="80" layoutY="15" prefHeight="40" prefWidth="100" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Files" />
+                    <Button fx:id="studentsButton" layoutX="260" layoutY="15" prefHeight="40" prefWidth="115" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Students" />
+
+                    <HBox HBox.hgrow="ALWAYS" /> <!-- spacer -->
+
+                    <Button fx:id="homeButton" layoutX="420" layoutY="20" onAction="#onHomeClicked" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="H">
+                        <!-- insert graphic here-->
+                    </Button>
+                    <Button fx:id="settingsButton" layoutX="460" layoutY="20" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="S">
+                        <!-- insert graphic here-->
+                    </Button>
+                </AnchorPane>
+            </top>
+         <left>
+             <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                 <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="355.0" prefWidth="100.0" vbarPolicy="AS_NEEDED">
+                     <VBox alignment="TOP_CENTER" style="-fx-padding: 0;">
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 1" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 2" />
+                         <Button prefHeight="89.0" prefWidth="85.0" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 3" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 4" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 5" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 6" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 7" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 8" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 9" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 10" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 11" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 12" />
+                         <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Week 13" />
+                     </VBox>
+                 </ScrollPane>
+
+             </VBox>
+         </left>
+         <center>
+             <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                 <Button layoutX="125.0" layoutY="71.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="107.0" text="View Lesson" />
+                 <Button layoutX="124.0" layoutY="137.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="109.0" text="View Cards" />
+                 <Button layoutX="124.0" layoutY="209.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="109.0" text="View Worksheet" />
+             </Pane>
+         </center>
+        </BorderPane>
+    </center>
+
+
+
+
+
+
+</BorderPane>

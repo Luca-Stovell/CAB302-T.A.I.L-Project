@@ -61,3 +61,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Ignore database files ###
+*.db

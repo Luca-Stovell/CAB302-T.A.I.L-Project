@@ -14,7 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import com.example.cab302tailproject.OllamaSyncResponse;
+import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 
 /**

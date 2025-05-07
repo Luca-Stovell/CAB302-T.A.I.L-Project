@@ -2,7 +2,6 @@
 
 package com.example.cab302tailproject;
 
-import com.example.cab302tailproject.controller.LessonGenController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

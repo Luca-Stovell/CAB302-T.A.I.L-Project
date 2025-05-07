@@ -1,4 +1,4 @@
-package com.example.cab302tailproject.controller;
+package com.example.cab302tailproject.controller.teachercontroller;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;

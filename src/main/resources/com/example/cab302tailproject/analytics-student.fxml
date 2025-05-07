@@ -11,7 +11,7 @@
             maxHeight = "-Infinity"
             prefHeight = "420"
             prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.LessonGenController"
+            fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController"
             style= "-fx-background-color: white;">
     <!-- Left sidebar -->
     <left>

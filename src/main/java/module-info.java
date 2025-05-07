@@ -15,4 +15,6 @@ module com.example.cab302tailproject {
     opens com.example.cab302tailproject.model to javafx.fxml;
     exports com.example.cab302tailproject.ollama4j;
     opens com.example.cab302tailproject.ollama4j to javafx.fxml;
+    exports com.example.cab302tailproject.controller.teachercontroller;
+    opens com.example.cab302tailproject.controller.teachercontroller to javafx.fxml;
 }

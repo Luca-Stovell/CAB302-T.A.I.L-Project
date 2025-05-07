@@ -83,7 +83,7 @@ public class LearningCardDeckTest {
 
     @Test
     public void testMediumNext(){
-        deck.next(0.5);
+        deck.mediumNext();
         for (int i = 0; i < 3; i++) {
             deck.next();
         }
@@ -91,9 +91,20 @@ public class LearningCardDeckTest {
     }
 
     @Test
+    public void testEasyNext(){
+        deck.easyNext();
+        for (int i = 0; i < 7; i++) {
+            deck.next();
+        }
+        assertEquals("question1", deck.getCurrentCard());
+    }
+
+
+    @Test
     public void testFlipStatusResetsProperly(){
         deck.flip();
-        deck.next(0); // probably shouldn't be able to do this in the real program
+        deck.hardNext(); // probably shouldn't be able to do this in the real program
+        deck.next();
         assertEquals("question1", deck.getCurrentCard());
     }
 

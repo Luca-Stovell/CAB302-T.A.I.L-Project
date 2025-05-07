@@ -1,9 +1,12 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
+import com.example.cab302tailproject.TailApplication;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -11,6 +14,8 @@ import javafx.scene.control.TextField;
 
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 import io.github.ollama4j.exceptions.OllamaBaseException;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 
 
@@ -58,9 +63,24 @@ public class AiAssistantController {
 
     // --- Event Handlers for Sidebar Buttons ---
     // TODO (Placeholder implementations - add actual navigation/logic)
-    @FXML private void onSidebarGenerateClicked(ActionEvent event) { System.out.println("Sidebar Generate button clicked."); }
-    @FXML private void onSidebarReviewClicked(ActionEvent event) { System.out.println("Sidebar Review button clicked."); }
-    @FXML private void onSidebarAnalysisClicked(ActionEvent event) { System.out.println("Sidebar Analysis button clicked."); }
+    @FXML private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_generator-teacher.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
+    }
+    @FXML private void onSidebarReviewClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
+    }
+    @FXML private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-teacher.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
+    }
     @FXML private void onSidebarAiAssistanceClicked(ActionEvent event) {
         System.out.println("Sidebar A.I. Assistance button clicked (current view).");
         if (userInputTextField != null) userInputTextField.clear();

@@ -1,15 +1,19 @@
 package com.example.cab302tailproject.controller.studentcontroller;
 
+import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -95,9 +99,11 @@ public class AiAssistantController_Student {
      * @param event The {@link ActionEvent} triggered by the button click.
      */
     @FXML
-    private void onSidebarGenerateClicked(ActionEvent event) {
-        System.out.println("Student Sidebar: Generate button clicked - Navigation or action needed.");
-        // TODO: Implement student-specific generate functionality or navigation
+    private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("Student_Ai_Assist.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
     }
 
     /**
@@ -106,9 +112,11 @@ public class AiAssistantController_Student {
      * @param event The {@link ActionEvent} triggered by the button click.
      */
     @FXML
-    private void onSidebarReviewClicked(ActionEvent event) {
-        System.out.println("Student Sidebar: Review button clicked - Navigation or action needed.");
-        // TODO: Implement student-specific review functionality or navigation
+    private void onSidebarReviewClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-student.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
     }
 
     /**
@@ -117,9 +125,11 @@ public class AiAssistantController_Student {
      * @param event The {@link ActionEvent} triggered by the button click.
      */
     @FXML
-    private void onSidebarAnalysisClicked(ActionEvent event) {
-        System.out.println("Student Sidebar: Analysis button clicked - Navigation or action needed.");
-        // TODO: Implement student-specific analysis functionality or navigation
+    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-student.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.ILoginDAO;
-import com.example.cab302tailproject.SqliteLoginDAO;
+import com.example.cab302tailproject.model.ILoginDAO;
+import com.example.cab302tailproject.model.SqliteLoginDAO;
 import com.example.cab302tailproject.TailApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,8 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import javafx.fxml.FXML;
 
@@ -100,7 +98,7 @@ public class RegistrationController {
         if (isRegistrationValid()) {
             addToDatabase();
             Stage stage = (Stage) registrationButton.getScene().getWindow();
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("LoginPage.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("login_page.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
         }

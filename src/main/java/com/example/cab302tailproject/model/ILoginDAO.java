@@ -1,4 +1,4 @@
-package com.example.cab302tailproject;
+package com.example.cab302tailproject.model;
 
 
 // Refers to login table, so has method for login and registration pages

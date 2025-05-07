@@ -3,9 +3,8 @@ package com.example.cab302tailproject;
 import io.github.ollama4j.OllamaAPI;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import io.github.ollama4j.models.response.OllamaResult;
-import io.github.ollama4j.utils.OptionsBuilder; // Assuming default options are okay
+import io.github.ollama4j.utils.OptionsBuilder;
 
-// Removed SLF4J imports
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -25,7 +24,7 @@ public class OllamaSyncResponse {
     // Standard HTTP OK status code
     private static final int HTTP_OK = 200;
     // Define the timeout in seconds
-    private static final int REQUEST_TIMEOUT_SECONDS = 300; // 5 minutes
+    private static final int REQUEST_TIMEOUT_SECONDS = 90; // 5 minutes
 
     // The user's prompt
     private final String prompt;

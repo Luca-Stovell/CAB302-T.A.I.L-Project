@@ -1,4 +1,4 @@
-import com.example.cab302tailproject.LoginPage;
+import com.example.cab302tailproject.model.LoginPage;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

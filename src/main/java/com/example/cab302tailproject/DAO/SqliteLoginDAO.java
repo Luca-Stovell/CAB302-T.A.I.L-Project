@@ -1,9 +1,9 @@
-package com.example.cab302tailproject;
+package com.example.cab302tailproject.DAO;
 
 import java.sql.*;
 // TODO: test all of these methods Manually
 // the controllers for the login/register page should use these
-public class SqliteLoginDAO implements ILoginDAO{
+public class SqliteLoginDAO implements ILoginDAO {
     private Connection connection;
 
     public SqliteLoginDAO() {

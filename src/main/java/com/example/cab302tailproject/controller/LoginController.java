@@ -1,7 +1,7 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.ILoginDAO;
-import com.example.cab302tailproject.SqliteLoginDAO;
+import com.example.cab302tailproject.DAO.ILoginDAO;
+import com.example.cab302tailproject.DAO.SqliteLoginDAO;
 import com.example.cab302tailproject.TailApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -43,7 +43,7 @@ public class LoginController {
     @FXML
     protected void onRegistrationButtonClick() throws IOException {
         Stage stage = (Stage) registerPageButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("RegistrationPage.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("registration_page.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         stage.setScene(scene);
     }

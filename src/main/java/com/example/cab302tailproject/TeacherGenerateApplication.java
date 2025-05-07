@@ -2,7 +2,6 @@
 
 package com.example.cab302tailproject;
 
-import com.example.cab302tailproject.controller.LessonGenController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,7 +17,7 @@ public class TeacherGenerateApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(TeacherGenerateApplication.class.getResource(
-                "lesson_generator-teacher.fxml"));
+                "login_page.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle(TITLE);
         stage.setScene(scene);

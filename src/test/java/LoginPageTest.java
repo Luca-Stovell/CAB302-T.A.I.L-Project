@@ -1,4 +1,4 @@
-import com.example.cab302tailproject.model.LoginPage;
+import com.example.cab302tailproject.DAO.LoginPage;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;

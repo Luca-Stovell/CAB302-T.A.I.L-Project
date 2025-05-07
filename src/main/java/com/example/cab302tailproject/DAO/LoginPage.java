@@ -1,4 +1,4 @@
-package com.example.cab302tailproject.model;
+package com.example.cab302tailproject.DAO;
 
 public class LoginPage {
     private String email;

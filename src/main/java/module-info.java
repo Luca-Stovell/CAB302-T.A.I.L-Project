@@ -13,4 +13,6 @@ module com.example.cab302tailproject {
     opens com.example.cab302tailproject.controller to javafx.fxml;
     exports com.example.cab302tailproject.model;
     opens com.example.cab302tailproject.model to javafx.fxml;
+    exports com.example.cab302tailproject.DAO;
+    opens com.example.cab302tailproject.DAO to javafx.fxml;
 }

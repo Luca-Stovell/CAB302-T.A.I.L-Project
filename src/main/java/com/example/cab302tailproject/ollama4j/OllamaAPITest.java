@@ -1,4 +1,4 @@
-package com.example.cab302tailproject;
+package com.example.cab302tailproject.ollama4j;
 
 import io.github.ollama4j.OllamaAPI;
 import java.net.ConnectException;

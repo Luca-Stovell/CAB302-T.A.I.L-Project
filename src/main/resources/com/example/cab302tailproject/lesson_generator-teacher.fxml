@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.* ?>
 <?import javafx.scene.text.Font ?>
 <?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.ToggleGroup?> <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.shape.Circle?>
 
@@ -16,7 +17,7 @@
             maxHeight = "-Infinity"
             prefHeight = "420"
             prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.LessonGenController"
+            fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController"
             style= "-fx-background-color: white;">
 
     <fx:define>
@@ -29,25 +30,21 @@
             <VBox prefHeight="120" alignment="TOP_LEFT" style="-fx-padding: 25 0 0 30;">
                 <HBox alignment="CENTER_LEFT" spacing="20" prefWidth="200">
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
-                        <Image url="@../../../images/tail_logo.png" />
-                        <clip>
-                            <Circle radius="20" centerX="20" centerY="20"/>
-                        </clip>
+                        <Image url="@../../../images/tail_logo.png" /> <clip>
+                        <Circle radius="20" centerX="20" centerY="20"/>
+                    </clip>
                     </ImageView>
-
                     <VBox alignment="CENTER_LEFT" prefWidth="80">
                         <Label text = "Mrs. Liat" style="-fx-font-weight: bold; -fx-text-fill: #757575" >
-                            <font> <Font size="16" /> </font> </Label>            <Label text = "Class 9C" style="-fx-text-fill: #B3B3B3">
-                        <font> <Font size="16" /> </font> </Label>
+                            <font> <Font size="16" /> </font> </Label>
+                        <Label text = "Class 9C" style="-fx-text-fill: #B3B3B3">
+                            <font> <Font size="16" /> </font> </Label>
                     </VBox>
                 </HBox>
-
-
                 <VBox>
                     <padding>
                         <Insets top="10" right="5" bottom="10" left="5" />
                     </padding>
-
                     <Label text = "Week 5" style="-fx-text-fill: #B3B3B3">
                         <font> <Font size="12" /> </font> </Label>
                     <Label text = "Time 12:34pm" style="-fx-text-fill: #B3B3B3">
@@ -56,32 +53,26 @@
                 </VBox>
             </VBox>
 
-            <Button text="Generate" fx:id="sidebarGenerateButton"
+            <Button text="Generate" fx:id="sidebarGenerateButton" onAction="#onSidebarGenerateClicked"
                     style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"
-            />
-            <Button text="Review" fx:id="sidebarReviewButton"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+            <Button text="Review" fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked"
                     style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"
-            />
-            <Button text="Analysis" fx:id="sidebarAnalysisButton"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+            <Button text="Analysis" fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked"
                     style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"
-            />
-            <Button text="A.I. Assistance" fx:id="sidebarAiAssistanceButton"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+            <Button text="A.I. Assistance" fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked"
                     style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"
-            />
-            <Button text="Library" fx:id="sidebarLibraryButton"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+            <Button text="Library" fx:id="sidebarLibraryButton" onAction="#onSidebarLibraryClicked"
                     style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;-fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"
-            />
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
         </VBox>
     </left>
 
-
     <center>
-        <BorderPane>
+        <BorderPane fx:id="contentAreaBorderPane">
             <top>
                 <AnchorPane prefHeight="70" prefWidth="510"
                             style = "-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
@@ -91,15 +82,12 @@
                     <Button text="Students" fx:id="studentsButton" onAction="#onStudentsClicked"
                             layoutX="260" layoutY="15" prefHeight="40" prefWidth="115"
                             style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;"/>
-
                     <Button text="H" fx:id="homeButton" onAction="#onHomeClicked"
                             layoutX="420" layoutY="20" prefHeight="30" prefWidth="30"
-                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;">
-                    </Button>
+                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;"/>
                     <Button text="S" fx:id="settingsButton" onAction="#onSettingsClicked"
                             layoutX="460" layoutY="20" prefHeight="30" prefWidth="30"
-                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;">
-                    </Button>
+                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;"/>
                 </AnchorPane>
             </top>
 
@@ -108,19 +96,19 @@
                     <padding>
                         <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
                     </padding>
-                    <VBox alignment="CENTER"> <Label text="What would you like to generate?" style="-fx-font-size: 20;"/>
+                    <VBox alignment="CENTER">
+                        <Label text="What would you like to generate?" style="-fx-font-size: 20;"/>
                         <padding>
-                            <Insets bottom="20.0"/> </padding>
+                            <Insets bottom="20.0"/>
+                        </padding>
                     </VBox>
-
                     <HBox alignment="CENTER" spacing="50" prefWidth="510">
                         <VBox prefWidth="175">
                             <RadioButton text="Worksheet" fx:id="worksheetRadioButton"
                                          style="-fx-font-size: 16;" toggleGroup="$generateToggleGroup"
                                          selected="true"/>
                             <Label text="Create a worksheet for your students"
-                                   style="-fx-text-fill: #757575; -fx-font-size: 16;
-                                    -fx-padding: 0 0 0 27;" wrapText="true" minHeight="40"/>
+                                   style="-fx-text-fill: #757575; -fx-font-size: 16; -fx-padding: 0 0 0 27;" wrapText="true" minHeight="40"/>
                         </VBox>
                         <VBox prefWidth="175">
                             <RadioButton text="Lesson Plan" fx:id="lessonPlanRadioButton"
@@ -128,33 +116,21 @@
                             <Label text="Create a lesson plan" style="-fx-text-fill: #757575; -fx-font-size: 16; -fx-padding: 0 0 0 27;"/>
                         </VBox>
                     </HBox>
-
                     <VBox alignment="CENTER" spacing="15" prefWidth="510" style="-fx-padding: 20 0 0 0;">
                         <VBox prefWidth="440" alignment="CENTER">
                             <TextField promptText="Enter topic or description here..."
                                        fx:id="generatorTextField"
-                                       prefWidth="350"
-                                       prefHeight="180"
-                                       minHeight="110"
-                                       minWidth="440"
-                                       maxWidth="440"
-                                       style="-fx-alignment: top-left; -fx-font-size: 16; -fx-background-color: #E3E3E3;"
-                            />
+                                       prefWidth="350" prefHeight="180" minHeight="110"
+                                       minWidth="440" maxWidth="440"
+                                       style="-fx-alignment: top-left; -fx-font-size: 16; -fx-background-color: #E3E3E3;"/>
                         </VBox>
                         <VBox prefWidth="100" prefHeight="30" alignment="CENTER" style="-fx-padding: 8 0 8 0">
                             <Button text="Generate" fx:id = "generateButton" onAction="#onGenerateClicked"
-                                    style="-fx-background-color: #E3E3E3;
-                                    -fx-text-fill:black; -fx-font-size: 16;
-                                    -fx-border-color: #767676; -fx-border-radius: 10;
-                                    -fx-border-width: 1; -fx-background-radius: 10;"
-                            />
+                                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1; -fx-background-radius: 10;"/>
                         </VBox>
                     </VBox>
-
                 </VBox>
             </center>
-
         </BorderPane>
     </center>
-
 </BorderPane>

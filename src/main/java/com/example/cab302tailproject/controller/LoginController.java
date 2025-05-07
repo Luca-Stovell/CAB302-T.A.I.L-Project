@@ -43,7 +43,7 @@ public class LoginController {
     @FXML
     protected void onRegistrationButtonClick() throws IOException {
         Stage stage = (Stage) registerPageButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("registration_page.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_generator-teacher.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         stage.setScene(scene);
     }
@@ -52,7 +52,7 @@ public class LoginController {
     protected void onLoginButtonClick() throws IOException {
         if (checkLogin()) {
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson-gen-view.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("student-page.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
         }

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight = "-Infinity"
+            prefHeight = "420"
+            prefWidth="710"
+            fx:controller="com.example.cab302tailproject.controller.studentcontroller.AiAssistantController_Student" style= "-fx-background-color: white;">
+    <left>
+        <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 2;">
+            <VBox alignment="TOP_LEFT" prefHeight="120" style="-fx-padding: 25 0 0 30;">
+                <HBox alignment="CENTER_LEFT" prefWidth="200" spacing="20">
+                    <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                        <Image url="@../../../images/tail_logo.png" /> <clip>
+                        <Circle centerX="20" centerY="20" radius="20" />
+                    </clip>
+                    </ImageView>
+
+                    <VBox alignment="CENTER_LEFT" prefWidth="80">
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #757575" text="Max"> <font> <Font size="16" /> </font> </Label>
+                        <Label style="-fx-text-fill: #B3B3B3" text="Class 9C"> <font> <Font size="16" /> </font> </Label>
+                    </VBox>
+                </HBox>
+
+                <VBox>
+                    <padding>
+                        <Insets bottom="10" left="5" right="5" top="10" />
+                    </padding>
+                    <Label style="-fx-text-fill: #B3B3B3" text="Week 5">
+                        <font> <Font size="12" /> </font> </Label>
+                    <Label style="-fx-text-fill: #B3B3B3" text="Time 12:34pm">
+                        <font> <Font size="12" /> </font>
+                    </Label>
+                </VBox>
+            </VBox>
+
+            <Button fx:id="sidebarGenerateButton" onAction="#onSidebarGenerateClicked" maxHeight="81.0" minHeight="60" prefHeight="81.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Generate" />
+            <Button fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
+            <Button fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" />
+            <Button fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" />
+        </VBox>
+    </left>
+
+    <center>
+        <BorderPane>
+            <top>
+                <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
+                    <Button fx:id="homeButton" layoutX="420" layoutY="20" onAction="#onHomeClicked" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="H" />
+                    <Button fx:id="settingsButton" onAction="#onSettingsClicked" layoutX="460" layoutY="20" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="S" />
+                </AnchorPane>
+            </top>
+
+            <center>
+                <VBox alignment="TOP_CENTER" prefHeight="353.0" prefWidth="533.0" style="-fx-border-color: #000000; -fx-border-width: 0 2 2 0;" spacing="10">
+                    <padding>
+                        <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
+                    </padding>
+                    <Label text="What would you like help with?">
+                        <font>
+                            <Font size="16.0" />
+                        </font>
+                        <VBox.margin>
+                            <Insets bottom="5.0" />
+                        </VBox.margin>
+                    </Label>
+
+                    <TextField fx:id="userInputTextField" prefHeight="43.0" promptText="Type your question or topic here...">
+                        <VBox.margin>
+                            <Insets bottom="10.0" />
+                        </VBox.margin>
+                    </TextField>
+
+                    <Button fx:id="sendHelpButton" onAction="#onSendHelpClicked" text="Help" prefHeight="30.0" prefWidth="80.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 14; -fx-border-color: #000000; -fx-border-width: 1;">
+                        <VBox.margin>
+                            <Insets bottom="10.0" />
+                        </VBox.margin>
+                    </Button>
+
+                    <TextArea fx:id="aiResponseArea" prefHeight="200.0" promptText="AI response will appear here..." style="-fx-font-size: 14; -fx-background-color: #F0F0F0;" wrapText="true" editable="false" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </center>
+        </BorderPane>
+    </center>
+</BorderPane>

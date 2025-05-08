@@ -208,7 +208,7 @@ public class RegistrationController {
     }
 
     @FXML
-    protected void updateRegisterButtonState() {
+    protected void updateRegisterButtonState(javafx.event.ActionEvent event) {
         boolean accepted = termsAndConditionsButton.isSelected();
         Toggle selectedToggle = userType.getSelectedToggle(); // Get the selected radio button
 

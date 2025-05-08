@@ -9,7 +9,7 @@ import java.io.IOException;
 
 
 
-public class Student_Ai_Assist extends Application {
+public class  Student_Ai_Assist extends Application {
 
     public static final String TITLE = "TAIL";
     public static final int WIDTH = 818;

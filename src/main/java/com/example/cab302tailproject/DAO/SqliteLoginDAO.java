@@ -1,13 +1,18 @@
 package com.example.cab302tailproject.DAO;
 
+import com.example.cab302tailproject.model.Student; // Import Student model
+
 import java.sql.*;
-import java.security.MessageDigest; // For hashing
-import java.security.NoSuchAlgorithmException; // For hashing
-import java.util.Base64; // For encoding hash
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList; // Import ArrayList
+import java.util.Base64;
+import java.util.List; // Import List
 
 /**
  * SQLite implementation of the ILoginDAO interface.
- * Handles database operations for Student and Teacher tables related to login and registration.
+ * Handles database operations for Student and Teacher tables related to login, registration,
+ * and student data management for analytics.
  */
 public class SqliteLoginDAO implements ILoginDAO {
     private Connection connection;
@@ -140,7 +145,8 @@ public class SqliteLoginDAO implements ILoginDAO {
             return false; // Email not found in the specified table
         }
         String enteredHash = hashPassword(plainPassword); // Hash the entered password
-        return storedHash.equals(enteredHash); // Compare hashes
+        // Ensure enteredHash is not null before comparing
+        return enteredHash != null && storedHash.equals(enteredHash); // Compare hashes
     }
 
     @Override
@@ -211,48 +217,118 @@ public class SqliteLoginDAO implements ILoginDAO {
     }
 
 
+    // --- New Methods for Analytics Page ---
+
     /**
-     * Hashes a plain text password using SHA-256.
-     * @param password The plain text password.
-     * @return The Base64 encoded SHA-256 hash of the password, or null if hashing fails.
+     * Retrieves a list of all students from the database.
+     * @return A List of Student objects. Returns an empty list if no students are found or an error occurs.
      */
+    @Override
+    public List<Student> getAllStudents() { // <<<--- Ensure this method exists
+        List<Student> students = new ArrayList<>();
+        String query = "SELECT StudentID, firstName, lastName, email FROM Student ORDER BY lastName, firstName"; // Order for consistency
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                Student student = new Student(
+                        rs.getInt("StudentID"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email")
+                );
+                students.add(student);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving all students: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return students;
+    }
+
+    /**
+     * Retrieves details for a specific student by their email.
+     * @param email The email of the student.
+     * @return A Student object, or null if not found or an error occurs.
+     */
+    @Override
+    public Student getStudentDetailsByEmail(String email) { // <<<--- Ensure this method exists
+        String query = "SELECT StudentID, firstName, lastName, email FROM Student WHERE email = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new Student(
+                        rs.getInt("StudentID"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("Error retrieving student details for email " + email + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null; // Not found or error
+    }
+
+    /**
+     * Updates the password for a student identified by email. Hashes the new password.
+     * @param email The email of the student.
+     * @param newPassword The new plain text password.
+     * @return true if the password was updated successfully, false otherwise.
+     */
+    @Override
+    public boolean resetStudentPassword(String email, String newPassword) { // <<<--- Ensure this method exists
+        String hashedPassword = hashPassword(newPassword);
+        if (hashedPassword == null) {
+            System.err.println("Password hashing failed. Cannot reset password.");
+            return false;
+        }
+        String query = "UPDATE Student SET password = ? WHERE email = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, hashedPassword);
+            pstmt.setString(2, email);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected == 1; // Check if exactly one row was updated
+        } catch (SQLException e) {
+            System.err.println("Error resetting password for student " + email + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // --- Password Hashing (Keep as before, but remember to improve for production) ---
     private static String hashPassword(String password) {
         if (password == null) return null;
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hash); // Encode hash to Base64 string for storage
+            return Base64.getEncoder().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
             System.err.println("Password hashing algorithm not found: " + e.getMessage());
             e.printStackTrace();
-            return null; // Indicate hashing failure
+            return null;
         }
     }
 
-
+    // --- Deprecated methods (Keep as before or remove) ---
     /** @deprecated Use checkStudentLogin or checkTeacherLogin instead. */
     @Deprecated
     public String GetPassword(String email) {
-        // This method doesn't know whether to check Student or Teacher table.
-        // Returning null or throwing an exception might be better.
         System.err.println("Warning: GetPassword(email) is deprecated. Use methods specifying user type.");
-        // Attempt to find in Teacher first, then Student (arbitrary choice)
         String pass = getPasswordHash(email, "Teacher");
-        if (pass == null) {
-            pass = getPasswordHash(email, "Student");
-        }
-        return pass; // Might be null
+        if (pass == null) { pass = getPasswordHash(email, "Student"); }
+        return pass;
     }
 
     /** @deprecated Use checkStudentLogin or checkTeacherLogin instead. */
     @Deprecated
     public boolean checkPassword(String email, String password) {
-        // This method doesn't know which table to check.
         System.err.println("Warning: checkPassword(email, password) is deprecated. Use methods specifying user type.");
-        // Check teacher first, then student
-        if (checkLoginCredentials(email, password, "Teacher")) {
-            return true;
-        }
+        if (checkLoginCredentials(email, password, "Teacher")) { return true; }
         return checkLoginCredentials(email, password, "Student");
     }
+
 }

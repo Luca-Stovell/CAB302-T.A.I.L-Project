@@ -16,8 +16,7 @@ public class TeacherGenerateApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(TeacherGenerateApplication.class.getResource(
-                "lesson_generator-teacher.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TeacherGenerateApplication.class.getResource("lesson_generator-teacher.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle(TITLE);
         stage.setScene(scene);

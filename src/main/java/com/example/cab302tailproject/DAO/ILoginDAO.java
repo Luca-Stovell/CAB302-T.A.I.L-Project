@@ -1,50 +1,64 @@
 package com.example.cab302tailproject.DAO;
 
-
-// Refers to login table, so has method for login and registration pages
+/**
+ * Data Access Object interface for handling user login and registration,
+ * differentiating between Students and Teachers.
+ */
 public interface ILoginDAO {
 
     /**
-     * Checks if an email has been registered to the database
-      * @param email The email that is being checked
-     * @return true if email was found, false if not
+     * Checks if an email exists in the Student table.
+     * @param email The email to check.
+     * @return true if the email exists for a student, false otherwise.
      */
-    public boolean CheckEmail(String email);
+    boolean checkStudentEmailExists(String email);
 
     /**
-     * Retrieves the password of a particular account
-     * @param email The email of the account that is being checked
-     * @return The specified email's stored password
+     * Checks if an email exists in the Teacher table.
+     * @param email The email to check.
+     * @return true if the email exists for a teacher, false otherwise.
      */
-    public String GetPassword(String email);
+    boolean checkTeacherEmailExists(String email);
 
     /**
-     * Checks an input password against the stored password of an account
-     * @param email email of the account being checked
-     * @param password the input password
-     * @return true if passwords match, false if not
+     * Validates login credentials against the Student table.
+     * @param email The student's email.
+     * @param password The entered password (unhashed).
+     * @return true if the email and hashed password match a record in the Student table, false otherwise.
      */
-    public boolean checkPassword(String email ,String password);
-    /**
-     * Registers a new account to the database
-     *
-     * @param email    account email
-     * @param password account password
-     * @return true if successful, false if email already exists
-     */
-    public boolean AddAccount(String email, String firstName, String lastName, String password);
-
-    public boolean AddStudent(String email, String firstName, String lastName, String password);
-
-    public boolean AddTeacher(String email, String firstName, String lastName, String password);
+    boolean checkStudentLogin(String email, String password);
 
     /**
-     * changes the password of an existing account
-     * @param email email of the existing account
-     * @param newPassword The new password
-     * @return true if successful, false if account doesn't exist
+     * Validates login credentials against the Teacher table.
+     * @param email The teacher's email.
+     * @param password The entered password (unhashed).
+     * @return true if the email and hashed password match a record in the Teacher table, false otherwise.
      */
-    public  boolean ChangePassword(String email, String newPassword);
+    boolean checkTeacherLogin(String email, String password);
 
+    /**
+     * Adds a new student record to the database.
+     * Assumes email uniqueness is handled or checked beforehand.
+     * @param email Student's email (should be unique).
+     * @param firstName Student's first name.
+     * @param lastName Student's last name.
+     * @param password Student's password (will be hashed before storing).
+     * @return true if the student was added successfully, false otherwise.
+     */
+    boolean addStudent(String email, String firstName, String lastName, String password);
 
+    /**
+     * Adds a new teacher record to the database.
+     * Assumes email uniqueness is handled or checked beforehand.
+     * @param email Teacher's email (should be unique).
+     * @param firstName Teacher's first name.
+     * @param lastName Teacher's last name.
+     * @param password Teacher's password (will be hashed before storing).
+     * @return true if the teacher was added successfully, false otherwise.
+     */
+    boolean addTeacher(String email, String firstName, String lastName, String password);
+
+    // Optional: Keep ChangePassword if needed, but it might need modification
+    // to specify whether to change student or teacher password.
+    // boolean ChangePassword(String email, String newPassword, String userType);
 }

@@ -217,14 +217,12 @@ public class SqliteLoginDAO implements ILoginDAO {
     }
 
 
-    // --- New Methods for Analytics Page ---
-
     /**
      * Retrieves a list of all students from the database.
      * @return A List of Student objects. Returns an empty list if no students are found or an error occurs.
      */
     @Override
-    public List<Student> getAllStudents() { // <<<--- Ensure this method exists
+    public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
         String query = "SELECT StudentID, firstName, lastName, email FROM Student ORDER BY lastName, firstName"; // Order for consistency
         try (Statement stmt = connection.createStatement();
@@ -252,7 +250,7 @@ public class SqliteLoginDAO implements ILoginDAO {
      * @return A Student object, or null if not found or an error occurs.
      */
     @Override
-    public Student getStudentDetailsByEmail(String email) { // <<<--- Ensure this method exists
+    public Student getStudentDetailsByEmail(String email) {
         String query = "SELECT StudentID, firstName, lastName, email FROM Student WHERE email = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setString(1, email);
@@ -280,7 +278,7 @@ public class SqliteLoginDAO implements ILoginDAO {
      * @return true if the password was updated successfully, false otherwise.
      */
     @Override
-    public boolean resetStudentPassword(String email, String newPassword) { // <<<--- Ensure this method exists
+    public boolean resetStudentPassword(String email, String newPassword) {
         String hashedPassword = hashPassword(newPassword);
         if (hashedPassword == null) {
             System.err.println("Password hashing failed. Cannot reset password.");
@@ -299,7 +297,6 @@ public class SqliteLoginDAO implements ILoginDAO {
         }
     }
 
-    // --- Password Hashing (Keep as before, but remember to improve for production) ---
     private static String hashPassword(String password) {
         if (password == null) return null;
         try {
@@ -312,23 +309,4 @@ public class SqliteLoginDAO implements ILoginDAO {
             return null;
         }
     }
-
-    // --- Deprecated methods (Keep as before or remove) ---
-    /** @deprecated Use checkStudentLogin or checkTeacherLogin instead. */
-    @Deprecated
-    public String GetPassword(String email) {
-        System.err.println("Warning: GetPassword(email) is deprecated. Use methods specifying user type.");
-        String pass = getPasswordHash(email, "Teacher");
-        if (pass == null) { pass = getPasswordHash(email, "Student"); }
-        return pass;
-    }
-
-    /** @deprecated Use checkStudentLogin or checkTeacherLogin instead. */
-    @Deprecated
-    public boolean checkPassword(String email, String password) {
-        System.err.println("Warning: checkPassword(email, password) is deprecated. Use methods specifying user type.");
-        if (checkLoginCredentials(email, password, "Teacher")) { return true; }
-        return checkLoginCredentials(email, password, "Student");
-    }
-
 }

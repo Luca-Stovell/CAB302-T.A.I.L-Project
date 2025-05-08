@@ -221,7 +221,6 @@ public class RegistrationController {
         return !name.isEmpty() && name.matches(nameRegex);
     }
 
-    // Removed verifyFirstName and verifyLastName as verifyName handles both
 
     /**
      * Validates the password fields. Checks if passwords match and meet complexity requirements.
@@ -288,6 +287,4 @@ public class RegistrationController {
         registrationButton.setDisable(!(termsAccepted && userTypeSelected));
     }
 
-    // Removed createUser method as it wasn't directly adding to DB and was redundant
-    // with the logic now in addToDatabase.
 }

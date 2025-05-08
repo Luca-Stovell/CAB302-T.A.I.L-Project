@@ -73,7 +73,6 @@ public class LoginController {
      */
     @FXML
     protected void onRegistrationButtonClick() throws IOException {
-        // Scene switching logic (same as your example)
         try {
             // Ensure registerPageButton is not null before accessing its scene
             if (registerPageButton == null || registerPageButton.getScene() == null) {
@@ -137,7 +136,7 @@ public class LoginController {
 
         boolean loginSuccess = false;
         String targetFxml = null;
-        String windowTitle = TailApplication.TITLE; // Default title
+        String windowTitle = TailApplication.TITLE;
 
         if (selectedToggle == teacherRadioButton) {
             // Check teacher credentials
@@ -152,7 +151,7 @@ public class LoginController {
             loginSuccess = loginDao.checkStudentLogin(email, password);
             if (loginSuccess) {
                 targetFxml = "student-page.fxml"; // Student's target page
-                windowTitle = "TAIL - Student Dashboard"; // Example title
+                windowTitle = "TAIL - Student Dashboard";
                 System.out.println("Student login successful for: " + email);
             }
         }
@@ -209,7 +208,7 @@ public class LoginController {
         if (loginErrorLabel != null) {
             loginErrorLabel.setText(message);
         } else {
-            // Fallback if label isn't injected - log error
+            // log error
             System.err.println("Login Error (Label not available): " + message);
             // Optionally show an alert as fallback
             showAlert(Alert.AlertType.ERROR, "Login Failed", message);

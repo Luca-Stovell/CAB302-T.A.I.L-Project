@@ -213,8 +213,6 @@ public class SqliteLoginDAO implements ILoginDAO {
 
     /**
      * Hashes a plain text password using SHA-256.
-     * IMPORTANT: For production systems, use a stronger, salted hashing algorithm like BCrypt or Argon2.
-     * This SHA-256 implementation is basic and primarily for demonstration.
      * @param password The plain text password.
      * @return The Base64 encoded SHA-256 hash of the password, or null if hashing fails.
      */
@@ -231,10 +229,6 @@ public class SqliteLoginDAO implements ILoginDAO {
         }
     }
 
-    // --- Deprecated / To Be Modified ---
-    // Keeping GetPassword and checkPassword based on email only might be misleading now.
-    // It's better to use the specific checkStudentLogin/checkTeacherLogin methods.
-    // If needed, they could be adapted to take a userType parameter, but separate methods are clearer.
 
     /** @deprecated Use checkStudentLogin or checkTeacherLogin instead. */
     @Deprecated
@@ -261,7 +255,4 @@ public class SqliteLoginDAO implements ILoginDAO {
         }
         return checkLoginCredentials(email, password, "Student");
     }
-
-    // ChangePassword needs modification to target the correct table, perhaps add userType param.
-    // public boolean ChangePassword(String email, String newPassword) { ... }
 }

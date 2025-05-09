@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.event.ActionEvent;
 
+
 public class LoginController {
 
     @FXML
@@ -40,6 +41,11 @@ public class LoginController {
         return false;
     }
 
+    /**
+     * Button used to take a user to registration page to register for the application.
+     * @throws IOException
+     */
+
     @FXML
     protected void onRegistrationButtonClick() throws IOException {
         Stage stage = (Stage) registerPageButton.getScene().getWindow();
@@ -47,6 +53,12 @@ public class LoginController {
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         stage.setScene(scene);
     }
+
+    /**
+     * Button which checks the validity of the login attempt against the data store in the Sqlite database and then
+     * the user to the appropriate view.
+     * @throws IOException
+     */
 
     @FXML
     protected void onLoginButtonClick() throws IOException {
@@ -58,6 +70,11 @@ public class LoginController {
         }
     }
 
+    /**
+     * Boolean function that checks whether the user has registered by using the inputted email and password and checking
+     * it against the database.
+     * @return true if the credentials inputted are valid.
+     */
     private boolean checkLogin() {
         String email = loginEmailTextField.getText();
         String password = loginPasswordField.getText();

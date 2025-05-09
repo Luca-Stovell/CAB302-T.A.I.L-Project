@@ -14,6 +14,7 @@ public class SqliteLoginDAO implements ILoginDAO {
     private void createTable() {
             createTeacherTable();
             createStudentTable();
+            createClassroomTable();
         try {
             Statement createTable = connection.createStatement();
         } catch (SQLException e) {
@@ -47,6 +48,20 @@ public class SqliteLoginDAO implements ILoginDAO {
                         + "password TEXT NOT NULL, "
                         + "teacherID INTEGER, "
                         + "FOREIGN KEY (teacherID) REFERENCES Teacher(TeacherID)"
+                        + ")";
+        try {
+            Statement createTable = connection.createStatement();
+            createTable.execute(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void createClassroomTable() {
+        String query =
+                "CREATE TABLE IF NOT EXISTS Classroom ("
+                        + "ClassroomID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + "TeacherID INTEGER, "
+                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID)"
                         + ")";
         try {
             Statement createTable = connection.createStatement();

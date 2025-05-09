@@ -49,10 +49,4 @@ public class Classroom {
     public void removeStudent(Student student) {
         students.remove(student);
     }
-
-    // Optional: display classroom info
-    @Override
-    public String toString() {
-        return "Classroom ID: " + classroomID + ", Teacher: " + teacher.getName() + ", Students: " + students.size();
-    }
 }

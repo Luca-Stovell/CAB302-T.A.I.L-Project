@@ -10,7 +10,7 @@ public class Classroom {
 
     /**
      * Constructor for a classroom.
-     * @param classroomID The Primary Key in the database
+     * @param classroomID The Primary Key in the database.
      * @param teacher is the teacher which is assigned to the classroom.
      */
     public Classroom(int classroomID, Teacher teacher) {

@@ -336,9 +336,11 @@ public class LessonGenController {
      * @param event The action event.
      */
     @FXML
-    private void onStudentsClicked(ActionEvent event) {
-        System.out.println("Students button clicked.");
-        // TODO ADD FUNCTIONALITY
+    private void onStudentsClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) studentsButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("classroom-teacher-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
     }
 
     /**

@@ -53,6 +53,6 @@ public class Classroom {
     // Optional: display classroom info
     @Override
     public String toString() {
-        return "Classroom ID: " + classroomID + ", Teacher: " + teacher.getName() + ", Students: " + students.size();
+        return "Classroom ID: " + classroomID + ", Teacher: " + ", Students: " + students.size();
     }
 }

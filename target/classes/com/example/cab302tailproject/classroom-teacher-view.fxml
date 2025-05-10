@@ -13,7 +13,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" prefHeight="420" prefWidth="710" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.teachercontroller.ClassroomViewController">
+<BorderPane maxHeight="-Infinity" prefHeight="420" prefWidth="710" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.teachercontroller.AiAssistantController">
    <left>
       <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 2;">
          <children>
@@ -92,8 +92,8 @@
                <children>
                   <AnchorPane prefHeight="375.0" prefWidth="478.0">
                      <children>
-                        <ListView fx:id="classroomDisplayListview" layoutY="45.0" prefHeight="286.0" prefWidth="477.0" />
-                        <Label layoutX="1.0" layoutY="6.0" prefHeight="30.0" prefWidth="476.0" text="Label" />
+                        <ListView fx:id="classroomDisplayListview" fixedCellSize="500.0" layoutX="1.0" layoutY="45.0" prefHeight="286.0" prefWidth="477.0" />
+                        <Label fx:id="classroomIDDisplay" layoutX="1.0" layoutY="6.0" prefHeight="30.0" prefWidth="476.0" text="Label" />
                      </children>
                   </AnchorPane>
                </children>

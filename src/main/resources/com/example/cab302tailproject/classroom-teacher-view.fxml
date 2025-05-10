@@ -92,8 +92,8 @@
                <children>
                   <AnchorPane prefHeight="375.0" prefWidth="478.0">
                      <children>
-                        <ListView fx:id="classroomDisplayListview" layoutY="45.0" prefHeight="286.0" prefWidth="477.0" />
-                        <Label layoutX="1.0" layoutY="6.0" prefHeight="30.0" prefWidth="476.0" text="Label" />
+                        <ListView fx:id="classroomDisplayListview" fixedCellSize="500.0" layoutX="1.0" layoutY="45.0" prefHeight="286.0" prefWidth="477.0" />
+                        <Label fx:id="classroomIDDisplay" layoutX="1.0" layoutY="6.0" prefHeight="30.0" prefWidth="476.0" text="Label" />
                      </children>
                   </AnchorPane>
                </children>

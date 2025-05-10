@@ -10,7 +10,7 @@ public class Classroom {
 
     /**
      * Constructor for a classroom.
-     * @param classroomID The Primary Key in the database
+     * @param classroomID The Primary Key in the database.
      * @param teacher is the teacher which is assigned to the classroom.
      */
     public Classroom(int classroomID, Teacher teacher) {
@@ -48,11 +48,5 @@ public class Classroom {
     // Remove a student
     public void removeStudent(Student student) {
         students.remove(student);
-    }
-
-    // Optional: display classroom info
-    @Override
-    public String toString() {
-        return "Classroom ID: " + classroomID + ", Teacher: " + ", Students: " + students.size();
     }
 }

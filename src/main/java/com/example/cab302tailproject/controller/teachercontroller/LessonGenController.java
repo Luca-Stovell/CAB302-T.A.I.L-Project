@@ -1,5 +1,9 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
+import com.example.cab302tailproject.DAO.ILessonContentDAO;
+import com.example.cab302tailproject.DAO.LessonContentDAO;
+import com.example.cab302tailproject.DAO.SqliteLoginDAO;
+import com.example.cab302tailproject.model.LessonContent;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 
 import com.example.cab302tailproject.TailApplication;
@@ -190,6 +194,7 @@ public class LessonGenController {
             String generatedContent = generateTask.getValue();
             generateButton.setDisable(false);
             generatorTextField.setDisable(false);
+            saveLessonToDatabase(generatedContent);
             saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
         });
         generateTask.setOnFailed(workerStateEvent -> {
@@ -250,6 +255,32 @@ public class LessonGenController {
         }
     }
     //</editor-fold>
+
+    private void saveLessonToDatabase(String content) {
+        try {
+            // Assuming ILessonContentDAO is already implemented and injected
+            ILessonContentDAO lessonContentDAO = new LessonContentDAO();
+
+            // Create LessonContent object
+            LessonContent lessonContent = new LessonContent(
+                    0,                  // Placeholder materialID (updates automatically)
+                    content,                     // Generated lesson content
+                    new java.util.Date()         // Current date for `lastModifiedDate`
+            );
+
+            // Save to database
+            boolean isSaved = lessonContentDAO.addLessonContent(lessonContent);
+
+            if (isSaved) {
+                System.out.println("Lesson content saved successfully!");
+            } else {
+                System.err.println("Failed to save lesson content to the database.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while saving lesson content: " + e.getMessage());
+        }
+    }
 
     //<editor-fold desc="Sidebar Navigation Event Handlers - Direct Scene Switching">
     /**

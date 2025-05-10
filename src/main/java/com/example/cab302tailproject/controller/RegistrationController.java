@@ -1,7 +1,6 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.DAO.ILoginDAO;
-import com.example.cab302tailproject.DAO.SqliteLoginDAO;
+import com.example.cab302tailproject.DAO.*;
 import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Student;
 import com.example.cab302tailproject.model.Teacher;
@@ -114,10 +113,14 @@ public class RegistrationController {
         registrationButton.setDisable(true); // Start with register button disabled
     }
 
-    private ILoginDAO registerDao;
+    private TeacherDAO teacherDao;
+    private StudentDAO studentDao;
+
     public RegistrationController() {
-        registerDao = new SqliteLoginDAO();
+        teacherDao = new SqliteTeacherDAO();
+        studentDao = new SqlStudentDAO();
     }
+
 
     /**
      * This is the registration button it uses helper functions to verify the details entered by the user through the
@@ -149,16 +152,16 @@ public class RegistrationController {
 
         // Check if student is selected
         if (setTeacherButton.isSelected()) {
-            if (!registerDao.CheckEmail(email)) {
-                registerDao.AddTeacher(email, fName, lName, password);
+            if (!teacherDao.checkEmail(email)) {
+                teacherDao.AddTeacher(email, fName, lName, password);
             } else {
                 System.out.println("Email already in use.");
             }
         }
         // Check if teacher is selected
         else if (setStudentButton.isSelected()) {
-            if (!registerDao.CheckEmail(email)) {
-                registerDao.AddStudent(email, fName, lName, password);
+            if (!studentDao.checkEmail(email)) {
+                studentDao.AddStudent(email, fName, lName, password);
             } else {
                 System.out.println("Email already in use.");
             }

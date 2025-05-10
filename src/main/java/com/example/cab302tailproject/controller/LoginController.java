@@ -1,7 +1,6 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.DAO.ILoginDAO;
-import com.example.cab302tailproject.DAO.SqliteLoginDAO;
+import com.example.cab302tailproject.DAO.*;
 import com.example.cab302tailproject.TailApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -28,9 +27,11 @@ public class LoginController {
     private TextField loginEmailTextField;
     @FXML
 
-    private ILoginDAO loginDao;
+    private TeacherDAO teacherDao;
+    private StudentDAO studentDAO;
     public LoginController() {
-        loginDao = new SqliteLoginDAO();
+        teacherDao = new SqliteTeacherDAO();
+        studentDAO = new SqlStudentDAO();
     }
 
     //Precondition -
@@ -64,7 +65,7 @@ public class LoginController {
     protected void onLoginButtonClick() throws IOException {
         if (checkLogin()) {
             Stage stage = (Stage) loginButton.getScene().getWindow();
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("student-page.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_generator-teacher.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
             stage.setScene(scene);
         }
@@ -78,13 +79,15 @@ public class LoginController {
     private boolean checkLogin() {
         String email = loginEmailTextField.getText();
         String password = loginPasswordField.getText();
-        if (!loginDao.CheckEmail(email)){
-            // TODO output error text to GUI
-            return false;
-        }
-        return loginDao.checkPassword(email, password);
 
-
+        return tryLogin(teacherDao, email, password)
+                || tryLogin(studentDAO, email, password);
     }
 
+    private boolean tryLogin(UserDAO dao, String email, String password) {
+        return dao.checkEmail(email) && dao.checkPassword(email, password);
+    }
+
+
 }
+

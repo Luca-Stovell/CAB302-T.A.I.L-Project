@@ -1,14 +1,14 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
-import com.example.cab302tailproject.DAO.ILoginDAO;
-import com.example.cab302tailproject.DAO.SqliteLoginDAO;
-import com.example.cab302tailproject.model.Classroom;
-import com.example.cab302tailproject.model.Student;
-import com.example.cab302tailproject.model.Teacher;
+import com.example.cab302tailproject.DAO.*;
 import com.example.cab302tailproject.TailApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import com.example.cab302tailproject.model.Student;
+import com.example.cab302tailproject.model.Teacher;
+
+import java.util.List;
 
 import java.io.IOException;
 
@@ -52,10 +52,15 @@ public class ClassroomViewController {
      */
     @FXML private ListView classroomDisplayListview;
 
-    private ILoginDAO classroomDOA;
+    private TeacherDAO teacherDao;
+    private StudentDAO studentDao;
+
+
     public ClassroomViewController() {
-        classroomDOA = new SqliteLoginDAO();
+        teacherDao = new SqliteTeacherDAO();
+        studentDao = new SqlStudentDAO();
     }
+
     @FXML
     private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
         Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
@@ -146,10 +151,14 @@ public class ClassroomViewController {
         System.out.println("Home button clicked.");
         // TODO ADD FUNCTIONALITY
     }
+    @FXML
+    public void loadStudentData() {
+        List<Student> students = studentDao.getAllStudents();
 
-
-
-
-
-
+        // Populate ListView with full names
+        for (Student s : students) {
+            String fullName = s.getFirstName() + " " + s.getLastName();
+            classroomDisplayListview.getItems().add(fullName);
+        }
+    }
 }

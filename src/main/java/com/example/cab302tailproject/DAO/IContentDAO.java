@@ -8,7 +8,7 @@ public interface IContentDAO {
     /**
      * Adds a lesson to the database
      * @param lessonContent The generated LessonContent object to add
-     * @return true if the content is successfully added, false if not
+     * @return materialID of the successful entry, -1 if unsuccessful
      */
     int addLessonContent(Lesson lessonContent);
 
@@ -22,9 +22,9 @@ public interface IContentDAO {
     /**
      * Adds a worksheet to the database
      * @param worksheetContent the content of the worksheet to be added
-     * @return true if successfully added to database, false if not
+     * @return materialID of the successful entry, -1 if unsuccessful
      */
-    boolean addWorksheetContent(Worksheet worksheetContent);
+    int addWorksheetContent(Worksheet worksheetContent);
 
     /**
      * Retrieves the material details based on the given material ID.

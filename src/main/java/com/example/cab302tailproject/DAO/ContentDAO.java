@@ -116,7 +116,7 @@ public class ContentDAO implements IContentDAO {
     /**
      * Add the content of a new lesson plan to the database
      * @param content The generated text from a lesson plan
-     * @return True if lesson is successfully added to the lesson table
+     * @return materialID of the successful entry to lesson table, -1 if unsuccessful
      */
     public int addLessonContent(Lesson content) {
         String sql = "INSERT INTO lesson (lessonTopic, lessonContent, " +
@@ -175,9 +175,9 @@ public class ContentDAO implements IContentDAO {
     /**
      * Adds the content of a new worksheet to the database
      * @param content The generated text of a worksheet
-     * @return True if lesson is successfully added to the worksheet table
+     * @return materialID of the successful entry to worksheet table, -1 if unsuccessful
      */
-    public boolean addWorksheetContent(Worksheet content) {
+    public int addWorksheetContent(Worksheet content) {
         String sql = "INSERT INTO worksheet (worksheetTopic, worksheetContent, " +
                 "TeacherID, ClassroomID, materialID) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -222,10 +222,10 @@ public class ContentDAO implements IContentDAO {
                     }
                 }
             }
-            return true;
+            return content.getMaterialID();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
 

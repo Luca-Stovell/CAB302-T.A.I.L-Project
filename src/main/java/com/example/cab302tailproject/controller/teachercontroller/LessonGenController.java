@@ -120,11 +120,16 @@ public class LessonGenController {
      * Defines the default height for new scenes loaded on the current stage.
      */
     private static final double SCENE_HEIGHT = 600;
+
+    /**
+     * Represents the identifier of the currently selected or generated material.
+     */
+    private Material currentMaterial;
     //</editor-fold>
 
     //<editor-fold desc="FXML UI Element References - Dynamic content">
     /**
-     * A reference to a VBox in the JavaFX view identified by the `@FXML` annotation.
+     * A reference to a VBox in the JavaFX view.
      * Represents a dynamic content container in the user interface, allowing the content
      * within it to be programmatically changed at runtime.
      *
@@ -150,8 +155,6 @@ public class LessonGenController {
      */
     @FXML
     private TextArea generatedTextArea;
-
-    private Stage stage;
     //</editor-fold>
 
     /**
@@ -229,6 +232,7 @@ public class LessonGenController {
             generateButton.setDisable(false);
             generatorTextField.setDisable(false);
             int generatedID = saveLessonToDatabase(generatedContent, selectedGeneratorType, userInput.trim());
+            currentMaterial = new Material(generatedID, selectedGeneratorType);
             //saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
             navigateToGeneratedPlan(generatedID);
         });
@@ -334,10 +338,11 @@ public class LessonGenController {
                         654321                         // Placeholder ClassroomID  TODO: retrieve class ID
                 );
                 // Save to database
-                boolean isSaved = contentDAO.addWorksheetContent(worksheet);
+                int isSaved = contentDAO.addWorksheetContent(worksheet);
 
-                if (isSaved) {
+                if (isSaved != -1) {
                     System.out.println("Worksheet saved successfully!");
+                    return isSaved;
                 } else {
                     System.err.println("Failed to save worksheet to the database.");
                 }
@@ -354,35 +359,61 @@ public class LessonGenController {
 
     private void navigateToGeneratedPlan(int materialID) {
         try {
-            System.out.println("Navigating to Generated Plan...");
-            System.out.println("Saving previous view with children: " + dynamicContentBox.getChildren().size());
+            IContentDAO contentDAO = new ContentDAO();
+            if (this.currentMaterial == null) {
+                showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
+                return;
+            }
 
+            System.out.println("Navigating to Generated Plan...");
+            System.out.println("Material Retrieved: ID = " + currentMaterial.getMaterialID() +
+                    ", Type = " + currentMaterial.getMaterialType());
+
+
+            // Save current view logic to return back to
+            System.out.println("Saving previous view with children: " + dynamicContentBox.getChildren().size());
             previousView = new VBox();
             previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
             System.out.println("Previous view saved: " + (previousView != null ? previousView.getChildren().size() : 0));
 
             FXMLLoader fxmlLoader = new FXMLLoader(TeacherGenerateApplication.class.getResource("lesson_plan-teacher.fxml"));
-            VBox lessonPlanView = fxmlLoader.load();
+            VBox generatedContentView = fxmlLoader.load();
 
             LessonGenController newController = fxmlLoader.getController();
 
-            IContentDAO contentDAO = new ContentDAO();
-            Lesson lesson = contentDAO.getLessonContent(materialID);
+            if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
+                Lesson lesson = contentDAO.getLessonContent(materialID);
 
-            if (lesson != null) {
-                newController.generatedTextArea.setText(lesson.getContent());
-            } else {
-                newController.showAlert(Alert.AlertType.WARNING, "No lesson found",
-                        "No lesson found for the given ID: " + materialID + ".");
+                if (lesson != null) {
+                    newController.generatedTextArea.setText(lesson.getContent());
+                } else {
+                    newController.showAlert(Alert.AlertType.WARNING, "No lesson found",
+                            "No lesson found for the given ID: " + materialID + ".");
+                }
+            }
+            else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
+                Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
+
+                if (worksheet != null) {
+                    newController.generatedTextArea.setText(worksheet.getContent());
+                } else {
+                    newController.showAlert(Alert.AlertType.WARNING, "No worksheet found",
+                            "No worksheet found for the given ID: " + materialID + ".");
+                }
+            }
+            else {
+                newController.showAlert(Alert.AlertType.WARNING, "Invalid material type",
+                        "The material type is invalid: " + currentMaterial.getMaterialType());
+                return;
             }
 
             // Replace content in the dynamic container
             dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().add(lessonPlanView);
+            dynamicContentBox.getChildren().add(generatedContentView);
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Could not load lesson plan view.\n" +e.getMessage());
+                    "Could not load generated content view.\n" +e.getMessage());
             e.printStackTrace();
         }
     }
@@ -400,27 +431,43 @@ public class LessonGenController {
                     "No previous state to navigate back to.");
         }
     }
-    private void initialiseStage() {
-        if (generateButton != null && generateButton.getScene() != null) {
-            stage = (Stage) generateButton.getScene().getWindow();
-        } else if (homeButton != null && homeButton.getScene() != null) { // Fallback
-            stage = (Stage) homeButton.getScene().getWindow();
-        }
 
+    private void saveContentToFileFromContentView(String content, String type, String topic){
+        if (content == null) {
+            showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
+            return;
+        }
+        String safeTopic = topic.replaceAll("[^a-zA-Z0-9\\-_ ]", "").replace(" ", "_");
+        if (safeTopic.length() > 50) safeTopic = safeTopic.substring(0, 50);
+        String suggestedFileName = String.format("%s-%s.txt", type.replace(" ", "_"), safeTopic);
+        fileChooser.setInitialFileName(suggestedFileName);
+
+        Stage stage = Stage.getWindows().stream()
+                .filter(window -> window instanceof Stage && window.isShowing())
+                .map(window -> (Stage) window)
+                .findFirst()
+                .orElse(null);
         if (stage == null) {
-            showAlert(Alert.AlertType.ERROR, "UI Error", "Could not determine current stage.");
+            showAlert(Alert.AlertType.ERROR, "UI Error", "Could not display save dialog (cannot get current stage).");
+            return;
         }
-    }
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+                writer.println(content);
+                showAlert(Alert.AlertType.INFORMATION, "Save Successful", "Content saved to " + file.getName());
+            } catch (IOException e) {
+                System.err.println("Error saving file '" + file.getAbsolutePath() + "': " + e.getMessage());
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Save Failed", "Could not save file. Error: " + e.getMessage());
+            }
+        }
 
+    }
 
     @FXML
     private void onSaveClicked(){
-        if (stage == null) { initialiseStage();
-            if (stage == null) {
-                return;
-            }
-        }
-        int materialID = 38; // placeholder
+        int materialID = currentMaterial.getMaterialID(); // placeholder
 
         IContentDAO contentDAO = new ContentDAO();
         Material material = contentDAO.getMaterialType(materialID);
@@ -429,7 +476,8 @@ public class LessonGenController {
             if ("lesson".equals(material.getMaterialType())) {
                 Lesson lesson = contentDAO.getLessonContent(materialID);
                 if (lesson != null) {
-                    saveContentToFile(lesson.getContent(), "Lesson Plan", lesson.getTopic());
+                    System.out.println("Lesson plan saving...");
+                    saveContentToFileFromContentView(lesson.getContent(), "Lesson Plan", lesson.getTopic());
                 } else {
                     showAlert(Alert.AlertType.WARNING, "No content", "No lesson found with this materialID");
                 }
@@ -437,7 +485,8 @@ public class LessonGenController {
             else if ("worksheet".equals(material.getMaterialType())) {
                 Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
                 if (worksheet != null) {
-                    saveContentToFile(worksheet.getContent(), "Worksheet", worksheet.getTopic());
+                    System.out.println("Worksheet saving...");
+                    saveContentToFileFromContentView(worksheet.getContent(), "Worksheet", worksheet.getTopic());
                 } else {
                     showAlert(Alert.AlertType.WARNING, "No content", "No worksheet found with this materialID");
                 }
@@ -447,7 +496,7 @@ public class LessonGenController {
             }
         }
         else {
-            showAlert(Alert.AlertType.WARNING, "No material found", "No material found with this materialID");
+            showAlert(Alert.AlertType.WARNING, "No material found", "No material found with this materialID: " + materialID + ". Current ID is " + currentMaterial);
         }
     }
 

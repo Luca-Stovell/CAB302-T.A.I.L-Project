@@ -2,7 +2,9 @@ package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.DAO.ContentDAO;
+import com.example.cab302tailproject.TeacherGenerateApplication;
 import com.example.cab302tailproject.model.Lesson;
+import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 
@@ -15,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -34,7 +37,6 @@ import java.io.PrintWriter;
  * @version 1.6
  */
 public class LessonGenController {
-
     //<editor-fold desc="FXML UI Element References - Main Content">
     /**
      * TextField for user input to generate lessons or worksheets.
@@ -120,6 +122,38 @@ public class LessonGenController {
     private static final double SCENE_HEIGHT = 600;
     //</editor-fold>
 
+    //<editor-fold desc="FXML UI Element References - Dynamic content">
+    /**
+     * A reference to a VBox in the JavaFX view identified by the `@FXML` annotation.
+     * Represents a dynamic content container in the user interface, allowing the content
+     * within it to be programmatically changed at runtime.
+     *
+     * This element is used in the context of lesson or worksheet generation and navigation,
+     * enabling the controller to update or switch the displayed content as required based
+     * on user interaction or application logic.
+     */
+    @FXML
+    private VBox dynamicContentBox;  // to change the content view
+
+    /**
+     * Holds a reference to the previously displayed view within the application.
+     * Used to facilitate navigation between views by tracking the last active view.
+     * Typically updated when transitioning between different scenes in the interface.
+     */
+    private static VBox previousView;
+
+    /**
+     * A JavaFX TextArea UI component that is used to display generated text content
+     * within the lesson generation view of the application. This component is
+     * updated dynamically when new text is generated based on user inputs or actions
+     * such as generating lessons or worksheets.
+     */
+    @FXML
+    private TextArea generatedTextArea;
+
+    private Stage stage;
+    //</editor-fold>
+
     /**
      * Initializes the controller after its root element has been completely processed.
      * Sets up the radio button toggle group and the file chooser.
@@ -194,8 +228,9 @@ public class LessonGenController {
             String generatedContent = generateTask.getValue();
             generateButton.setDisable(false);
             generatorTextField.setDisable(false);
-            saveLessonToDatabase(generatedContent, selectedGeneratorType, userInput.trim());
-            saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
+            int generatedID = saveLessonToDatabase(generatedContent, selectedGeneratorType, userInput.trim());
+            //saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
+            navigateToGeneratedPlan(generatedID);
         });
         generateTask.setOnFailed(workerStateEvent -> {
             Throwable exception = generateTask.getException();
@@ -262,13 +297,12 @@ public class LessonGenController {
      * @param type The type of material it is: "Lesson Plan" or "Worksheet".
      * @param topic The topic of the content. Generally the AI prompt entered to create the content.
      */
-    private void saveLessonToDatabase(String content, String type, String topic) {
+    private int saveLessonToDatabase(String content, String type, String topic) {
         if (content == null) {
             showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
-            return;
+            return -1;
         }
         if (topic.length() > 50) topic = topic.substring(0, 50);
-
         try {
             IContentDAO contentDAO = new ContentDAO();
 
@@ -282,10 +316,11 @@ public class LessonGenController {
                 );
 
                 // Save to database
-                boolean isSaved = contentDAO.addLessonContent(lessonContent);
+                int isSaved = contentDAO.addLessonContent(lessonContent);
 
-                if (isSaved) {
+                if (isSaved != -1) {
                     System.out.println("Lesson plan saved successfully!");
+                    return isSaved;
                 } else {
                     System.err.println("Failed to save lesson to the database.");
                 }
@@ -298,7 +333,6 @@ public class LessonGenController {
                         123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
                         654321                         // Placeholder ClassroomID  TODO: retrieve class ID
                 );
-
                 // Save to database
                 boolean isSaved = contentDAO.addWorksheetContent(worksheet);
 
@@ -311,12 +345,115 @@ public class LessonGenController {
             else {
                 System.out.println("Invalid content type: " + type + ".");
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("An error occurred while saving the content: " + e.getMessage());
         }
+        return -1;
+    }
+
+    private void navigateToGeneratedPlan(int materialID) {
+        try {
+            System.out.println("Navigating to Generated Plan...");
+            System.out.println("Saving previous view with children: " + dynamicContentBox.getChildren().size());
+
+            previousView = new VBox();
+            previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
+            System.out.println("Previous view saved: " + (previousView != null ? previousView.getChildren().size() : 0));
+
+            FXMLLoader fxmlLoader = new FXMLLoader(TeacherGenerateApplication.class.getResource("lesson_plan-teacher.fxml"));
+            VBox lessonPlanView = fxmlLoader.load();
+
+            LessonGenController newController = fxmlLoader.getController();
+
+            IContentDAO contentDAO = new ContentDAO();
+            Lesson lesson = contentDAO.getLessonContent(materialID);
+
+            if (lesson != null) {
+                newController.generatedTextArea.setText(lesson.getContent());
+            } else {
+                newController.showAlert(Alert.AlertType.WARNING, "No lesson found",
+                        "No lesson found for the given ID: " + materialID + ".");
+            }
+
+            // Replace content in the dynamic container
+            dynamicContentBox.getChildren().clear();
+            dynamicContentBox.getChildren().add(lessonPlanView);
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error",
+                    "Could not load lesson plan view.\n" +e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onBackClicked() {
+        if (previousView != null) {
+            System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
+
+            dynamicContentBox.getChildren().clear();
+            dynamicContentBox.getChildren().addAll(previousView.getChildren());
+        }
+        else {
+            showAlert(Alert.AlertType.WARNING, "No Previous View",
+                    "No previous state to navigate back to.");
+        }
+    }
+    private void initialiseStage() {
+        if (generateButton != null && generateButton.getScene() != null) {
+            stage = (Stage) generateButton.getScene().getWindow();
+        } else if (homeButton != null && homeButton.getScene() != null) { // Fallback
+            stage = (Stage) homeButton.getScene().getWindow();
+        }
+
+        if (stage == null) {
+            showAlert(Alert.AlertType.ERROR, "UI Error", "Could not determine current stage.");
+        }
+    }
+
+
+    @FXML
+    private void onSaveClicked(){
+        if (stage == null) { initialiseStage();
+            if (stage == null) {
+                return;
+            }
+        }
+        int materialID = 38; // placeholder
+
+        IContentDAO contentDAO = new ContentDAO();
+        Material material = contentDAO.getMaterialType(materialID);
+
+        if (material != null) {
+            if ("lesson".equals(material.getMaterialType())) {
+                Lesson lesson = contentDAO.getLessonContent(materialID);
+                if (lesson != null) {
+                    saveContentToFile(lesson.getContent(), "Lesson Plan", lesson.getTopic());
+                } else {
+                    showAlert(Alert.AlertType.WARNING, "No content", "No lesson found with this materialID");
+                }
+            }
+            else if ("worksheet".equals(material.getMaterialType())) {
+                Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
+                if (worksheet != null) {
+                    saveContentToFile(worksheet.getContent(), "Worksheet", worksheet.getTopic());
+                } else {
+                    showAlert(Alert.AlertType.WARNING, "No content", "No worksheet found with this materialID");
+                }
+            }
+            else {
+                showAlert(Alert.AlertType.WARNING, "Invalid material type", "The material type is invalid.");
+            }
+        }
+        else {
+            showAlert(Alert.AlertType.WARNING, "No material found", "No material found with this materialID");
+        }
+    }
+
+    @FXML
+    private void onModifyClicked() {
+        ;
     }
 
     //<editor-fold desc="Sidebar Navigation Event Handlers - Direct Scene Switching">

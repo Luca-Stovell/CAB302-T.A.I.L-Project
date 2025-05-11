@@ -1,6 +1,7 @@
 package com.example.cab302tailproject.DAO;
 
 import com.example.cab302tailproject.model.Lesson;
+import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
 
 import java.sql.*;
@@ -117,7 +118,7 @@ public class ContentDAO implements IContentDAO {
      * @param content The generated text from a lesson plan
      * @return True if lesson is successfully added to the lesson table
      */
-    public boolean addLessonContent(Lesson content) {
+    public int addLessonContent(Lesson content) {
         String sql = "INSERT INTO lesson (lessonTopic, lessonContent, " +
                 "TeacherID, ClassroomID, materialID) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -164,10 +165,10 @@ public class ContentDAO implements IContentDAO {
                          }
                      }
             }
-            return true;
+            return content.getMaterialID();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
 
@@ -234,7 +235,7 @@ public class ContentDAO implements IContentDAO {
      * @return the LessonContent object being requested if it exists, otherwise returns null
      */
     public Lesson getLessonContent(int materialID) {
-        String sql = "SELECT * FROM lessonContent WHERE materialID = ?";
+        String sql = "SELECT * FROM lesson WHERE materialID = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, materialID);
@@ -242,7 +243,7 @@ public class ContentDAO implements IContentDAO {
 
             if (rs.next()) {
                 return new Lesson(
-                        rs.getString("topic"),
+                        rs.getString("lessonTopic"),
                         rs.getString("lessonContent"),
                         rs.getTimestamp("lastModifiedDate") != null
                                 ? rs.getTimestamp("lastModifiedDate").toInstant()
@@ -251,6 +252,49 @@ public class ContentDAO implements IContentDAO {
                         rs.getInt("classroomID"),
                         rs.getInt("materialID")
                         );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Material getMaterialType(int materialID) {
+        String sql = "SELECT materialType FROM material WHERE materialID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, materialID);
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                return new Material(materialID,
+                        result.getString("materialType"));
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Worksheet getWorksheetContent(int materialID) {
+        String sql = "SELECT * FROM worksheet WHERE materialID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, materialID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return new Worksheet(
+                        rs.getString("worksheetTopic"),
+                        rs.getString("worksheetContent"),
+                        rs.getTimestamp("lastModifiedDate") != null
+                                ? rs.getTimestamp("lastModifiedDate").toInstant()
+                                : null ,    // for null case of timestamp
+                        rs.getInt("teacherID"),
+                        rs.getInt("classroomID"),
+                        rs.getInt("materialID")
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();

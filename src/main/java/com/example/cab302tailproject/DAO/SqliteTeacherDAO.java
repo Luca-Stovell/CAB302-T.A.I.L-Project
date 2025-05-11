@@ -1,5 +1,4 @@
 package com.example.cab302tailproject.DAO;
-import com.example.cab302tailproject.model.Teacher;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +17,7 @@ public class SqliteTeacherDAO implements TeacherDAO {
     public boolean AddTeacher(String email, String firstName, String lastName, String password){
         String hashedPassword = hashPassword(password);
         try {
-            String query = "INSERT INTO Teacher (email, firstName, lastName, password) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO Teacher (TeacherEmail, firstName, lastName, password) VALUES (?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             statement.setString(2, firstName);
@@ -42,7 +41,7 @@ public class SqliteTeacherDAO implements TeacherDAO {
     public boolean ChangePassword(String email, String newPassword) {
         String hashedPassword = hashPassword(newPassword);
         try {
-            String query  = "UPDATE Teacher SET password = ? WHERE email = ?";
+            String query  = "UPDATE Teacher SET password = ? WHERE TeacherEmail = ?";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, hashedPassword);
             statement.setString(2, email);
@@ -58,7 +57,7 @@ public class SqliteTeacherDAO implements TeacherDAO {
     @Override
     public boolean checkEmail(String email) {
         try {
-            String query =  "SELECT COUNT(1) FROM Teacher WHERE email = ?;";
+            String query =  "SELECT COUNT(1) FROM Teacher WHERE TeacherEmail = ?;";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
@@ -76,7 +75,7 @@ public class SqliteTeacherDAO implements TeacherDAO {
 
     public String GetPassword(String email) {
         try {
-            String query =  "SELECT password FROM Teacher WHERE email = ?;";
+            String query =  "SELECT password FROM Teacher WHERE TeacherEmail = ?;";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
@@ -96,5 +95,16 @@ public class SqliteTeacherDAO implements TeacherDAO {
         return actualPassword.equals(HPassword);
     }
 
-
+    @Override
+    public void createClassroom(String ClassID, String Teacher) {
+        try {
+            String query = "INSERT INTO Classroom (ClassID, TeacherEmail) VALUES (?, ?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, ClassID);
+            statement.setString(2, Teacher);
+            int rowsInserted = statement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

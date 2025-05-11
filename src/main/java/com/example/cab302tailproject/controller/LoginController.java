@@ -2,6 +2,7 @@ package com.example.cab302tailproject.controller;
 
 import com.example.cab302tailproject.DAO.*;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.Session;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -80,14 +81,22 @@ public class LoginController {
         String email = loginEmailTextField.getText();
         String password = loginPasswordField.getText();
 
-        return tryLogin(teacherDao, email, password)
-                || tryLogin(studentDAO, email, password);
+        if (tryLogin(teacherDao, email, password)) {
+            Session.setLoggedInTeacherEmail(email);
+            return true;
+        }
+
+        if (tryLogin(studentDAO, email, password)) {
+            Session.setLoggedInStudentEmail(email);
+            return true;
+        }
+
+        return false;
     }
 
     private boolean tryLogin(UserDAO dao, String email, String password) {
         return dao.checkEmail(email) && dao.checkPassword(email, password);
     }
-
 
 }
 

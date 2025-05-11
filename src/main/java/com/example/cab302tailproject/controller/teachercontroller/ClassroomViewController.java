@@ -2,6 +2,8 @@ package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.DAO.*;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.Classroom;
+import com.example.cab302tailproject.model.Session;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -52,13 +54,17 @@ public class ClassroomViewController {
      */
     @FXML private ListView classroomDisplayListview;
 
+    @FXML private Button createClassroomButton;
+
     private TeacherDAO teacherDao;
     private StudentDAO studentDao;
+    private ClassroomDAO classroomDao;
 
 
     public ClassroomViewController() {
         teacherDao = new SqliteTeacherDAO();
         studentDao = new SqlStudentDAO();
+        classroomDao = new SqliteClassroomDAO();
     }
 
     @FXML
@@ -159,6 +165,17 @@ public class ClassroomViewController {
         for (Student s : students) {
             String fullName = s.getFirstName() + " " + s.getLastName();
             classroomDisplayListview.getItems().add(fullName);
+        }
+    }
+
+    @FXML
+    public void onCreateClassRoom(ActionEvent event) {
+        String teacherEmail = Session.getLoggedInTeacherEmail();
+        Classroom classroom = new Classroom(teacherEmail);
+        classroomDao.createClassroom(classroom);
+
+        for (Classroom c : Classroom.getClassrooms()) {
+            System.out.println(c.getClassroomID() + " " + c.getTeacher());
         }
     }
 }

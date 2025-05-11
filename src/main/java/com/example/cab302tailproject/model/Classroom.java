@@ -5,20 +5,24 @@ import java.util.List;
 
 public class Classroom {
     private int classroomID;
-    private Teacher teacher;
+    private String teacher;
     private List<Student> students;
+    private static List<Classroom> classrooms = new ArrayList<>();
 
     /**
-     * Constructor for a classroom.
-     * @param classroomID The Primary Key in the database.
-     * @param teacher is the teacher which is assigned to the classroom.
+     * This is the constructor for the Classroom
+     * TODO May have to change implimentation to reflect the students that are loaded yet to figure out.
+     * @param teacherEmail
      */
-    public Classroom(int classroomID, Teacher teacher) {
-        this.classroomID = classroomID;
-        this.teacher = teacher;
+    public Classroom(String teacherEmail) {
+        this.teacher = teacherEmail;
         this.students = new ArrayList<>();
+        classrooms.add(this);
     }
 
+    public static List<Classroom> getClassrooms() {
+        return classrooms;
+    }
 
     public int getClassroomID() {
         return classroomID;
@@ -28,11 +32,11 @@ public class Classroom {
         this.classroomID = classroomID;
     }
 
-    public Teacher getTeacher() {
+    public String getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(Teacher teacher) {
+    public void setTeacher(String teacher) {
         this.teacher = teacher;
     }
 

@@ -24,8 +24,7 @@ public class DatabaseInitializer {
     private void createTeacherTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS Teacher ("
-                        + "TeacherID INTEGER PRIMARY KEY AUTOINCREMENT, /* Possibly redundant, email is unique */"
-                        + "email TEXT UNIQUE,"
+                        + "TeacherEmail TEXT PRIMARY KEY UNIQUE NOT NULL,"
                         + "firstName TEXT,"
                         + "lastName TEXT,"
                         + "password TEXT"
@@ -40,17 +39,17 @@ public class DatabaseInitializer {
                         + "firstName TEXT NOT NULL, "
                         + "lastName TEXT NOT NULL, "
                         + "password TEXT NOT NULL, "
-                        + "teacherID INTEGER, "
-                        + "FOREIGN KEY (teacherID) REFERENCES Teacher(TeacherID)"
+                        + "TeacherEmail TEXT NOT NULL, "
+                        + "FOREIGN KEY (TeacherEmail) REFERENCES Teacher(TeacherEmail)"
                         + ")";
         execute(query);
     }
     private void createClassroomTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS Classroom ("
-                        + "ClassroomID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        + "TeacherID INTEGER, "
-                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID)"
+                        + "ClassroomID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                        + "TeacherEmail TEXT NOT NULL, "
+                        + "FOREIGN KEY (TeacherEmail) REFERENCES Teacher(TeacherEmail)"
                         + ")";
                 execute(query);
     }

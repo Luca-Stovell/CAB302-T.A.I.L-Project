@@ -1,6 +1,6 @@
 package com.example.cab302tailproject.DAO;
 
-import com.example.cab302tailproject.model.LessonContent;
+import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Worksheet;
 
 public interface IContentDAO {
@@ -9,14 +9,14 @@ public interface IContentDAO {
      * @param lessonContent The generated LessonContent object to add
      * @return true if the content is successfully added, false if not
      */
-    boolean addLessonContent(LessonContent lessonContent);
+    boolean addLessonContent(Lesson lessonContent);
 
     /**
      * Retrieves lesson content from the database by its materialID.
      * @param materialID The material identifier of the requested lesson
      * @return the LessonContent object if found, null otherwise
      */
-    LessonContent getLessonContent(int materialID);
+    Lesson getLessonContent(int materialID);
 
     /**
      * Adds a worksheet to the database

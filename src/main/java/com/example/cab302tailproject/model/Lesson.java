@@ -2,9 +2,9 @@ package com.example.cab302tailproject.model;
 
 import java.time.Instant;
 
-public class Worksheet {
-    private String topic;   // Topic of worksheet
-    private String content; // Actual content of the worksheet
+public class Lesson {
+    private String topic;   // Topic of lesson
+    private String content; // Actual content of the lesson
     private Instant lastModifiedDate;
     private int teacherID;
     private int classroomID;
@@ -17,7 +17,7 @@ public class Worksheet {
      * @param teacherID The ID of the teacher
      * @param classroomID The ID of the classroom
      */
-    public Worksheet(String topic, String content,
+    public Lesson(String topic, String content,
                   int teacherID, int classroomID) {
         this.topic = topic;
         this.content = content;
@@ -25,11 +25,20 @@ public class Worksheet {
         this.classroomID = classroomID;
     }
 
-    public Worksheet(String topic, String content, Instant lastModifiedDate,
-                         int teacherID, int classroomID, int materialID) {
+    /**
+     * Constructor for lesson content. Use this constructor to access the date and materialID.
+     * @param topic The topic of the lesson
+     * @param content The actual content of the lesson
+     * @param lastModifiedDate The timestamp of when the lesson was last modified
+     * @param teacherID The ID of the teacher
+     * @param classroomID The ID of the classroom
+     * @param materialID The ID of the material
+     */
+    public Lesson(String topic, String content, Instant lastModifiedDate,
+                  int teacherID, int classroomID, int materialID) {
         this.topic = topic;
         this.content = content;
-        this.lastModifiedDate = (lastModifiedDate == null) ? Instant.now() : lastModifiedDate;;
+        this.lastModifiedDate = (lastModifiedDate == null) ? Instant.now() : lastModifiedDate;
         this.teacherID = teacherID;
         this.classroomID = classroomID;
         this.materialID = materialID;

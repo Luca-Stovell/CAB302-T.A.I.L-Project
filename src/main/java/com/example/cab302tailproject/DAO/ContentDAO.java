@@ -1,6 +1,6 @@
 package com.example.cab302tailproject.DAO;
 
-import com.example.cab302tailproject.model.LessonContent;
+import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Worksheet;
 
 import java.sql.*;
@@ -98,8 +98,8 @@ public class ContentDAO implements IContentDAO {
             statement.executeUpdate();
 
             // Retrieve the last inserted ID
-            try (PreparedStatement stmt = connection.prepareStatement(sqlLastInsertId);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (PreparedStatement statement_retrieveID = connection.prepareStatement(sqlLastInsertId);
+                 ResultSet rs = statement_retrieveID.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1); // The generated materialID
                 }
@@ -117,7 +117,15 @@ public class ContentDAO implements IContentDAO {
      * @param content The generated text from a lesson plan
      * @return True if lesson is successfully added to the lesson table
      */
-    public boolean addLessonContent(LessonContent content) {
+    public boolean addLessonContent(Lesson content) {
+        String sql = "INSERT INTO lesson (lessonTopic, lessonContent, " +
+                "TeacherID, ClassroomID, materialID) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        String sqlRetrieveDate = "SELECT lastModifiedDate FROM lesson WHERE rowid = last_insert_rowid()";
+        String sqlUpdateDate = "UPDATE lesson SET lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') " +
+                "WHERE rowid = last_insert_rowid()";
+
+
         // Ensure the materialID exists by inserting into the material table if necessary
         if (content.getMaterialID() <= 0) {
             int generatedMaterialID = addMaterial("lesson");
@@ -127,9 +135,7 @@ public class ContentDAO implements IContentDAO {
             content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
         }
 
-        String sql = "INSERT INTO lesson (lessonTopic, lessonContent, lastModifiedDate," +
-                "TeacherID, ClassroomID, materialID) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+
         if (connection == null) {
             throw new IllegalStateException("Database connection is not active.");
         }
@@ -137,11 +143,27 @@ public class ContentDAO implements IContentDAO {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, content.getTopic());
             statement.setString(2, content.getContent());
-            statement.setTimestamp(3, new Timestamp(content.getLastModifiedDate().getTime()));
-            statement.setInt(4, content.getTeacherID());
-            statement.setInt(5, content.getClassroomID());
-            statement.setInt(6, content.getMaterialID());
+            statement.setInt(3, content.getTeacherID());
+            statement.setInt(4, content.getClassroomID());
+            statement.setInt(5, content.getMaterialID());
             statement.executeUpdate();
+
+            // Update the lastModifiedDate with '+10 hours' offset
+            try (PreparedStatement statement_updateTimeZone = connection.prepareStatement(sqlUpdateDate)) {
+                statement_updateTimeZone.executeUpdate();
+            }
+
+
+            // Retrieve generated timestamp
+            try (PreparedStatement statement_retrieveDate = connection.prepareStatement(sqlRetrieveDate);
+                 ResultSet rs = statement_retrieveDate.executeQuery()) {
+                     if (rs.next()) {
+                         Timestamp lastModified = rs.getTimestamp("lastModifiedDate");
+                         if (lastModified != null) {
+                             content.setLastModifiedDate(lastModified.toInstant());
+                         }
+                     }
+            }
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -155,6 +177,13 @@ public class ContentDAO implements IContentDAO {
      * @return True if lesson is successfully added to the worksheet table
      */
     public boolean addWorksheetContent(Worksheet content) {
+        String sql = "INSERT INTO worksheet (worksheetTopic, worksheetContent, " +
+                "TeacherID, ClassroomID, materialID) " +
+                "VALUES (?, ?, ?, ?, ?)";
+        String sqlRetrieveDate = "SELECT lastModifiedDate FROM worksheet WHERE rowid = last_insert_rowid()";
+        String sqlUpdateDate = "UPDATE worksheet SET lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') " +
+                "WHERE rowid = last_insert_rowid()";
+
         // Ensure the materialID exists by inserting into the material table if necessary
         if (content.getMaterialID() <= 0) {
             int generatedMaterialID = addMaterial("worksheet");
@@ -164,9 +193,7 @@ public class ContentDAO implements IContentDAO {
             content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
         }
 
-        String sql = "INSERT INTO worksheet (worksheetTopic, worksheetContent, lastModifiedDate," +
-                "TeacherID, ClassroomID, materialID) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+
         if (connection == null) {
             throw new IllegalStateException("Database connection is not active.");
         }
@@ -174,11 +201,26 @@ public class ContentDAO implements IContentDAO {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, content.getTopic());
             statement.setString(2, content.getContent());
-            statement.setTimestamp(3, new Timestamp(content.getLastModifiedDate().getTime()));
-            statement.setInt(4, content.getTeacherID());
-            statement.setInt(5, content.getClassroomID());
-            statement.setInt(6, content.getMaterialID());
+            statement.setInt(3, content.getTeacherID());
+            statement.setInt(4, content.getClassroomID());
+            statement.setInt(5, content.getMaterialID());
             statement.executeUpdate();
+
+            // Update the lastModifiedDate with '+10 hours' offset
+            try (PreparedStatement statement_updateTimeZone = connection.prepareStatement(sqlUpdateDate)) {
+                statement_updateTimeZone.executeUpdate();
+            }
+
+            // Retrieve generated timestamp
+            try (PreparedStatement statement_retrieveDate = connection.prepareStatement(sqlRetrieveDate);
+                 ResultSet rs = statement_retrieveDate.executeQuery()) {
+                if (rs.next()) {
+                    Timestamp lastModified = rs.getTimestamp("lastModifiedDate");
+                    if (lastModified != null) {
+                        content.setLastModifiedDate(lastModified.toInstant());
+                    }
+                }
+            }
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -191,7 +233,7 @@ public class ContentDAO implements IContentDAO {
      * @param materialID The material identifier of the requested lesson
      * @return the LessonContent object being requested if it exists, otherwise returns null
      */
-    public LessonContent getLessonContent(int materialID) {
+    public Lesson getLessonContent(int materialID) {
         String sql = "SELECT * FROM lessonContent WHERE materialID = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -199,10 +241,12 @@ public class ContentDAO implements IContentDAO {
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-                return new LessonContent(
+                return new Lesson(
                         rs.getString("topic"),
                         rs.getString("lessonContent"),
-                        rs.getTimestamp("lastModifiedDate"),
+                        rs.getTimestamp("lastModifiedDate") != null
+                                ? rs.getTimestamp("lastModifiedDate").toInstant()
+                                : null ,    // for null case of timestamp
                         rs.getInt("teacherID"),
                         rs.getInt("classroomID"),
                         rs.getInt("materialID")

@@ -2,7 +2,7 @@ package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.DAO.ContentDAO;
-import com.example.cab302tailproject.model.LessonContent;
+import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Worksheet;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 
@@ -274,13 +274,11 @@ public class LessonGenController {
 
             if (type.equals("Lesson Plan")) {
                 // Create LessonContent object
-                LessonContent lessonContent = new LessonContent(
+                Lesson lessonContent = new Lesson(
                         topic,
                         content,                        // Generated lesson content
-                        new java.util.Date(),           // Current date for `lastModifiedDate`
                         123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
-                        654321,                         // Placeholder ClassroomID  TODO: retrieve class ID
-                        0                               // Placeholder materialID (updates automatically)
+                        654321                         // Placeholder ClassroomID  TODO: retrieve class ID
                 );
 
                 // Save to database
@@ -297,10 +295,8 @@ public class LessonGenController {
                 Worksheet worksheet = new Worksheet(
                         topic,
                         content,                        // Generated lesson content
-                        new java.util.Date(),           // Current date for `lastModifiedDate`
                         123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
-                        654321,                         // Placeholder ClassroomID  TODO: retrieve class ID
-                        0                               // Placeholder materialID (updates automatically)
+                        654321                         // Placeholder ClassroomID  TODO: retrieve class ID
                 );
 
                 // Save to database

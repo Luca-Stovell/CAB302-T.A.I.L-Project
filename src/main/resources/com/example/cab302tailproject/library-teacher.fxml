@@ -12,7 +12,7 @@
             maxHeight = "-Infinity"
             prefHeight = "420"
             prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController"
+            fx:controller="com.example.cab302tailproject.controller.teachercontroller.LibraryController"
             style= "-fx-background-color: white;">
     <!-- Left sidebar -->
     <left>
@@ -87,7 +87,7 @@
          <center>
                 <Pane prefHeight="365.0" prefWidth="510.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button layoutX="182.0" layoutY="96.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="159.0" style="-fx-background-color: #00FF26;" text="⬆">
+                        <Button layoutX="182.0" layoutY="96.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="159.0" style="-fx-background-color: #00FF26;" text="⬆" onAction="#handleUpload">
                      <font>
                         <Font size="28.0" />
                      </font></Button>

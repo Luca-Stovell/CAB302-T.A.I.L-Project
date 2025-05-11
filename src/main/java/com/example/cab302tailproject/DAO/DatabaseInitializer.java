@@ -15,11 +15,13 @@ public class DatabaseInitializer {
         createTeacherTable();
         createStudentTable();
         createClassroomTable();
+        createLibraryItemTable();
         try {
             Statement createTable = connection.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
     private void createTeacherTable() {
         String query =
@@ -54,6 +56,20 @@ public class DatabaseInitializer {
                         + ")";
                 execute(query);
     }
+    private void createLibraryItemTable() {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS library_item (
+                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                teacher_id    INTEGER,
+                stored_name   TEXT NOT NULL,
+                original_name TEXT NOT NULL,
+                size          INTEGER,
+                uploaded_at   TEXT,
+                FOREIGN KEY (teacher_id) REFERENCES Teacher(TeacherID)
+            );
+            """;
+        execute(sql);
+    }
 
     /**
      *Executes a given SQL query using the current database connection.
@@ -65,5 +81,6 @@ public class DatabaseInitializer {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 }

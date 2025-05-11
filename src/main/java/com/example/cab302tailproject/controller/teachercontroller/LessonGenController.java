@@ -1,9 +1,9 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
-import com.example.cab302tailproject.DAO.ILessonContentDAO;
-import com.example.cab302tailproject.DAO.LessonContentDAO;
-import com.example.cab302tailproject.DAO.SqliteLoginDAO;
+import com.example.cab302tailproject.DAO.IContentDAO;
+import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.model.LessonContent;
+import com.example.cab302tailproject.model.Worksheet;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 
 import com.example.cab302tailproject.TailApplication;
@@ -194,7 +194,7 @@ public class LessonGenController {
             String generatedContent = generateTask.getValue();
             generateButton.setDisable(false);
             generatorTextField.setDisable(false);
-            saveLessonToDatabase(generatedContent);
+            saveLessonToDatabase(generatedContent, selectedGeneratorType, userInput.trim());
             saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
         });
         generateTask.setOnFailed(workerStateEvent -> {
@@ -256,29 +256,70 @@ public class LessonGenController {
     }
     //</editor-fold>
 
-    private void saveLessonToDatabase(String content) {
+    /**
+     * Saves the supplied content to the database. Assumes the teacher and classroom.
+     * @param content The full text of content to be added
+     * @param type The type of material it is: "Lesson Plan" or "Worksheet".
+     * @param topic The topic of the content. Generally the AI prompt entered to create the content.
+     */
+    private void saveLessonToDatabase(String content, String type, String topic) {
+        if (content == null) {
+            showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
+            return;
+        }
+        if (topic.length() > 50) topic = topic.substring(0, 50);
+
         try {
-            // Assuming ILessonContentDAO is already implemented and injected
-            ILessonContentDAO lessonContentDAO = new LessonContentDAO();
+            IContentDAO contentDAO = new ContentDAO();
 
-            // Create LessonContent object
-            LessonContent lessonContent = new LessonContent(
-                    0,                  // Placeholder materialID (updates automatically)
-                    content,                     // Generated lesson content
-                    new java.util.Date()         // Current date for `lastModifiedDate`
-            );
+            if (type.equals("Lesson Plan")) {
+                // Create LessonContent object
+                LessonContent lessonContent = new LessonContent(
+                        topic,
+                        content,                        // Generated lesson content
+                        new java.util.Date(),           // Current date for `lastModifiedDate`
+                        123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
+                        654321,                         // Placeholder ClassroomID  TODO: retrieve class ID
+                        0                               // Placeholder materialID (updates automatically)
+                );
 
-            // Save to database
-            boolean isSaved = lessonContentDAO.addLessonContent(lessonContent);
+                // Save to database
+                boolean isSaved = contentDAO.addLessonContent(lessonContent);
 
-            if (isSaved) {
-                System.out.println("Lesson content saved successfully!");
-            } else {
-                System.err.println("Failed to save lesson content to the database.");
+                if (isSaved) {
+                    System.out.println("Lesson plan saved successfully!");
+                } else {
+                    System.err.println("Failed to save lesson to the database.");
+                }
             }
+            else if (type.equals("Worksheet")) {
+                // Create LessonContent object
+                Worksheet worksheet = new Worksheet(
+                        topic,
+                        content,                        // Generated lesson content
+                        new java.util.Date(),           // Current date for `lastModifiedDate`
+                        123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
+                        654321,                         // Placeholder ClassroomID  TODO: retrieve class ID
+                        0                               // Placeholder materialID (updates automatically)
+                );
+
+                // Save to database
+                boolean isSaved = contentDAO.addWorksheetContent(worksheet);
+
+                if (isSaved) {
+                    System.out.println("Worksheet saved successfully!");
+                } else {
+                    System.err.println("Failed to save worksheet to the database.");
+                }
+            }
+            else {
+                System.out.println("Invalid content type: " + type + ".");
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("An error occurred while saving lesson content: " + e.getMessage());
+            System.err.println("An error occurred while saving the content: " + e.getMessage());
         }
     }
 

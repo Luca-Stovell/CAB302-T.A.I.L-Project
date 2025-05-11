@@ -2,7 +2,7 @@ package com.example.cab302tailproject.model;
 
 import java.util.Date;
 
-public class LessonContent {
+public class Worksheet {
     private String topic;   // Topic of lesson
     private String content; // Actual content of the lesson
     private Date lastModifiedDate;
@@ -11,7 +11,7 @@ public class LessonContent {
     private int materialID; // Matches materials.materialID
 
 
-    public LessonContent(String topic, String content, Date lastModifiedDate,
+    public Worksheet(String topic, String content, Date lastModifiedDate,
                          int teacherID, int classroomID, int materialID) {
         this.topic = topic;
         this.content = content;

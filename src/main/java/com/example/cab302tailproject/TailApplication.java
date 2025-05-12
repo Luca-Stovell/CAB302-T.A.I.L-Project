@@ -1,5 +1,6 @@
 package com.example.cab302tailproject;
 
+import com.example.cab302tailproject.DAO.DatabaseInitializer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -25,6 +26,7 @@ public class TailApplication extends Application {
     }
 
     public static void main(String[] args) {
+        new DatabaseInitializer().initialize();
         launch();
     }
 }

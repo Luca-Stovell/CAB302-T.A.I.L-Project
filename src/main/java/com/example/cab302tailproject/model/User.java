@@ -2,10 +2,10 @@ package com.example.cab302tailproject.model;
 
 public class User {
     // Define Attributes for a user
-    private final String firstName;
-    private final String lastName;
-    private final String email;
-    private String password;
+    protected String firstName;
+    protected String lastName;
+    protected String email;
+    protected String password;;
 
     public User(String firstName, String lastName, String email, String password) {
         this.firstName = firstName;
@@ -13,22 +13,17 @@ public class User {
         this.email = email;
         this.password = password;
     }
-    // Getter methods
-    public String getFirstName() {
-        return firstName;
-    }
+    // Getters
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public String getEmail() { return email; }
+    public String getPassword() { return password; }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
+    // Setters
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setEmail(String email) { this.email = email; }
+    public void setPassword(String password) { this.password = password; }
 
     public void login(){
 

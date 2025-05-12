@@ -1,16 +1,21 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.DAO.ILoginDAO;
-import com.example.cab302tailproject.DAO.SqliteLoginDAO;
+import com.example.cab302tailproject.DAO.StudentDAO;
+import com.example.cab302tailproject.DAO.TeacherDAO;
+import com.example.cab302tailproject.DAO.SqlStudentDAO;
+import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.UserSession;     // For storing logged-in user info
+import com.example.cab302tailproject.model.UserDetail; // For fetching user names
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.Node;
-import javafx.application.Platform;
+import javafx.application.Platform; // For showAlert
 
 import java.io.IOException;
-import java.net.URL;
+import java.net.URL; // For FXML loading
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -19,7 +24,10 @@ import javafx.event.ActionEvent;
 /**
  * Controller for the login view (login_page.fxml).
  * Handles user authentication based on email, password, and selected user type (Student/Teacher).
- * Navigates to the appropriate application view upon successful login.
+ * Navigates to the appropriate application view upon successful login and sets UserSession.
+ *
+ * @author Your Name/TAIL Project Team
+ * @version 1.3
  */
 public class LoginController {
 
@@ -35,69 +43,71 @@ public class LoginController {
     @FXML private RadioButton studentRadioButton;
     @FXML private ToggleGroup userTypeToggleGroup; // Should match fx:id in login_page.fxml
 
-    // --- DAO Instance ---
-    private ILoginDAO loginDao;
+    // --- DAO Instances ---
+    private TeacherDAO teacherDao;
+    private StudentDAO studentDao;
 
     /**
-     * Constructor initializes the DAO.
+     * Constructor initializes the DAO instances.
+     * Also ensures the database tables are created via DatabaseInitializer.
      */
     public LoginController() {
-        loginDao = new SqliteLoginDAO();
+        new com.example.cab302tailproject.DAO.DatabaseInitializer().initialize(); // Ensure tables exist
+
+        teacherDao = new SqliteTeacherDAO();
+        studentDao = new SqlStudentDAO();
     }
 
     /**
      * Initializes the controller after FXML loading.
-     * Ensures the error label is present and initially empty.
+     * Ensures the error label is present and initially empty, and sets default radio button.
      */
     @FXML
     public void initialize() {
         if (loginErrorLabel != null) {
             loginErrorLabel.setText(""); // Clear error label on init
-            loginErrorLabel.setStyle("-fx-text-fill: red;"); // Style for errors
+            loginErrorLabel.setStyle("-fx-text-fill: red; -fx-font-weight: bold;"); // Style for errors
         } else {
-            System.err.println("WARN: loginErrorLabel is not injected. Check FXML fx:id.");
+            System.err.println("WARN: loginErrorLabel is not injected. Check FXML fx:id 'loginErrorLabel'.");
         }
-        // Ensure radio buttons and toggle group are injected
+
+        // Ensure radio buttons and toggle group are injected from FXML
         if (userTypeToggleGroup == null || teacherRadioButton == null || studentRadioButton == null) {
-            System.err.println("WARN: User type radio buttons or toggle group not injected. Check FXML fx:id.");
+            System.err.println("WARN: User type radio buttons or toggle group not injected. Check FXML fx:id attributes (userTypeToggleGroup, teacherRadioButton, studentRadioButton).");
         } else {
-            // Optional: Set a default selection if not done in FXML (Student is default in FXML)
-            // studentRadioButton.setSelected(true);
+            // Set a default selection if not already done in FXML (Student is default in login_page.fxml)
+            if (userTypeToggleGroup.getSelectedToggle() == null) {
+                studentRadioButton.setSelected(true);
+            }
         }
     }
 
     /**
      * Handles the action for the registration button click.
      * Navigates the user to the registration page scene.
-     * @throws IOException if the registration FXML file cannot be loaded.
+     *
+     * @param event The action event from the button click.
      */
     @FXML
-    protected void onRegistrationButtonClick() throws IOException {
+    protected void onRegistrationButtonClick(ActionEvent event) {
         try {
-            // Ensure registerPageButton is not null before accessing its scene
-            if (registerPageButton == null || registerPageButton.getScene() == null) {
-                System.err.println("Error: Cannot get scene from registerPageButton.");
-                showAlert(Alert.AlertType.ERROR, "Navigation Error", "Cannot initiate registration navigation.");
-                return;
-            }
-            Stage stage = (Stage) registerPageButton.getScene().getWindow();
-            URL fxmlUrl = TailApplication.class.getResource("registration_page.fxml"); // Use URL
-            if (fxmlUrl == null) {
-                throw new IOException("Cannot find FXML file: registration_page.fxml");
-            }
-            FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl); // Pass URL
-            // Use dimensions defined in TailApplication or specific ones
+            Node sourceNode = (Node) event.getSource();
+            Stage stage = (Stage) sourceNode.getScene().getWindow();
+            URL fxmlUrl = TailApplication.class.getResource("registration_page.fxml");
+            if (fxmlUrl == null) throw new IOException("Cannot find registration_page.fxml. Check path in resources.");
+
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-            stage.setTitle("TAIL - Registration"); // Set appropriate title
+            stage.setTitle("TAIL - Registration");
             stage.setScene(scene);
         } catch (IOException e) {
             System.err.println("Error loading registration_page.fxml: " + e.getMessage());
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not open registration page.");
         } catch (IllegalStateException e) {
-            System.err.println("Error getting stage/scene: " + e.getMessage());
+            System.err.println("Error getting stage/scene for registration: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Cannot determine current window.");
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Cannot determine current window for registration.");
         }
     }
 
@@ -105,12 +115,13 @@ public class LoginController {
      * Handles the action for the login button click.
      * Validates credentials based on selected user type and navigates on success.
      * Displays an error message on failure.
+     *
+     * @param event The action event from the button click.
      */
     @FXML
-    protected void onLoginButtonClick(ActionEvent event) { // Added ActionEvent parameter
-        if (loginErrorLabel != null) loginErrorLabel.setText(""); // Clear previous errors
+    protected void onLoginButtonClick(ActionEvent event) {
+        if (loginErrorLabel != null) loginErrorLabel.setText("");
 
-        // Ensure essential UI components are injected
         if (loginEmailTextField == null || loginPasswordField == null || userTypeToggleGroup == null ||
                 teacherRadioButton == null || studentRadioButton == null) {
             System.err.println("ERROR: One or more login UI components are null. Check FXML fx:id.");
@@ -121,13 +132,11 @@ public class LoginController {
         String email = loginEmailTextField.getText().trim();
         String password = loginPasswordField.getText();
 
-        // Basic validation for empty fields
         if (email.isEmpty() || password.isEmpty()) {
             setLoginError("Email and password cannot be empty.");
             return;
         }
 
-        // Determine selected user type
         Toggle selectedToggle = userTypeToggleGroup.getSelectedToggle();
         if (selectedToggle == null) {
             setLoginError("Please select whether you are a Teacher or Student.");
@@ -137,66 +146,58 @@ public class LoginController {
         boolean loginSuccess = false;
         String targetFxml = null;
         String windowTitle = TailApplication.TITLE;
+        UserDetail userDetails = null;
+        String userRole = "";
 
         if (selectedToggle == teacherRadioButton) {
-            // Check teacher credentials
-            loginSuccess = loginDao.checkTeacherLogin(email, password);
-            if (loginSuccess) {
-                targetFxml = "lesson_generator-teacher.fxml"; // Teacher's target page
+            userRole = "Teacher";
+            // Use teacherDao to check credentials and get details
+            if (teacherDao.checkEmail(email) && teacherDao.checkPassword(email, password)) {
+                loginSuccess = true;
+                userDetails = teacherDao.getUserNameDetails(email);
+                targetFxml = "lesson_generator-teacher.fxml"; // Your teacher's main page
                 windowTitle = "TAIL - Teacher Dashboard";
-                System.out.println("Teacher login successful for: " + email);
             }
         } else if (selectedToggle == studentRadioButton) {
-            // Check student credentials
-            loginSuccess = loginDao.checkStudentLogin(email, password);
-            if (loginSuccess) {
-                targetFxml = "student-page.fxml"; // Student's target page
+            userRole = "Student";
+            // Use studentDao to check credentials and get details
+            if (studentDao.checkEmail(email) && studentDao.checkPassword(email, password)) {
+                loginSuccess = true;
+                userDetails = studentDao.getUserNameDetails(email);
+                targetFxml = "student-page.fxml"; // Your student's main page
                 windowTitle = "TAIL - Student Dashboard";
-                System.out.println("Student login successful for: " + email);
             }
         }
 
-        // Handle login result
-        if (loginSuccess && targetFxml != null) {
-            // Navigate to the appropriate page
+        if (loginSuccess && userDetails != null && targetFxml != null) {
+            // Set UserSession with retrieved first name, last name, email, and role
+            UserSession.getInstance().loginUser(userDetails.firstName(), userDetails.lastName(), email, userRole);
+            System.out.println(userRole + " login successful for: " + email);
+
             try {
-                // Get stage from the event source (the login button)
                 Node sourceNode = (Node) event.getSource();
-                if (sourceNode == null || sourceNode.getScene() == null) {
-                    throw new IllegalStateException("Could not get scene from event source.");
-                }
                 Stage stage = (Stage) sourceNode.getScene().getWindow();
-                if (stage == null) {
-                    throw new IllegalStateException("Could not get stage from event source.");
-                }
+                URL fxmlUrl = TailApplication.class.getResource(targetFxml);
+                if (fxmlUrl == null) throw new IOException("Cannot find target FXML: " + targetFxml + ". Check path in resources.");
 
-                URL fxmlUrl = TailApplication.class.getResource(targetFxml); // Use URL
-                if (fxmlUrl == null) {
-                    throw new IOException("Cannot find target FXML file: " + targetFxml);
-                }
-                FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl); // Pass URL
-
-                // Use dimensions defined in TailApplication or specific ones
+                FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
                 Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
                 stage.setTitle(windowTitle);
                 stage.setScene(scene);
             } catch (IOException e) {
-                System.err.println("Error loading target FXML ("+ targetFxml +"): " + e.getMessage());
+                System.err.println("Error loading target FXML (" + targetFxml + "): " + e.getMessage());
                 e.printStackTrace();
                 setLoginError("Login successful, but failed to load next page.");
+                UserSession.getInstance().logoutUser(); // Clear session if navigation fails
             } catch (IllegalStateException e) {
-                System.err.println("Error getting stage/scene: " + e.getMessage());
+                System.err.println("Error getting stage/scene for navigation post-login: " + e.getMessage());
                 e.printStackTrace();
                 setLoginError("Login successful, but failed to switch page.");
-            } catch (Exception e) {
-                System.err.println("Unexpected error during scene switch after login: " + e.getMessage());
-                e.printStackTrace();
-                setLoginError("An unexpected error occurred after login.");
+                UserSession.getInstance().logoutUser();
             }
         } else {
-            // Login failed
             setLoginError("Invalid email or password for selected user type.");
-            System.out.println("Login failed for email: " + email);
+            System.out.println("Login failed for email: " + email + " as " + (selectedToggle == teacherRadioButton ? "Teacher" : "Student"));
         }
     }
 
@@ -208,27 +209,23 @@ public class LoginController {
         if (loginErrorLabel != null) {
             loginErrorLabel.setText(message);
         } else {
-            // log error
             System.err.println("Login Error (Label not available): " + message);
-            // Optionally show an alert as fallback
-            showAlert(Alert.AlertType.ERROR, "Login Failed", message);
+            showAlert(Alert.AlertType.ERROR, "Login Failed", message); // Fallback alert
         }
     }
 
     /**
-     * Helper method to display alerts (useful for errors if label fails or for general notifications).
-     * Ensures the alert is shown on the JavaFX Application Thread.
+     * Helper method to display alerts.
      * @param alertType The type of alert.
-     * @param title The title for the alert window.
-     * @param message The message to display in the alert.
+     * @param title The title.
+     * @param message The message.
      */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
-        // Ensure runs on FX thread
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(alertType);
                 alert.setTitle(title);
-                alert.setHeaderText(null); // No header
+                alert.setHeaderText(null);
                 alert.setContentText(message);
                 alert.showAndWait();
             });

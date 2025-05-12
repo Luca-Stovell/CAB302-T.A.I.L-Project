@@ -29,4 +29,13 @@ public interface StudentDAO extends UserDAO {
      */
     public boolean checkPassword(String email ,String password);
 
+    /**
+     * Resets the password for a specific student identified by their email.
+     * The new password provided should be plain text and will be hashed by this method before storage.
+     * @param email The email of the student whose password needs resetting.
+     * @param newPassword The new plain text password.
+     * @return true if the password was successfully reset, false otherwise.
+     */
+    boolean resetStudentPassword(String email, String newPassword);
+
 }

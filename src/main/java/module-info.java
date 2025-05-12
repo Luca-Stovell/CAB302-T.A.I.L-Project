@@ -16,4 +16,5 @@ module com.example.cab302tailproject {
 
     exports com.example.cab302tailproject.model;
     exports com.example.cab302tailproject.ollama4j;
+    exports  com.example.cab302tailproject.controller;
 }

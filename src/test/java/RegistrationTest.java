@@ -35,63 +35,64 @@ public class RegistrationTest {
 
     @Test
     void testVerifyName_withValidName() {
-        // Set a valid name
-        controller.setFirstName(VALID_FIRST_NAME);
         // Verify name validation logic works
-        assertTrue(controller.verifyName(new TextField(controller.getFirstName())),
+        assertTrue(controller.verifyName(new TextField(VALID_FIRST_NAME)),
                 "Name validation failed for valid input");
     }
 
     @Test
     void testVerifyName_withInvalidName() {
-        // Set an invalid name
-        controller.setFirstName(INVALID_FIRST_NAME);
+        //controller.setFirstName(INVALID_FIRST_NAME);
         // Verify name validation logic works
-        assertFalse(controller.verifyName(new TextField(controller.getFirstName())),
+        assertFalse(controller.verifyName(new TextField(INVALID_FIRST_NAME)),
                 "Name validation passed for invalid input (numbers)");
     }
 
     @Test
     void testVerifyPassword_withMatchingPasswords() {
-        // Set matching passwords
-        controller.setPassword(VALID_PASSWORD);
-        controller.setConfirmPassword(VALID_PASSWORD);
         // Verify password validation logic works
         assertTrue(controller.verifyPassword(
-                new PasswordField() {{ setText(controller.getPassword()); }},
-                new PasswordField() {{ setText(controller.getConfirmPassword()); }}
+                new PasswordField() {{ setText(VALID_PASSWORD); }},
+                new PasswordField() {{ setText(VALID_PASSWORD); }}
         ), "Password verification failed for matching passwords");
     }
 
     @Test
     void testVerifyPassword_withNonMatchingPasswords() {
-        // Set non-matching passwords
-        controller.setPassword(VALID_PASSWORD);
-        controller.setConfirmPassword(MISMATCHED_PASSWORD);
         // Verify password validation logic works
         assertFalse(controller.verifyPassword(
-                new PasswordField() {{ setText(controller.getPassword()); }},
-                new PasswordField() {{ setText(controller.getConfirmPassword()); }}
+                new PasswordField() {{ setText(VALID_PASSWORD); }},
+                new PasswordField() {{ setText(MISMATCHED_PASSWORD); }}
         ), "Password verification passed for non-matching passwords");
     }
 
     @Test
+    void testVerifyPasswordWhenPasswordIsEmpty() {
+        // Verify password validation logic works
+        assertFalse(controller.verifyPassword(
+                new PasswordField() {{ setText(""); }},
+                new PasswordField() {{ setText(MISMATCHED_PASSWORD); }}
+        ), "Password verification passed for empty password");
+    }
+
+    @Test
     void testVerifyEmail_withValidEmail() {
-        // Set a valid email
-        controller.setEmail(VALID_EMAIL);
         // Verify email validation logic works
-        assertTrue(controller.verifyEmail(new TextField(controller.getEmail())),
+        assertTrue(controller.verifyEmail(new TextField(VALID_EMAIL)),
                 "Email validation failed for valid input");
     }
 
     @Test
     void testVerifyEmail_withInvalidEmail() {
-        // Set an invalid email
-        controller.setEmail(INVALID_EMAIL);
         // Verify email validation logic works
-        assertFalse(controller.verifyEmail(new TextField(controller.getEmail())),
+        assertFalse(controller.verifyEmail(new TextField(INVALID_EMAIL)),
                 "Email validation passed for invalid input");
     }
 
-
+    @Test
+    void testVerifyEmailWithEmptyEmail() {
+        // Verify email validation logic works
+        assertFalse(controller.verifyEmail(new TextField("")),
+                "Email validation passed for invalid input");
+    }
 }

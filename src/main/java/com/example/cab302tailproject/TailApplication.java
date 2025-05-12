@@ -1,5 +1,6 @@
 package com.example.cab302tailproject;
 
+import com.example.cab302tailproject.DAO.DatabaseInitializer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -9,15 +10,15 @@ import java.io.IOException;
 
 
 
-public class HelloApplication extends Application {
+public class TailApplication extends Application {
 
     public static final String TITLE = "TAIL";
-    public static final int WIDTH = 550;
-    public static final int HEIGHT = 450;
+    public static final int WIDTH = 818;
+    public static final int HEIGHT = 435;
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("LoginPage.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("login_page.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
         stage.setTitle(TITLE);
         stage.setScene(scene);
@@ -25,6 +26,7 @@ public class HelloApplication extends Application {
     }
 
     public static void main(String[] args) {
+        new DatabaseInitializer().initialize();
         launch();
     }
 }

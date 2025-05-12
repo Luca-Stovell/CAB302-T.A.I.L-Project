@@ -52,10 +52,15 @@ public class LearningCardDeck {
     }
 
     // should probably be private, identical to easyNext
+    // it's used in the unit tests
     public void next(){
         next(1);
     }
 
+    /**
+     * sends the current card to a place in the deck depending on an input double
+     * @param difficulty double that determines where the current card is sent
+     */
     private void next(double difficulty) {
         DeckContent.getFirst().resetFlip();
         int newIndex = (int) (DeckContent.size()*difficulty);
@@ -67,23 +72,28 @@ public class LearningCardDeck {
     /**
      * moves the current card to the end of the deck
      */
-    public void easyNext(){
+    public String easyNext(){
         next();
+        return getCurrentCard();
     }
 
     /**
      * moves the current card to the middle of the deck
      */
-    public void mediumNext(){
+    public String mediumNext(){
         next(MEDIUM);
+        return getCurrentCard();
     }
+
 
     /**
      * moves the current card close to the start of the deck
      */
-    public void hardNext(){
+    public String hardNext(){
         next(HARD);
+        return getCurrentCard();
     }
+
 
     /// Optional extra functionality: shuffle function. Not mentioned in the GUI or any planning documents, but might be nice to have
 

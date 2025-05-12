@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.2.0 Week 9 checkpoint 
+#### 02/05/25
+- Pulling specific files from branches *SQLite; Logintest; lesson-plan-gen; javafxn; tests*
+- Login and registration pages working with input validation
+- Implemented SQL database, working for user login/registration
+- Working version of lesson plan/worksheet generator with AI output in txt
+- User tests for login and registration pages implemented and passing (pending full test coverage)
+
+*0.2.0 notes*
+  - Removed the example 'hello' files
+  - Updated gitignore to ignore database files (*.db)
+  - Added SQL to pom.xml
+
 ## v0.1.1 - lesson-plan-gen 
 #### 25/04/25
 - Put controller files into own package

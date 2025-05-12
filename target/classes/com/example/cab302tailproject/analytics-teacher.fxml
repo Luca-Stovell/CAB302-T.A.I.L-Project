@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight = "-Infinity"
+            prefHeight = "420"
+            prefWidth="710"
+            fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController"
+            style= "-fx-background-color: white;">
+    <!-- Left sidebar -->
+    <left>
+        <VBox prefHeight="420" prefWidth="50.0" style="-fx-border-color: #000000; -fx-border-width: 2;">
+
+            <!-- Back Button -->
+            <Button fx:id="sidebarLibraryButton" prefHeight="59.0" prefWidth="112.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 12; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="← Back" />
+
+            <!-- Divider Line -->
+            <Line endX="50.0" startX="-50.0" strokeWidth="2.0">
+                <fill>
+                    <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                        <stops>
+                            <Stop offset="0.0">
+                                <color>
+                                    <Color red="0.8" green="0.8" blue="0.8" />
+                                </color>
+                            </Stop>
+                            <Stop offset="1.0">
+                                <color>
+                                    <Color red="1.0" green="1.0" blue="1.0" />
+                                </color>
+                            </Stop>
+                        </stops>
+                    </RadialGradient>
+                </fill>
+            </Line>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="377.0" prefWidth="102.0" vbarPolicy="AS_NEEDED">
+           <content>
+               <VBox alignment="TOP_CENTER" prefHeight="950.0" prefWidth="87.0" spacing="0" style="-fx-padding: 0;">
+                   <children>
+                       <Button prefHeight="100" prefWidth="191.0" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="195.0" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="89.0" prefWidth="202.0" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="187.0" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="94.0" prefWidth="187.0" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                       <Button prefHeight="100" prefWidth="100" style="-fx-background-radius: 0; -fx-border-radius: 0;" text="Max" />
+                   </children>
+               </VBox>
+           </content>
+         </ScrollPane>
+        </VBox>
+    </left>
+
+
+    <center>
+        <BorderPane>
+            <!-- Top Navigation Bar -->
+            <top>
+                <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
+
+                    <HBox HBox.hgrow="ALWAYS" /> <!-- spacer -->
+
+                    <Button fx:id="homeButton" layoutX="420" layoutY="20" onAction="#onHomeClicked" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="H">
+                        <!-- insert graphic here-->
+                    </Button>
+                    <Button fx:id="settingsButton" layoutX="460" layoutY="20" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="S">
+                        <!-- insert graphic here-->
+                    </Button>
+               <Label layoutX="253.0" layoutY="11.0" prefHeight="46.0" prefWidth="92.0" text="Analytics">
+                  <font>
+                     <Font size="17.0" />
+                  </font>
+               </Label>
+                </AnchorPane>
+            </top>
+            <bottom>
+                <Pane prefHeight="365.0" prefWidth="510.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label layoutX="246.0" layoutY="74.0" text="Class Average" />
+                  <Label layoutX="180.0" layoutY="273.0" prefHeight="15.0" prefWidth="291.0" text="Click on a student for more information" />
+               </children>
+                </Pane>
+            </bottom>
+
+        </BorderPane>
+    </center>
+
+
+
+
+
+
+</BorderPane>

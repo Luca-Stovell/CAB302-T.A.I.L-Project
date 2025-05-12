@@ -27,19 +27,48 @@ public interface IContentDAO {
     int addWorksheetToDB(Worksheet worksheetContent);
 
     /**
-     * Retrieves the material details based on the given material ID.
+     * Retrieves the material type details based on the provided material ID.
      * @param materialID The unique identifier of the material to be retrieved.
-     * @return The Material object corresponding to the provided material ID, or null if no such material exists.
+     * @return The Material object containing the material type and ID, or null if no material is found for the given ID or an error occurs.
      */
     Material getMaterialType(int materialID);
 
     /**
-     * Retrieves the worksheet content associated with the given material ID.
-     * @param materialID The unique identifier for the worksheet to be retrieved.
-     * @return The Worksheet object containing the requested content, or null if no worksheet is found for the given ID.
+     * Retrieves the content of a worksheet from the database based on the provided material ID.
+     * @param materialID The unique identifier of the material (worksheet) to be retrieved.
+     * @return A {@link Worksheet} object containing all attributes if found;
+     * otherwise, returns null if no worksheet is found or an error occurs.
      */
     Worksheet getWorksheetContent(int materialID);
 
+    /**
+     * Updates the content of the specified material in the database, based on the given material ID.
+     * This method accepts either worksheets or lessons and executes the appropriate update query.
+     * @param materialID The unique identifier of the existing material to be updated.
+     * @param newContent The new content to be set for the specified material.
+     * @return true if the content was successfully updated, false otherwise.
+     */
     boolean setContent(int materialID, String newContent);
+
+    /**
+     * Updates the content and topic of a material in the database based on the provided material ID.
+     * This method distinguishes between lessons and worksheets and performs the update operation accordingly.
+     *
+     * @param materialID The unique identifier of the material to be updated.
+     * @param newContent The new content to set for the specified material.
+     * @param newTopic The new topic to set for the specified material.
+     * @return true if the update operation is successful; false otherwise.
+     */
+    boolean setContent(int materialID, String newContent, String newTopic);
+
+    /**
+     * Deletes the content associated with a specified material ID from the database.
+     * This method identifies the material type (lesson or worksheet) and performs the
+     * necessary deletions in the corresponding table before removing the material record.
+     *
+     * @param materialID The unique identifier of the material to be deleted.
+     * @return true if the material and its associated content were successfully deleted; false otherwise.
+     */
+    boolean deleteContent(int materialID);
 
 }

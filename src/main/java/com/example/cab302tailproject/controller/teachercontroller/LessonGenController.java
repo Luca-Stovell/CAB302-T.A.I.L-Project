@@ -224,7 +224,7 @@ public class LessonGenController {
             generateButton.setDisable(false);
             generatorTextField.setDisable(false);
             int generatedID = saveLessonToDatabase(generatedContent, selectedGeneratorType, userInput.trim());
-            currentMaterial = new Material(generatedID, selectedGeneratorType);
+            currentMaterial = new Material(generatedID, selectedGeneratorType);     // Prepare new view with the given output
             //saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
             navigateToGeneratedPlan(generatedID);
         });
@@ -350,7 +350,14 @@ public class LessonGenController {
     }
 
 
-
+    /**
+     * Navigates to the generated lesson plan view for the material specified by the given ID.
+     * If no material is found with the provided ID, displays a warning alert.
+     * Saves the current view to allow navigating back later and handles the transition
+     * to the new lesson plan view with the relevant data.
+     *
+     * @param materialID The identifier of the material for which the lesson plan is to be generated.
+     */
     private void navigateToGeneratedPlan(int materialID) {
         try {
             if (this.currentMaterial == null) {

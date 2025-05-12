@@ -372,6 +372,59 @@ public class ContentDAO implements IContentDAO {
     }
 
     /**
+     * Updates the content and topic of a material in the database based on the provided material ID.
+     * This method distinguishes between lessons and worksheets and performs the update operation accordingly.
+     *
+     * @param materialID The unique identifier of the material to be updated.
+     * @param newContent The new content to set for the specified material.
+     * @param newTopic The new topic to set for the specified material.
+     * @return true if the update operation is successful; false otherwise.
+     */
+    public boolean setContent(int materialID, String newContent, String newTopic) {
+        String lessonUpdateQuery = "UPDATE lesson SET lessonContent = ?, lessonTopic = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?";
+        String worksheetUpdateQuery = "UPDATE worksheet SET worksheetContent = ?, worksheetTopic = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?";
+
+        try {
+            Material material = getMaterialType(materialID);
+            String materialType = material.getMaterialType();
+            String updateQuery = null;
+
+            if (material == null) {
+                System.err.println("No material found with ID: " + materialID);
+                return false;
+            }
+
+            if ("lesson".equalsIgnoreCase(materialType)) {
+                updateQuery = lessonUpdateQuery;
+            } else if ("worksheet".equalsIgnoreCase(materialType)) {
+                updateQuery = worksheetUpdateQuery;
+            } else {
+                System.err.println("Invalid material type: " + materialType);
+                return false;
+            }
+            // Execute the update query
+            try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+                updateStatement.setString(1, newContent);
+                updateStatement.setString(2, newTopic);
+                updateStatement.setInt(3, materialID);
+                int rowsAffected = updateStatement.executeUpdate();
+
+                // Check if the update was successful
+                if (rowsAffected > 0) {
+                    return true;
+                } else {
+                    System.err.println("Failed to update content/topic for material with ID: " + materialID);
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    /**
      * Retrieves the material type details based on the provided material ID.
      * @param materialID The unique identifier of the material to be retrieved.
      * @return The Material object containing the material type and ID, or null if no material is found for the given ID or an error occurs.
@@ -392,6 +445,62 @@ public class ContentDAO implements IContentDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Deletes the content associated with a specified material ID from the database.
+     * This method identifies the material type (lesson or worksheet) and performs the
+     * necessary deletions in the corresponding table before removing the material record.
+     *
+     * @param materialID The unique identifier of the material to be deleted.
+     * @return true if the material and its associated content were successfully deleted; false otherwise.
+     */
+    public boolean deleteContent(int materialID){
+        String lessonUpdateQuery = "DELETE FROM lesson WHERE materialID = ?";
+        String worksheetUpdateQuery = "DELETE FROM worksheet WHERE materialID = ?";
+        String materialDeleteQuery = "DELETE FROM material WHERE materialID = ?";
+
+        try {
+            Material material = getMaterialType(materialID);
+            String materialType = material.getMaterialType();
+            String updateQuery = null;
+            if (material == null) {
+                System.err.println("No material found with ID: " + materialID);
+                return false;
+            }
+
+            if ("lesson".equalsIgnoreCase(materialType)) {
+                updateQuery = lessonUpdateQuery;
+            } else if ("worksheet".equalsIgnoreCase(materialType)) {
+                updateQuery = worksheetUpdateQuery;
+            } else {
+                System.err.println("Invalid material type: " + materialType);
+                return false;
+            }
+
+            // Execute the update query
+            try (PreparedStatement deleteItemStatement = connection.prepareStatement(updateQuery)) {
+                deleteItemStatement.setInt(1, materialID);
+                int rowsAffected = deleteItemStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    try (PreparedStatement deleteMaterialStatement = connection.prepareStatement(materialDeleteQuery)) {
+                        deleteMaterialStatement.setInt(1, materialID);
+                        int rowsAffected2 = deleteMaterialStatement.executeUpdate();
+
+                        if (rowsAffected2 > 0){
+                            return true;
+                        }
+                    }
+                } else {
+                    System.err.println("Failed to update content for material with ID: " + materialID);
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

@@ -18,12 +18,12 @@ import java.io.PrintWriter;
 
 public class LessonPlanController {
 
+    /**
+     * A JavaFX TextField component used for displaying and editing the topic or title
+     * associated with the material being managed in the `LessonPlanController`.
+     */
     @FXML
-    private Label editableLabel;
-
-    @FXML
-    private TextField editField;
-
+    private TextField topicTextField;
 
     /**
      * A JavaFX TextArea UI component that is used to display generated text content
@@ -46,18 +46,54 @@ public class LessonPlanController {
      */
     private static VBox previousView;
 
+    /**
+     * Represents the material currently being edited or managed by the LessonPlanController.
+     * This field holds a reference to the Material object containing relevant metadata
+     */
     private Material currentMaterial;
+
+    /**
+     * The `contentDAO` variable is a private instance of the `IContentDAO` interface used to interact
+     * with the content database.
+     */
     private IContentDAO contentDAO;
+
+    /**
+     * A VBox container dynamically populated with content for managing and displaying
+     * lesson plans or associated materials in the LessonPlanController.
+     */
     @FXML
     private VBox dynamicContentBox;
 
+    /**
+     * Represents the type of material currently being processed or displayed within the
+     * LessonPlanController.
+     */
     private String materialType;
+
+    /**
+     * Represents the unique identifier for the material currently being processed or displayed within LessonPlanController.
+     */
     private int materialID;
 
+    /**
+     * LessonPlanController constructor intentionally blank due to this
+     * controller requiring input to be passed to it (incompatible with JavaFX constructors)
+     */
     public LessonPlanController(){
         ;
     }
 
+    /**
+     * Initializes the material data and sets up the user interface components based on the provided material type.
+     * Handles different material types such as "lesson" and "worksheet", retrieves their content from the database,
+     * and populates the text area and topic fields accordingly. Validates material type and displays appropriate
+     * alerts for invalid cases or missing content.
+     *
+     * @param material the Material object containing the material ID and type to initialize
+     * @param dynamicContentBox the VBox that dynamically displays the content for the initialized material
+     * @param previousView the VBox representing the prior view to which the user can navigate back
+     */
     public void initData(Material material, VBox dynamicContentBox, VBox previousView) {
         this.currentMaterial = material;
         this.contentDAO = new ContentDAO();
@@ -72,6 +108,7 @@ public class LessonPlanController {
 
             if (lesson != null) {
                 generatedTextArea.setText(lesson.getContent());
+                topicTextField.setText(lesson.getTopic());
             } else {
                 showAlert(Alert.AlertType.WARNING, "No lesson found",
                         "No lesson found for the given ID: " + materialID + ".");
@@ -85,6 +122,7 @@ public class LessonPlanController {
 
             if (worksheet != null) {
                 generatedTextArea.setText(worksheet.getContent());
+                topicTextField.setText(worksheet.getTopic());
             } else {
                 showAlert(Alert.AlertType.WARNING, "No worksheet found",
                         "No worksheet found for the given ID: " + materialID + ".");
@@ -103,10 +141,21 @@ public class LessonPlanController {
         ;
     }
 
+    /**
+     * Handles the event triggered when the "Back" button is clicked.
+     *
+     * Restores the previous view if one is available by clearing the current dynamic content and replacing it with the
+     * children of the previous view. Also deletes the content associated with the current material ID from the database.
+     * If no previous view exists, it displays a warning alert to the user.
+     *
+     * The method interacts with the contentDAO to delete content and utilizes the showAlert helper method to notify users
+     * when there is no previous view to navigate back to.
+     */
     @FXML
     private void onBackClicked() { // TODO: make it delete the entry as well
         if (previousView != null) {
             System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
+            contentDAO.deleteContent(materialID);
 
             dynamicContentBox.getChildren().clear();
             dynamicContentBox.getChildren().addAll(previousView.getChildren());
@@ -117,6 +166,17 @@ public class LessonPlanController {
         }
     }
 
+    /**
+     * Saves the provided content to a file, allowing the user to choose the file's location and name.
+     * The file name is automatically suggested based on the supplied type and topic. If the content is
+     * null or the current stage cannot be retrieved, an error alert is displayed. If the file is successfully
+     * saved, an informational alert confirms the save operation. If an error occurs during the save process,
+     * an error alert is displayed with the relevant message.
+     *
+     * @param content the text content to be saved to the file; cannot be null.
+     * @param type the category or type of the content used to suggest a file name.
+     * @param topic the topic of the content used to suggest a safe and descriptive file name.
+     */
     private void saveContentToFileFromContentView(String content, String type, String topic){
         if (content == null) {
             showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
@@ -154,6 +214,19 @@ public class LessonPlanController {
 
     }
 
+    /**
+     * Handles the save operation when the "Save" button is clicked.
+     *
+     * This method determines the type of material (lesson or worksheet) and attempts
+     * to retrieve the corresponding content from the database. If the content is found,
+     * it triggers any necessary modifications, retrieves the updated content, and saves
+     * it to a file. The file save operation includes suggesting a file name based on the
+     * material type and topic. If no content or an invalid material type is provided,
+     * an appropriate alert is displayed to notify the user.
+     *
+     * - If an invalid material type is detected, a warning alert is displayed.
+     * - If no content is found, a warning alert is displayed referencing the material ID.
+     */
     @FXML
     private void onSaveClicked(){
         if (currentMaterial != null) {
@@ -162,7 +235,8 @@ public class LessonPlanController {
                 if (lesson != null) {
                     System.out.println("Lesson plan saving...");
                     onModifyClicked();
-                    saveContentToFileFromContentView(lesson.getContent(), "Lesson Plan", lesson.getTopic());
+                    Lesson updated_lesson = contentDAO.getLessonContent(materialID);
+                    saveContentToFileFromContentView(updated_lesson.getContent(), "Lesson Plan", updated_lesson.getTopic());
                 } else {
                     showAlert(Alert.AlertType.WARNING, "No content", "No lesson found with this materialID");
                 }
@@ -172,7 +246,8 @@ public class LessonPlanController {
                 if (worksheet != null) {
                     System.out.println("Worksheet saving...");
                     onModifyClicked();
-                    saveContentToFileFromContentView(worksheet.getContent(), "Worksheet", worksheet.getTopic());
+                    Worksheet updated_worksheet = contentDAO.getWorksheetContent(materialID);
+                    saveContentToFileFromContentView(updated_worksheet.getContent(), "Worksheet", updated_worksheet.getTopic());
                 } else {
                     showAlert(Alert.AlertType.WARNING, "No content", "No worksheet found with this materialID");
                 }
@@ -186,6 +261,19 @@ public class LessonPlanController {
         }
     }
 
+    /**
+     * Handles the event triggered when the "Modify" button is clicked.
+     *
+     * This method validates the current state and modifies the content and topic
+     * of a material if valid inputs are provided. It verifies that both "generatedTextArea"
+     * and "currentMaterial" are not null before proceeding. On successful modification,
+     * the updated content and topic name are sent to the `contentDAO` for updating the database.
+     *
+     * If the `generatedTextArea` or `currentMaterial` is null, an error alert is displayed
+     * to inform the user that there is no content to modify. In the event of a database
+     * update failure, the method handles the exception and displays an error alert with
+     * the respective error message.
+     */
     @FXML
     private void onModifyClicked() {
         if (generatedTextArea == null || currentMaterial == null) {
@@ -194,9 +282,10 @@ public class LessonPlanController {
         }
         // Retrieve updated content
         String updatedContent = generatedTextArea.getText();
+        String newTopicName = topicTextField.getText();
 
         try {
-            contentDAO.setContent(materialID, updatedContent);
+            contentDAO.setContent(materialID, updatedContent, newTopicName);
 
             //showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
 
@@ -205,6 +294,13 @@ public class LessonPlanController {
         }
     }
 
+    /**
+     * Displays an alert dialog to the user with the specified alert type, title, and content.
+     *
+     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
+     * @param title the title of the alert dialog
+     * @param content the text content to be displayed within the alert dialog
+     */
     private void showAlert(Alert.AlertType alertType, String title, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -212,47 +308,52 @@ public class LessonPlanController {
         alert.showAndWait();
     }
 
-
-
+    /**
+     * Configures the behavior of the `topicTextField` to allow editing when clicked and
+     * disable editing upon losing focus or pressing Enter. Validates input to ensure the
+     * topic name is not empty, displaying an error alert if the validation fails.
+     *
+     * The method sets the following behaviors on the `topicTextField`:
+     * - Initially disables editing by setting it as non-editable.
+     * - Enables editing when the user clicks on the field.
+     * - Disables editing when the field loses focus or the Enter key is pressed.
+     * - Validates the entered text, ensuring it is not empty. An error alert is displayed
+     *   if the validation fails.
+     *
+     * This method utilizes the `showAlert` helper method to display error messages for
+     * invalid inputs, ensuring proper feedback is given to the user in case of empty or
+     * invalid topic names.
+     */
     private void setupLabelToggleBehavior() {
-        // Convert Label into editable field on click
-        editableLabel.setOnMouseClicked(event -> enableEditing());
+        topicTextField.setEditable(false); // Disable editing initially
 
-        // Save updated text on pressing Enter (or losing focus)
-        editField.setOnAction(event -> updateTopicEdit());
-        editField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) { // When the TextField loses focus
-                updateTopicEdit();
+        // Allow edits when clicked
+        topicTextField.setOnMouseClicked(event -> topicTextField.setEditable(true));
+
+        // Save changes on focus loss
+        topicTextField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { // Focus lost
+                topicTextField.setEditable(false); // Disable editing again
+                String newTopicName = topicTextField.getText();
+                if (newTopicName.trim().isEmpty()) {
+                    showAlert(Alert.AlertType.ERROR, "Invalid Input", "Topic name cannot be empty");
+                } else {
+                    ;
+                }
             }
         });
+
+        // Save changes on pressing Enter
+        topicTextField.setOnAction(event -> {
+            topicTextField.setEditable(false); // Disable editing
+            String newTopicName = topicTextField.getText();
+            if (newTopicName.trim().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Input", "Topic name cannot be empty");
+            } else {
+                ;
+            }
+        });
+
     }
-
-    /**
-     * Enables editing of the label by switching to a TextField.
-     */
-    private void enableEditing() {
-        // Set the text field's content to the label's current text
-        editField.setText(editableLabel.getText());
-
-        // Hide the label & show the text field
-        editableLabel.setVisible(false);
-        editField.setVisible(true);
-        editField.requestFocus(); // Focus on the text field
-    }
-
-    /**
-     * Saves the text from the TextField back to the Label.
-     */
-    private void updateTopicEdit() {
-        String newText = editField.getText(); // Get the text from the input field
-
-        // Update the label to reflect the new text
-        editableLabel.setText(newText);
-
-        // Hide the TextField and show the Label
-        editField.setVisible(false);
-        editableLabel.setVisible(true);
-    }
-
 
 }

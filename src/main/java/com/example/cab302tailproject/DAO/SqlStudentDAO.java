@@ -1,7 +1,7 @@
 package com.example.cab302tailproject.DAO;
 
 import com.example.cab302tailproject.model.Student;
-import com.example.cab302tailproject.model.UserDetail; // Import UserDetail
+import com.example.cab302tailproject.model.UserDetail;
 
 import java.sql.*;
 import java.security.MessageDigest;
@@ -13,9 +13,7 @@ import java.util.List;
 /**
  * SQLite implementation of the {@link StudentDAO} interface.
  * Handles database operations for the Student table.
- *
- * @author Your Name/TAIL Project Team
- * @version 1.2
+
  */
 public class SqlStudentDAO implements StudentDAO {
 

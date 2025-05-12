@@ -13,9 +13,6 @@ import java.util.Base64;
 /**
  * SQLite implementation of the {@link TeacherDAO} interface.
  * Handles database operations for the Teacher table.
- *
- * @author Your Name/TAIL Project Team
- * @version 1.2
  */
 public class SqliteTeacherDAO implements TeacherDAO {
     private final Connection connection;

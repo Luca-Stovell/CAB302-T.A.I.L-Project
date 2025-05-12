@@ -5,16 +5,13 @@ import com.example.cab302tailproject.DAO.TeacherDAO;
 import com.example.cab302tailproject.DAO.SqlStudentDAO;
 import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.TailApplication;
-// Model imports Student and Teacher are not strictly needed here if only passing data to DAO
-// import com.example.cab302tailproject.model.Student;
-// import com.example.cab302tailproject.model.Teacher;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent; // Import ActionEvent
+import javafx.event.ActionEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,9 +21,6 @@ import javafx.fxml.FXML;
 /**
  * Controller for the user registration view (registration_page.fxml).
  * Handles input validation and registration of new Student or Teacher accounts.
- *
- * @author Your Name/TAIL Project Team
- * @version 1.3
  */
 public class RegistrationController {
     @FXML private TextField firstNameTextField;
@@ -132,8 +126,6 @@ public class RegistrationController {
             // DAO methods now check for existing email internally before adding
             success = teacherDao.AddTeacher(email, fName, lName, password);
             if (!success) {
-                // The DAO implementation should print a more specific error to console.
-                // We set a general error for the user.
                 setRegistrationError("Failed to register teacher. Email might already exist or a database error occurred.");
                 System.out.println("Registration failed: DAO could not add teacher for " + email);
             } else {

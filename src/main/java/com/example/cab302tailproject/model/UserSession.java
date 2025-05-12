@@ -4,9 +4,6 @@ package com.example.cab302tailproject.model;
  * A utility class to hold static information about the currently logged-in user.
  * This provides a simple way to access user details across different controllers.
  * Implemented as a singleton.
- *
- * @author Your Name/TAIL Project Team
- * @version 1.0
  */
 public class UserSession {
 

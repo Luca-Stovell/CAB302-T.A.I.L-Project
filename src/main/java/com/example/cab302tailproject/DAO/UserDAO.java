@@ -1,6 +1,6 @@
 package com.example.cab302tailproject.DAO;
 
-import com.example.cab302tailproject.model.UserDetail; // Import UserDetail
+import com.example.cab302tailproject.model.UserDetail;
 
 /**
  * Base Data Access Object interface for user operations.

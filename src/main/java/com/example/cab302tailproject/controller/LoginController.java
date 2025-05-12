@@ -52,10 +52,6 @@ public class LoginController {
      * Also ensures the database tables are created via DatabaseInitializer.
      */
     public LoginController() {
-        // It's good practice to initialize the database schema once when the application starts,
-        // for example, in your TailApplication.start() method or a dedicated startup routine.
-        // Calling it in every controller constructor might be redundant if DAOs also call it,
-        // but ensures tables exist if this is the first DAO-related class instantiated.
         new com.example.cab302tailproject.DAO.DatabaseInitializer().initialize(); // Ensure tables exist
 
         teacherDao = new SqliteTeacherDAO();

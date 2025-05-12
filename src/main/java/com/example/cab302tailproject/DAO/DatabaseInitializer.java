@@ -39,7 +39,7 @@ public class DatabaseInitializer {
                         + "firstName TEXT NOT NULL, "
                         + "lastName TEXT NOT NULL, "
                         + "password TEXT NOT NULL, "
-                        + "TeacherEmail TEXT NOT NULL, "
+                        + "TeacherEmail TEXT, "
                         + "FOREIGN KEY (TeacherEmail) REFERENCES Teacher(TeacherEmail)"
                         + ")";
         execute(query);

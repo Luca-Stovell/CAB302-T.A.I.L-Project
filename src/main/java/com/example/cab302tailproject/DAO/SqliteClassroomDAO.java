@@ -2,10 +2,9 @@ package com.example.cab302tailproject.DAO;
 
 import com.example.cab302tailproject.model.Classroom;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SqliteClassroomDAO implements ClassroomDAO {
     private final Connection connection = SqliteConnection.getInstance();
@@ -35,5 +34,24 @@ public class SqliteClassroomDAO implements ClassroomDAO {
         return false;
     }
 
+    public List<Classroom> getClassroomsByTeacherEmail(String email) {
+        List<Classroom> result = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM Classroom WHERE TeacherEmail = ?";
+            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
 
+            while (rs.next()) {
+                int id = rs.getInt("ClassroomID");
+                String teacherEmail = rs.getString("TeacherEmail");
+                Classroom classroom = new Classroom(teacherEmail);
+                classroom.setClassroomID(id);
+                result.add(classroom);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

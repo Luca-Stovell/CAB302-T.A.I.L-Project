@@ -53,4 +53,8 @@ public class Classroom {
     public void removeStudent(Student student) {
         students.remove(student);
     }
+
+    public String toString() {
+        return "Classroom " + classroomID;
+    }
 }

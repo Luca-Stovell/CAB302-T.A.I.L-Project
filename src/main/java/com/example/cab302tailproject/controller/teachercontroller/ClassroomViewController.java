@@ -6,6 +6,7 @@ import com.example.cab302tailproject.model.Classroom;
 import com.example.cab302tailproject.model.Session;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.stage.Stage;
 import com.example.cab302tailproject.model.Student;
 import com.example.cab302tailproject.model.Teacher;
@@ -55,6 +56,8 @@ public class ClassroomViewController {
     @FXML private ListView classroomDisplayListview;
 
     @FXML private Button createClassroomButton;
+
+    @FXML private ComboBox<Classroom> classroomComboBox;
 
     private TeacherDAO teacherDao;
     private StudentDAO studentDao;
@@ -169,13 +172,26 @@ public class ClassroomViewController {
     }
 
     @FXML
+    public void initialize() {
+        refreshClassroomComboBox();
+    }
+
+    @FXML
     public void onCreateClassRoom(ActionEvent event) {
         String teacherEmail = Session.getLoggedInTeacherEmail();
         Classroom classroom = new Classroom(teacherEmail);
-        classroomDao.createClassroom(classroom);
+        boolean created = classroomDao.createClassroom(classroom);
 
-        for (Classroom c : Classroom.getClassrooms()) {
-            System.out.println(c.getClassroomID() + " " + c.getTeacher());
+        if (created) {
+            refreshClassroomComboBox();
+            classroomComboBox.setValue(classroom);
         }
     }
+
+    private void refreshClassroomComboBox() {
+        String teacherEmail = Session.getLoggedInTeacherEmail();
+        List<Classroom> classrooms = classroomDao.getClassroomsByTeacherEmail(teacherEmail);
+        classroomComboBox.getItems().setAll(classrooms);
+    }
+
 }

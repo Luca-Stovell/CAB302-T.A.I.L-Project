@@ -5,11 +5,12 @@
 <?import javafx.scene.layout.*?>
 
 <VBox maxHeight="Infinity" maxWidth="Infinity"
-      style="-fx-border-color: #000000; -fx-border-width: 0 2 2 0;"
+      style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;"
+      VBox.vgrow="ALWAYS"
       xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:id="dynamicContentBox"
-      fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController">
+      fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonPlanController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -20,12 +21,12 @@
         </padding>
     </VBox>
 
-    <VBox alignment="CENTER" prefWidth="510"
+    <VBox alignment="CENTER" prefWidth="510" VBox.vgrow="ALWAYS"
           spacing="15" style="-fx-padding: 0 0 0 0;">
-        <VBox alignment="CENTER" prefWidth="440">
+        <VBox alignment="CENTER" prefWidth="440" VBox.vgrow="ALWAYS">
             <TextArea fx:id="generatedTextArea" maxWidth="Infinity" maxHeight="Infinity"
-                      minHeight="180" minWidth="200"
-                      prefHeight="180" prefWidth="200" wrapText="true"
+                      minHeight="180" minWidth="200" VBox.vgrow="ALWAYS"
+                      prefWidth="200" wrapText="true"
                       style="-fx-alignment: top-left; -fx-font-size: 16;
                       -fx-background-color: #E3E3E3;" />
         </VBox>

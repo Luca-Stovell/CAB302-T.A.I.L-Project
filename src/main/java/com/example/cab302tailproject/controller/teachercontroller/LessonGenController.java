@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.AbstractSequentialList;
 
 
 /**
@@ -147,14 +148,7 @@ public class LessonGenController {
      */
     private static VBox previousView;
 
-    /**
-     * A JavaFX TextArea UI component that is used to display generated text content
-     * within the lesson generation view of the application. This component is
-     * updated dynamically when new text is generated based on user inputs or actions
-     * such as generating lessons or worksheets.
-     */
-    @FXML
-    private TextArea generatedTextArea;
+
     //</editor-fold>
 
     /**
@@ -357,59 +351,34 @@ public class LessonGenController {
         return -1;
     }
 
+
+
     private void navigateToGeneratedPlan(int materialID) {
         try {
-            IContentDAO contentDAO = new ContentDAO();
             if (this.currentMaterial == null) {
                 showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
                 return;
             }
 
-            System.out.println("Navigating to Generated Plan...");
-            System.out.println("Material Retrieved: ID = " + currentMaterial.getMaterialID() +
-                    ", Type = " + currentMaterial.getMaterialType());
-
-
             // Save current view logic to return back to
-            System.out.println("Saving previous view with children: " + dynamicContentBox.getChildren().size());
             previousView = new VBox();
             previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
-            System.out.println("Previous view saved: " + (previousView != null ? previousView.getChildren().size() : 0));
 
-            FXMLLoader fxmlLoader = new FXMLLoader(TeacherGenerateApplication.class.getResource("lesson_plan-teacher.fxml"));
-            VBox generatedContentView = fxmlLoader.load();
-
-            LessonGenController newController = fxmlLoader.getController();
-
-            if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
-                Lesson lesson = contentDAO.getLessonContent(materialID);
-
-                if (lesson != null) {
-                    newController.generatedTextArea.setText(lesson.getContent());
-                } else {
-                    newController.showAlert(Alert.AlertType.WARNING, "No lesson found",
-                            "No lesson found for the given ID: " + materialID + ".");
-                }
-            }
-            else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
-                Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-
-                if (worksheet != null) {
-                    newController.generatedTextArea.setText(worksheet.getContent());
-                } else {
-                    newController.showAlert(Alert.AlertType.WARNING, "No worksheet found",
-                            "No worksheet found for the given ID: " + materialID + ".");
-                }
-            }
-            else {
-                newController.showAlert(Alert.AlertType.WARNING, "Invalid material type",
-                        "The material type is invalid: " + currentMaterial.getMaterialType());
-                return;
-            }
+            // Moving to new view
+            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_plan-teacher.fxml"));
+            VBox layout = fxmlLoader.load();
+            LessonPlanController controller = fxmlLoader.getController();
+            controller.initData(currentMaterial, dynamicContentBox, previousView);  // pass the data
 
             // Replace content in the dynamic container
             dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().add(generatedContentView);
+            dynamicContentBox.getChildren().add(layout);
+
+            // ----- OPTION FOR THE WHOLE WINDOW VIEW. REQUIRES ADDING THE FULL LAYOUT TO FXML AND CHANGING BACK BEHAVIOUR IN PLAN CONTROLLER ------ //
+//            Stage stage = (Stage) dynamicContentBox.getScene().getWindow();
+//            Scene scene = new Scene(layout, TailApplication.WIDTH, TailApplication.HEIGHT);
+//            stage.setScene(scene);
+//            stage.show();
 
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
@@ -418,92 +387,7 @@ public class LessonGenController {
         }
     }
 
-    @FXML
-    private void onBackClicked() {
-        if (previousView != null) {
-            System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
 
-            dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().addAll(previousView.getChildren());
-        }
-        else {
-            showAlert(Alert.AlertType.WARNING, "No Previous View",
-                    "No previous state to navigate back to.");
-        }
-    }
-
-    private void saveContentToFileFromContentView(String content, String type, String topic){
-        if (content == null) {
-            showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
-            return;
-        }
-        String safeTopic = topic.replaceAll("[^a-zA-Z0-9\\-_ ]", "").replace(" ", "_");
-        if (safeTopic.length() > 50) safeTopic = safeTopic.substring(0, 50);
-        String suggestedFileName = String.format("%s-%s.txt", type.replace(" ", "_"), safeTopic);
-        fileChooser.setInitialFileName(suggestedFileName);
-
-        Stage stage = Stage.getWindows().stream()
-                .filter(window -> window instanceof Stage && window.isShowing())
-                .map(window -> (Stage) window)
-                .findFirst()
-                .orElse(null);
-        if (stage == null) {
-            showAlert(Alert.AlertType.ERROR, "UI Error", "Could not display save dialog (cannot get current stage).");
-            return;
-        }
-        File file = fileChooser.showSaveDialog(stage);
-        if (file != null) {
-            try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-                writer.println(content);
-                showAlert(Alert.AlertType.INFORMATION, "Save Successful", "Content saved to " + file.getName());
-            } catch (IOException e) {
-                System.err.println("Error saving file '" + file.getAbsolutePath() + "': " + e.getMessage());
-                e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Save Failed", "Could not save file. Error: " + e.getMessage());
-            }
-        }
-
-    }
-
-    @FXML
-    private void onSaveClicked(){
-        int materialID = currentMaterial.getMaterialID(); // placeholder
-
-        IContentDAO contentDAO = new ContentDAO();
-        Material material = contentDAO.getMaterialType(materialID);
-
-        if (material != null) {
-            if ("lesson".equals(material.getMaterialType())) {
-                Lesson lesson = contentDAO.getLessonContent(materialID);
-                if (lesson != null) {
-                    System.out.println("Lesson plan saving...");
-                    saveContentToFileFromContentView(lesson.getContent(), "Lesson Plan", lesson.getTopic());
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "No content", "No lesson found with this materialID");
-                }
-            }
-            else if ("worksheet".equals(material.getMaterialType())) {
-                Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-                if (worksheet != null) {
-                    System.out.println("Worksheet saving...");
-                    saveContentToFileFromContentView(worksheet.getContent(), "Worksheet", worksheet.getTopic());
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "No content", "No worksheet found with this materialID");
-                }
-            }
-            else {
-                showAlert(Alert.AlertType.WARNING, "Invalid material type", "The material type is invalid.");
-            }
-        }
-        else {
-            showAlert(Alert.AlertType.WARNING, "No material found", "No material found with this materialID: " + materialID + ". Current ID is " + currentMaterial);
-        }
-    }
-
-    @FXML
-    private void onModifyClicked() {
-        ;
-    }
 
     //<editor-fold desc="Sidebar Navigation Event Handlers - Direct Scene Switching">
     /**

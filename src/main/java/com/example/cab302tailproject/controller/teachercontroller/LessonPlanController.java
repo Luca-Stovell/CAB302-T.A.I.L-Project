@@ -46,6 +46,9 @@ public class LessonPlanController {
     @FXML
     private VBox dynamicContentBox;
 
+    private String materialType;
+    private String materialID;
+
     public LessonPlanController(){
         ;
     }
@@ -55,11 +58,12 @@ public class LessonPlanController {
         this.contentDAO = new ContentDAO();
         this.dynamicContentBox = dynamicContentBox;
         this.previousView = previousView;
-
         int materialID = currentMaterial.getMaterialID();
 
         if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
             Lesson lesson = contentDAO.getLessonContent(materialID);
+            currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
+            this.materialType = currentMaterial.getMaterialType();
 
             if (lesson != null) {
                 generatedTextArea.setText(lesson.getContent());
@@ -70,6 +74,9 @@ public class LessonPlanController {
         }
         else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
             Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
+            currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
+            this.materialType = currentMaterial.getMaterialType();
+
 
             if (worksheet != null) {
                 generatedTextArea.setText(worksheet.getContent());
@@ -178,7 +185,23 @@ public class LessonPlanController {
 
     @FXML
     private void onModifyClicked() {
-        ;
+        if (generatedTextArea == null || currentMaterial == null) {
+            showAlert(Alert.AlertType.ERROR, "Error", "no content to modify");
+            return;
+        }
+
+        // Retrieve updated content
+        String updatedContent = generatedTextArea.getText();
+
+
+        try {
+            contentDAO.setContent(currentMaterial.getMaterialID(), updatedContent);
+
+            showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
+        }
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String content) {

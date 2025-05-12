@@ -2,7 +2,6 @@ package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.DAO.ContentDAO;
-import com.example.cab302tailproject.TeacherGenerateApplication;
 import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
@@ -25,7 +24,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.AbstractSequentialList;
 
 
 /**
@@ -332,7 +330,7 @@ public class LessonGenController {
                         654321                         // Placeholder ClassroomID  TODO: retrieve class ID
                 );
                 // Save to database
-                int isSaved = contentDAO.addWorksheetContent(worksheet);
+                int isSaved = contentDAO.addWorksheetToDB(worksheet);
 
                 if (isSaved != -1) {
                     System.out.println("Worksheet saved successfully!");

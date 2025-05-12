@@ -24,7 +24,7 @@ public interface IContentDAO {
      * @param worksheetContent the content of the worksheet to be added
      * @return materialID of the successful entry, -1 if unsuccessful
      */
-    int addWorksheetContent(Worksheet worksheetContent);
+    int addWorksheetToDB(Worksheet worksheetContent);
 
     /**
      * Retrieves the material details based on the given material ID.
@@ -39,5 +39,7 @@ public interface IContentDAO {
      * @return The Worksheet object containing the requested content, or null if no worksheet is found for the given ID.
      */
     Worksheet getWorksheetContent(int materialID);
+
+    boolean setContent(int materialID, String newContent);
 
 }

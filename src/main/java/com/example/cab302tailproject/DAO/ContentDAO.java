@@ -4,12 +4,26 @@ import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
 
+import javax.xml.transform.Result;
 import java.sql.*;
 
 // the controllers for the login/register page should use these
 public class ContentDAO implements IContentDAO {
     private Connection connection;
 
+    /**
+     * Constructor for the ContentDAO class.
+     * Initializes the database connection using a singleton approach provided by the
+     * SqliteConnection class. Additionally, it creates the necessary database tables
+     * ("material", "lesson", and "worksheet") if they do not already exist.
+     *
+     * If the connection establishment process fails, this constructor throws a RuntimeException
+     * with the relevant SQLException details.
+     *
+     * The database file used by this connection is "Tail.db", and it is assumed to
+     * reside in the application's working directory. Modify the JDBC URL if required
+     * to match your configuration.
+     */
     public ContentDAO() {
         connection = SqliteConnection.getInstance();
         createMaterialTable();
@@ -29,6 +43,20 @@ public class ContentDAO implements IContentDAO {
 
     }
 
+    /**
+     * Creates the "material" table in the database if it does not already exist.
+     * The table includes the following columns:
+     *
+     * - materialID: An INTEGER that serves as the primary key and is auto-incremented.
+     * - materialType: A TEXT field that cannot be null, specifying the type of material.
+     *
+     * If the table creation operation encounters an exception, the error is caught,
+     * and the stack trace is printed.
+     *
+     * This method performs the table creation operation using a SQL query executed
+     * through a Statement object. The database connection used for executing the
+     * query is assumed to be active and valid.
+     */
     private void createMaterialTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS material ("
@@ -43,6 +71,19 @@ public class ContentDAO implements IContentDAO {
     }
 
 
+    /**
+     * Creates the "lesson" table in the database if it does not already exist.
+     * The table includes columns for lesson ID, topic, content, last modified date, teacher ID,
+     * classroom ID, and material ID.
+     *
+     * The lessonID column serves as the primary key and is auto-incremented.
+     * The materialID column is mandatory and acts as a foreign key referencing the material table.
+     * The TeacherID and ClassroomID columns also feature foreign key constraints to their respective tables.
+     *
+     * A default timestamp is applied to the lastModifiedDate column to capture the last update time automatically.
+     *
+     * If the table creation query encounters an exception, the stack trace is printed.
+     */
     private void createLessonTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS lesson ("
@@ -64,6 +105,19 @@ public class ContentDAO implements IContentDAO {
         }
     }
 
+    /**
+     * Creates the "worksheet" table in the database if it does not already exist.
+     * The table contains columns for worksheet ID, topic, content, last modified date, teacher ID,
+     * classroom ID, and material ID. It also establishes foreign key constraints between the worksheet
+     * table and the material, teacher, and classroom tables.
+     *
+     * The worksheetID column is set as the primary key and auto-incremented.
+     * The materialID column is mandatory and serves as a foreign key reference to the material table.
+     *
+     * A default timestamp is set for the lastModifiedDate column to capture the time of the last update.
+     *
+     * If the table creation query fails, an exception is caught, and the stack trace is printed.
+     */
     private void createWorksheetTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS worksheet ("
@@ -114,9 +168,16 @@ public class ContentDAO implements IContentDAO {
 
 
     /**
-     * Add the content of a new lesson plan to the database
-     * @param content The generated text from a lesson plan
-     * @return materialID of the successful entry to lesson table, -1 if unsuccessful
+     * Adds a new lesson entry to the database, including its attributes.
+     * If the material ID is not already set in the provided lesson object, this method
+     * generates a new material ID by adding an entry to the material table.
+     *
+     * @param content The Lesson object containing the details of the lesson to be added,
+     *                including topic, content, teacher ID, classroom ID, and optionally material ID.
+     * @return The material ID of the newly added lesson if the operation is successful.
+     *         Returns -1 if an error occurs.
+     * @throws IllegalStateException if the database connection is inactive or if adding
+     *                                a material entry fails.
      */
     public int addLessonContent(Lesson content) {
         String sql = "INSERT INTO lesson (lessonTopic, lessonContent, " +
@@ -126,7 +187,6 @@ public class ContentDAO implements IContentDAO {
         String sqlUpdateDate = "UPDATE lesson SET lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') " +
                 "WHERE rowid = last_insert_rowid()";
 
-
         // Ensure the materialID exists by inserting into the material table if necessary
         if (content.getMaterialID() <= 0) {
             int generatedMaterialID = addMaterial("lesson");
@@ -135,7 +195,6 @@ public class ContentDAO implements IContentDAO {
             }
             content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
         }
-
 
         if (connection == null) {
             throw new IllegalStateException("Database connection is not active.");
@@ -173,11 +232,16 @@ public class ContentDAO implements IContentDAO {
     }
 
     /**
-     * Adds the content of a new worksheet to the database
-     * @param content The generated text of a worksheet
-     * @return materialID of the successful entry to worksheet table, -1 if unsuccessful
+     * Adds a new worksheet entry to the database, including its attributes.
+     * If the materialID is not already set, this method generates a new materialID
+     * by adding an entry to the material table.
+     *
+     * @param content The Worksheet object containing the details of the worksheet to
+     *                be added, including topic, content, teacher ID, classroom ID, and optionally materialID.
+     * @return The materialID of the newly added worksheet if the operation is successful. Returns -1 if an error occurs.
+     * @throws IllegalStateException if the database connection is inactive or if adding a material entry fails.
      */
-    public int addWorksheetContent(Worksheet content) {
+    public int addWorksheetToDB(Worksheet content) {
         String sql = "INSERT INTO worksheet (worksheetTopic, worksheetContent, " +
                 "TeacherID, ClassroomID, materialID) " +
                 "VALUES (?, ?, ?, ?, ?)";
@@ -259,6 +323,59 @@ public class ContentDAO implements IContentDAO {
         return null;
     }
 
+    /**
+     * Updates the content of the specified material in the database, based on the given material ID.
+     * This method accepts either worksheets or lessons and executes the appropriate update query.
+     * @param materialID The unique identifier of the existing material to be updated.
+     * @param newContent The new content to be set for the specified material.
+     * @return true if the content was successfully updated, false otherwise.
+     */
+    public boolean setContent(int materialID, String newContent) {
+        String lessonUpdateQuery = "UPDATE lesson SET lessonContent = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?";
+        String worksheetUpdateQuery = "UPDATE worksheet SET worksheetContent = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?";
+
+        try {
+            Material material = getMaterialType(materialID);
+            String materialType = material.getMaterialType();
+            String updateQuery = null;
+            if (material == null) {
+                System.err.println("No material found with ID: " + materialID);
+                return false;
+            }
+
+            if ("lesson".equalsIgnoreCase(materialType)) {
+                updateQuery = lessonUpdateQuery;
+            } else if ("worksheet".equalsIgnoreCase(materialType)) {
+                updateQuery = worksheetUpdateQuery;
+            } else {
+                System.err.println("Invalid material type: " + materialType);
+                return false;
+            }
+
+            // Execute the update query
+            try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+                updateStatement.setString(1, newContent);
+                updateStatement.setInt(2, materialID);
+                int rowsAffected = updateStatement.executeUpdate();
+
+                if (rowsAffected > 0) {
+                    return true;
+                } else {
+                    System.err.println("Failed to update content for material with ID: " + materialID);
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Retrieves the material type details based on the provided material ID.
+     * @param materialID The unique identifier of the material to be retrieved.
+     * @return The Material object containing the material type and ID, or null if no material is found for the given ID or an error occurs.
+     */
     public Material getMaterialType(int materialID) {
         String sql = "SELECT materialType FROM material WHERE materialID = ?";
 
@@ -277,6 +394,12 @@ public class ContentDAO implements IContentDAO {
         return null;
     }
 
+    /**
+     * Retrieves the content of a worksheet from the database based on the provided material ID.
+     * @param materialID The unique identifier of the material (worksheet) to be retrieved.
+     * @return A {@link Worksheet} object containing all attributes if found;
+     * otherwise, returns null if no worksheet is found or an error occurs.
+     */
     public Worksheet getWorksheetContent(int materialID) {
         String sql = "SELECT * FROM worksheet WHERE materialID = ?";
 

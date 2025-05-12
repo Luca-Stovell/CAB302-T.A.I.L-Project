@@ -13,7 +13,9 @@ import java.util.List;
 /**
  * SQLite implementation of the {@link StudentDAO} interface.
  * Handles database operations for the Student table.
-
+ *
+ * @author Your Name/TAIL Project Team
+ * @version 1.3
  */
 public class SqlStudentDAO implements StudentDAO {
 
@@ -28,10 +30,10 @@ public class SqlStudentDAO implements StudentDAO {
     }
 
     /**
-     * Hashes a plain text password using SHA-256.
+     * Hashes a plain text password using SHA-256 and encodes it to Base64.
      * IMPORTANT: For production systems, use a stronger, salted hashing algorithm like BCrypt or Argon2.
      * @param password The plain text password.
-     * @return The Base64 encoded SHA-256 hash of the password, or null if hashing fails.
+     * @return The Base64 encoded SHA-256 hash of the password, or null if hashing fails or password is empty.
      */
     public static String hashPassword(String password) {
         if (password == null || password.isEmpty()) {
@@ -56,7 +58,6 @@ public class SqlStudentDAO implements StudentDAO {
             System.err.println("Password hashing failed for student: " + email + ". Student not added.");
             return false;
         }
-        // Check if email already exists in the Student table
         if (checkEmail(email)) {
             System.err.println("Cannot add student: Email '" + email + "' already exists in Student table.");
             return false;
@@ -70,7 +71,6 @@ public class SqlStudentDAO implements StudentDAO {
             int rowsAffected = statement.executeUpdate();
             return rowsAffected == 1;
         } catch (SQLException e) {
-            // Handle potential unique constraint violation if checkEmail somehow missed it (should not happen)
             if (e.getErrorCode() == 19 && e.getMessage() != null && e.getMessage().contains("UNIQUE constraint failed")) {
                 System.err.println("Database constraint violation: Email '" + email + "' already exists for Student.");
             } else {
@@ -84,15 +84,18 @@ public class SqlStudentDAO implements StudentDAO {
     @Override
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
-        String query = "SELECT firstName, lastName, email FROM Student ORDER BY lastName, firstName";
+        String query = "SELECT StudentID, firstName, lastName, email FROM Student ORDER BY lastName, firstName";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                // Using the Student constructor: Student(String firstName, String lastName, String email)
-                students.add(new Student(
+                // Assuming your Student model has a constructor that takes ID
+                // If your Student model is (firstName, lastName, email, password)
+                // and you don't want to fetch password for this list:
+                students.add(new com.example.cab302tailproject.model.Student( // Using fully qualified name to avoid conflict if Student class is also in this package
                         rs.getString("firstName"),
                         rs.getString("lastName"),
                         rs.getString("email")
+                        // studentID is available as rs.getInt("StudentID") if your model needs it
                 ));
             }
         } catch (SQLException e) {
@@ -118,11 +121,6 @@ public class SqlStudentDAO implements StudentDAO {
         return false;
     }
 
-    /**
-     * Retrieves the stored hashed password for a student.
-     * @param email The student's email.
-     * @return The hashed password, or null if not found or an error occurs.
-     */
     private String getStoredPasswordHash(String email) {
         String query = "SELECT password FROM Student WHERE email = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -142,11 +140,13 @@ public class SqlStudentDAO implements StudentDAO {
     public boolean checkPassword(String email, String password) {
         String storedHash = getStoredPasswordHash(email);
         if (storedHash == null) {
-            return false; // Email not found or error getting stored hash
+            System.err.println("No stored hash found for student email: " + email);
+            return false;
         }
         String enteredHash = hashPassword(password);
         if (enteredHash == null) {
-            return false; // Hashing of entered password failed
+            System.err.println("Hashing of entered password failed for student email: " + email);
+            return false;
         }
         return storedHash.equals(enteredHash);
     }
@@ -164,6 +164,33 @@ public class SqlStudentDAO implements StudentDAO {
             System.err.println("Error retrieving student name details for " + email + ": " + e.getMessage());
             e.printStackTrace();
         }
-        return null; // User not found or error
+        return null;
+    }
+
+    /**
+     * Resets the password for a student identified by email.
+     * The new password is hashed before being stored in the database.
+     * @param email The email of the student whose password is to be reset.
+     * @param newPassword The new plain text password.
+     * @return true if the password was successfully updated, false otherwise.
+     */
+    @Override
+    public boolean resetStudentPassword(String email, String newPassword) {
+        String hashedPassword = hashPassword(newPassword);
+        if (hashedPassword == null) {
+            System.err.println("Password hashing failed. Cannot reset password for student " + email);
+            return false;
+        }
+        String query = "UPDATE Student SET password = ? WHERE email = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, hashedPassword);
+            pstmt.setString(2, email);
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected == 1; // True if one row was updated
+        } catch (SQLException e) {
+            System.err.println("Error resetting password for student " + email + ": " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }

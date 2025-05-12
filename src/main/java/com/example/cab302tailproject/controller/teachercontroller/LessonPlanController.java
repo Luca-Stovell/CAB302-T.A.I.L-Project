@@ -17,8 +17,13 @@ import java.io.PrintWriter;
 
 
 public class LessonPlanController {
-//    @FXML
-//    private TextArea generatedTextArea;
+
+    @FXML
+    private Label editableLabel;
+
+    @FXML
+    private TextField editField;
+
 
     /**
      * A JavaFX TextArea UI component that is used to display generated text content
@@ -47,7 +52,7 @@ public class LessonPlanController {
     private VBox dynamicContentBox;
 
     private String materialType;
-    private String materialID;
+    private int materialID;
 
     public LessonPlanController(){
         ;
@@ -58,7 +63,7 @@ public class LessonPlanController {
         this.contentDAO = new ContentDAO();
         this.dynamicContentBox = dynamicContentBox;
         this.previousView = previousView;
-        int materialID = currentMaterial.getMaterialID();
+        materialID = currentMaterial.getMaterialID();
 
         if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
             Lesson lesson = contentDAO.getLessonContent(materialID);
@@ -90,6 +95,7 @@ public class LessonPlanController {
                     "The material type is invalid: " + currentMaterial.getMaterialType());
             return;
         }
+        setupLabelToggleBehavior();
     }
 
     @FXML
@@ -98,7 +104,7 @@ public class LessonPlanController {
     }
 
     @FXML
-    private void onBackClicked() {
+    private void onBackClicked() { // TODO: make it delete the entry as well
         if (previousView != null) {
             System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
 
@@ -150,25 +156,22 @@ public class LessonPlanController {
 
     @FXML
     private void onSaveClicked(){
-        int materialID = currentMaterial.getMaterialID(); // placeholder
-
-        IContentDAO contentDAO = new ContentDAO();
-        Material material = contentDAO.getMaterialType(materialID);
-
-        if (material != null) {
-            if ("lesson".equals(material.getMaterialType())) {
+        if (currentMaterial != null) {
+            if ("lesson".equals(materialType)) {
                 Lesson lesson = contentDAO.getLessonContent(materialID);
                 if (lesson != null) {
                     System.out.println("Lesson plan saving...");
+                    onModifyClicked();
                     saveContentToFileFromContentView(lesson.getContent(), "Lesson Plan", lesson.getTopic());
                 } else {
                     showAlert(Alert.AlertType.WARNING, "No content", "No lesson found with this materialID");
                 }
             }
-            else if ("worksheet".equals(material.getMaterialType())) {
+            else if ("worksheet".equals(materialType)) {
                 Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
                 if (worksheet != null) {
                     System.out.println("Worksheet saving...");
+                    onModifyClicked();
                     saveContentToFileFromContentView(worksheet.getContent(), "Worksheet", worksheet.getTopic());
                 } else {
                     showAlert(Alert.AlertType.WARNING, "No content", "No worksheet found with this materialID");
@@ -189,15 +192,13 @@ public class LessonPlanController {
             showAlert(Alert.AlertType.ERROR, "Error", "no content to modify");
             return;
         }
-
         // Retrieve updated content
         String updatedContent = generatedTextArea.getText();
 
-
         try {
-            contentDAO.setContent(currentMaterial.getMaterialID(), updatedContent);
+            contentDAO.setContent(materialID, updatedContent);
 
-            showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
+            //showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
@@ -210,5 +211,48 @@ public class LessonPlanController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+
+
+    private void setupLabelToggleBehavior() {
+        // Convert Label into editable field on click
+        editableLabel.setOnMouseClicked(event -> enableEditing());
+
+        // Save updated text on pressing Enter (or losing focus)
+        editField.setOnAction(event -> updateTopicEdit());
+        editField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { // When the TextField loses focus
+                updateTopicEdit();
+            }
+        });
+    }
+
+    /**
+     * Enables editing of the label by switching to a TextField.
+     */
+    private void enableEditing() {
+        // Set the text field's content to the label's current text
+        editField.setText(editableLabel.getText());
+
+        // Hide the label & show the text field
+        editableLabel.setVisible(false);
+        editField.setVisible(true);
+        editField.requestFocus(); // Focus on the text field
+    }
+
+    /**
+     * Saves the text from the TextField back to the Label.
+     */
+    private void updateTopicEdit() {
+        String newText = editField.getText(); // Get the text from the input field
+
+        // Update the label to reflect the new text
+        editableLabel.setText(newText);
+
+        // Hide the TextField and show the Label
+        editField.setVisible(false);
+        editableLabel.setVisible(true);
+    }
+
 
 }

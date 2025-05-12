@@ -4,50 +4,31 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="Infinity" maxWidth="Infinity"
-      style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;"
-      VBox.vgrow="ALWAYS"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:id="dynamicContentBox"
-      fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonPlanController">
+<VBox fx:id="dynamicContentBox" maxHeight="Infinity" maxWidth="Infinity" style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonPlanController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <VBox alignment="CENTER">
-        <Label style="-fx-font-size: 20;" text="AAAAAAAAAAAAAAAAAAA" />
+        <Label style="-fx-font-size: 20;" text="AAAAAAAAAAAAAAAAAAA" visible="false" fx:id="editableLabel" />
+        <TextField alignment="CENTER" promptText="Enter topic name..." style="-fx-font-size: 20;" fx:id="editField" />
         <padding>
             <Insets bottom="10.0" />
         </padding>
     </VBox>
 
-    <VBox alignment="CENTER" prefWidth="510" VBox.vgrow="ALWAYS"
-          spacing="15" style="-fx-padding: 0 0 0 0;">
+    <VBox alignment="CENTER" prefWidth="510" spacing="15" style="-fx-padding: 0 0 0 0;" VBox.vgrow="ALWAYS">
         <VBox alignment="CENTER" prefWidth="440" VBox.vgrow="ALWAYS">
-            <TextArea fx:id="generatedTextArea" maxWidth="Infinity" maxHeight="Infinity"
-                      minHeight="180" minWidth="200" VBox.vgrow="ALWAYS"
-                      prefWidth="200" wrapText="true"
-                      style="-fx-alignment: top-left; -fx-font-size: 16;
-                      -fx-background-color: #E3E3E3;" />
+            <TextArea fx:id="generatedTextArea" maxHeight="Infinity" maxWidth="Infinity" minHeight="180" minWidth="200" prefWidth="200" style="-fx-alignment: top-left; -fx-font-size: 16;                       -fx-background-color: #E3E3E3;" wrapText="true" VBox.vgrow="ALWAYS" />
         </VBox>
-        <HBox alignment="CENTER">
-            <VBox prefHeight="30" prefWidth="100" style="-fx-padding: 8 0 8 0">
-                <Button fx:id="backButton" onAction="#onBackClicked"
-                        style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;
-                         -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;
-                          -fx-background-radius: 10;" text="Back" />
+        <HBox alignment="CENTER" spacing="50">
+            <VBox minWidth="120" prefHeight="30" prefWidth="120" style="-fx-padding: 8 0 8 0">
+                <Button fx:id="backButton" minWidth="120" onAction="#onBackClicked" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;                          -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;                           -fx-background-radius: 10;" text="Adjust prompt" />
             </VBox>
-            <VBox prefHeight="30" prefWidth="100" style="-fx-padding: 8 0 8 0">
-                <Button fx:id="modifyButton" onAction="#onModifyClicked"
-                        style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;
-                         -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;
-                          -fx-background-radius: 10;" text="Modify" />
+            <VBox minWidth="120" prefHeight="30" prefWidth="120" style="-fx-padding: 8 0 8 0">
+                <Button fx:id="modifyButton" minWidth="120" onAction="#onModifyClicked" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;                          -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;                           -fx-background-radius: 10;" text="Save changes" />
             </VBox>
-            <VBox prefHeight="30" prefWidth="100" style="-fx-padding: 8 0 8 0">
-                <Button fx:id="saveToDisk" onAction="#onSaveClicked"
-                        style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;
-                         -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;
-                          -fx-background-radius: 10;" text="Save" />
+            <VBox minWidth="120" prefHeight="30" prefWidth="120" style="-fx-padding: 8 0 8 0">
+                <Button fx:id="saveToDisk" minWidth="120" onAction="#onSaveClicked" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;                          -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;                           -fx-background-radius: 10;" text="Export" />
             </VBox>
         </HBox>
     </VBox>

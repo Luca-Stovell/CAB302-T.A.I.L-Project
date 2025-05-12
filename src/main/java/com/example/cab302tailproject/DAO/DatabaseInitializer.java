@@ -7,10 +7,18 @@ import java.sql.Statement;
 public class DatabaseInitializer {
     private Connection connection;
 
+    /**
+     * This function initializes the connection to the database which is declared in the SQLiteConnection class.
+     */
+
     public DatabaseInitializer() {
         this.connection = SqliteConnection.getInstance();
     }
 
+    /**
+     * This funciton is called upon lauching of the app in the main function and creates all necessary tables which are
+     * declared below
+     */
     public void initialize(){
         createTeacherTable();
         createStudentTable();
@@ -21,16 +29,24 @@ public class DatabaseInitializer {
             e.printStackTrace();
         }
     }
+
+    /**
+     * This function creates the teacher table in the SQLite database with TeacherID being the primary key.
+     */
     private void createTeacherTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS Teacher ("
-                        + "TeacherEmail TEXT PRIMARY KEY UNIQUE NOT NULL,"
+                        + "TeacherID INTEGER PRIMARY KEY AUTOINCREMENT, /* Possibly redundant, email is unique */"
+                        + "TeacherEmail TEXT UNIQUE,"
                         + "firstName TEXT,"
                         + "lastName TEXT,"
                         + "password TEXT"
                         + ")";
         execute(query);
     }
+    /**
+     * This function creates the Student table in the SQLite database with TeacherID being the primary key.
+     */
     private void createStudentTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS Student ("
@@ -44,6 +60,9 @@ public class DatabaseInitializer {
                         + ")";
         execute(query);
     }
+    /**
+     * This function creates the Classroom table in the SQLite database with TeacherID being the primary key.
+     */
     private void createClassroomTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS Classroom ("

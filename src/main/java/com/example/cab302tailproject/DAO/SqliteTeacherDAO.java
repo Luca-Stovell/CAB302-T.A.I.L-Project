@@ -13,6 +13,9 @@ import java.util.Base64;
 /**
  * SQLite implementation of the {@link TeacherDAO} interface.
  * Handles database operations for the Teacher table.
+ *
+ * @author Your Name/TAIL Project Team
+ * @version 1.2
  */
 public class SqliteTeacherDAO implements TeacherDAO {
     private final Connection connection;
@@ -26,10 +29,10 @@ public class SqliteTeacherDAO implements TeacherDAO {
     }
 
     /**
-     * Hashes a plain text password using SHA-256.
-     * IMPORTANT: For production systems, use a stronger, salted hashing algorithm (e.g., BCrypt, Argon2).
+     * Hashes a plain text password using SHA-256 and encodes it to Base64.
+     * IMPORTANT: For production systems, use a stronger, salted hashing algorithm like BCrypt or Argon2.
      * @param password The plain text password.
-     * @return The Base64 encoded SHA-256 hash of the password, or null if hashing fails.
+     * @return The Base64 encoded SHA-256 hash of the password, or null if hashing fails or password is empty.
      */
     public static String hashPassword(String password) {
         if (password == null || password.isEmpty()) {
@@ -138,10 +141,12 @@ public class SqliteTeacherDAO implements TeacherDAO {
     public boolean checkPassword(String email, String password) {
         String storedHash = getStoredPasswordHash(email);
         if (storedHash == null) {
+            System.err.println("No stored hash found for teacher email: " + email);
             return false; // Email not found or error
         }
         String enteredHash = hashPassword(password);
         if (enteredHash == null) {
+            System.err.println("Hashing of entered password failed for teacher email: " + email);
             return false; // Hashing of entered password failed
         }
         return storedHash.equals(enteredHash);

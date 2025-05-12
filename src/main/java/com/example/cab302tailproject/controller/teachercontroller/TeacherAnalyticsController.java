@@ -1,9 +1,10 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
+// DAO imports should be correct from previous fixes (StudentDAO, SqlStudentDAO)
 import com.example.cab302tailproject.DAO.StudentDAO;
 import com.example.cab302tailproject.DAO.SqlStudentDAO;
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.model.Student;
+import com.example.cab302tailproject.model.Student; // Ensure this is your Student model with getFullName()
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,7 +28,7 @@ import java.util.Optional;
  * and reset passwords for selected students. Also shows placeholder class average.
  *
  * @author Your Name/TAIL Project Team
- * @version 1.2
+ * @version 1.5
  */
 public class TeacherAnalyticsController {
 
@@ -61,7 +62,7 @@ public class TeacherAnalyticsController {
 
     //<editor-fold desc="Other Fields">
     /** Data Access Object for interacting with student data. */
-    private StudentDAO studentDao; // MODIFIED: Changed from ILoginDAO to StudentDAO
+    private StudentDAO studentDao;
     /** Observable list to hold student data for the ListView. */
     private ObservableList<Student> studentObservableList;
     /** Holds the currently selected student from the list. */
@@ -76,7 +77,7 @@ public class TeacherAnalyticsController {
     @FXML
     public void initialize() {
         System.out.println("TeacherAnalyticsController initializing...");
-        studentDao = new SqlStudentDAO(); // MODIFIED: Instantiated SqlStudentDAO
+        studentDao = new SqlStudentDAO();
 
         studentObservableList = FXCollections.observableArrayList();
         if (studentListView != null) {
@@ -85,16 +86,16 @@ public class TeacherAnalyticsController {
                     (observable, oldValue, newValue) -> displayStudentDetails(newValue)
             );
         } else {
-            System.err.println("ERROR: studentListView is null. Check FXML fx:id.");
+            System.err.println("ERROR: studentListView is null in TeacherAnalyticsController. Check FXML fx:id.");
+            showAlert(Alert.AlertType.ERROR, "UI Error", "Student list component could not be initialized.");
         }
-
 
         loadStudentList();
 
         if (studentDetailPane != null) studentDetailPane.setVisible(false);
         if (resetPasswordButton != null) resetPasswordButton.setDisable(true);
         if (instructionLabel != null) instructionLabel.setVisible(true);
-        if (classAverageLabel != null) classAverageLabel.setText("Class Average: (Calculation Pending)");
+        if (classAverageLabel != null) classAverageLabel.setText("Class Average: (Feature Coming Soon)");
 
         System.out.println("TeacherAnalyticsController initialized.");
     }
@@ -105,23 +106,23 @@ public class TeacherAnalyticsController {
      */
     private void loadStudentList() {
         if (studentDao == null) {
-            System.err.println("ERROR: studentDao is not initialized in loadStudentList.");
-            showAlert(Alert.AlertType.ERROR, "Initialization Error", "Cannot load student data.");
+            System.err.println("ERROR: studentDao is not initialized in loadStudentList (TeacherAnalyticsController).");
+            showAlert(Alert.AlertType.ERROR, "Initialization Error", "Cannot load student data: data service not available.");
             return;
         }
         try {
             List<com.example.cab302tailproject.model.Student> students = studentDao.getAllStudents();
             if (students != null) {
                 studentObservableList.setAll(students);
-                System.out.println("Loaded " + students.size() + " students.");
+                System.out.println("Loaded " + students.size() + " students into analytics view.");
             } else {
-                System.err.println("Error: getAllStudents returned null.");
-                showAlert(Alert.AlertType.ERROR, "Data Error", "Failed to retrieve student list (null returned).");
+                System.err.println("Error in TeacherAnalyticsController: getAllStudents returned null.");
+                showAlert(Alert.AlertType.ERROR, "Data Retrieval Error", "Failed to retrieve student list (null data returned from source).");
             }
         } catch (Exception e) {
-            System.err.println("Error loading student list: " + e.getMessage());
+            System.err.println("Error loading student list in TeacherAnalyticsController: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Data Error", "Failed to load student list due to an exception.");
+            showAlert(Alert.AlertType.ERROR, "Data Error", "An unexpected error occurred while loading the student list.");
         }
     }
 
@@ -138,18 +139,21 @@ public class TeacherAnalyticsController {
             if (firstNameLabel != null) firstNameLabel.setText(student.getFirstName());
             if (lastNameLabel != null) lastNameLabel.setText(student.getLastName());
             if (emailLabel != null) emailLabel.setText(student.getEmail());
+
             if (studentDetailPane != null) studentDetailPane.setVisible(true);
             if (resetPasswordButton != null) resetPasswordButton.setDisable(false);
             if (instructionLabel != null) instructionLabel.setVisible(false);
-            System.out.println("Displayed details for: " + student.getFullName());
+            // Using getFullName() from the Student model
+            System.out.println("Displayed details for student: " + student.getFullName());
         } else {
             if (firstNameLabel != null) firstNameLabel.setText("-");
             if (lastNameLabel != null) lastNameLabel.setText("-");
             if (emailLabel != null) emailLabel.setText("-");
+
             if (studentDetailPane != null) studentDetailPane.setVisible(false);
             if (resetPasswordButton != null) resetPasswordButton.setDisable(true);
             if (instructionLabel != null) instructionLabel.setVisible(true);
-            System.out.println("Student selection cleared.");
+            System.out.println("Student selection cleared in analytics view.");
         }
     }
 
@@ -161,32 +165,29 @@ public class TeacherAnalyticsController {
      */
     @FXML
     private void onBackButtonClicked(ActionEvent event) {
-        System.out.println("Back button clicked.");
-        // Assuming the main teacher view is lesson_generator-teacher.fxml or a dashboard
+        System.out.println("Analytics: Back button clicked.");
         switchScene(event, "lesson_generator-teacher.fxml", "TAIL - Generate Content");
     }
 
     /**
-     * Handles the action for the "Home" button in the top navigation.
-     * Navigates to the main teacher dashboard.
-     * @param event The action event.
+     * Handles the action for the "Home" button in the top navigation bar.
+     * Navigates the user to the main teacher dashboard.
+     * @param event The {@link ActionEvent} triggered by the button click.
      */
     @FXML
     private void onHomeClicked(ActionEvent event) {
-        System.out.println("Home button clicked.");
-        // TODO: Create teacher_dashboard_view.fxml or use an existing main teacher page
+        System.out.println("Analytics: Home button clicked.");
         switchScene(event, "teacher_dashboard_view.fxml", "TAIL - Dashboard");
     }
 
     /**
-     * Handles the action for the "Settings" button in the top navigation.
-     * Navigates to the settings view.
-     * @param event The action event.
+     * Handles the action for the "Settings" button in the top navigation bar.
+     * Navigates the user to the application settings view.
+     * @param event The {@link ActionEvent} triggered by the button click.
      */
     @FXML
     private void onSettingsClicked(ActionEvent event) {
-        System.out.println("Settings button clicked.");
-        // TODO: Create teacher_settings_view.fxml
+        System.out.println("Analytics: Settings button clicked.");
         switchScene(event, "teacher_settings_view.fxml", "TAIL - Settings");
     }
     //</editor-fold>
@@ -201,38 +202,38 @@ public class TeacherAnalyticsController {
     @FXML
     private void onResetPasswordClicked(ActionEvent event) {
         if (selectedStudent == null) {
-            showAlert(Alert.AlertType.WARNING, "No Student Selected", "Please select a student from the list first.");
+            showAlert(Alert.AlertType.WARNING, "No Student Selected", "Please select a student from the list first to reset their password.");
             return;
         }
         if (studentDao == null) {
-            System.err.println("ERROR: studentDao is not initialized in onResetPasswordClicked.");
-            showAlert(Alert.AlertType.ERROR, "Initialization Error", "Cannot reset password, data service not ready.");
+            System.err.println("ERROR: studentDao is not initialized in onResetPasswordClicked (TeacherAnalyticsController).");
+            showAlert(Alert.AlertType.ERROR, "Initialization Error", "Cannot reset password: data service is not available.");
             return;
         }
 
         TextInputDialog passwordDialog = new TextInputDialog();
-        passwordDialog.setTitle("Reset Password");
-        passwordDialog.setHeaderText("Reset Password for " + selectedStudent.getFullName());
-        passwordDialog.setContentText("Enter new password:");
+        passwordDialog.setTitle("Reset Student Password");
+        // Using getFullName() from the Student model
+        passwordDialog.setHeaderText("Resetting password for: " + selectedStudent.getFullName());
+        passwordDialog.setContentText("Please enter the new password:");
 
         Optional<String> result = passwordDialog.showAndWait();
 
         result.ifPresent(newPassword -> {
             if (newPassword.trim().isEmpty()) {
-                showAlert(Alert.AlertType.WARNING, "Password Reset Failed", "New password cannot be empty.");
+                showAlert(Alert.AlertType.WARNING, "Password Reset Failed", "The new password cannot be empty.");
                 return;
             }
-            // TODO: Add password complexity validation here if desired before resetting
-            // For example: if (!isPasswordComplexEnough(newPassword.trim())) { showAlert(...); return; }
+            // TODO: Implement more robust password complexity validation here
 
             boolean success = studentDao.resetStudentPassword(selectedStudent.getEmail(), newPassword.trim());
 
             if (success) {
-                showAlert(Alert.AlertType.INFORMATION, "Password Reset", "Password for " + selectedStudent.getFullName() + " has been reset successfully.");
-                System.out.println("Password reset successfully for: " + selectedStudent.getEmail());
+                showAlert(Alert.AlertType.INFORMATION, "Password Reset Successful", "The password for " + selectedStudent.getFullName() + " has been successfully reset.");
+                System.out.println("Password reset successfully for student: " + selectedStudent.getEmail());
             } else {
-                showAlert(Alert.AlertType.ERROR, "Password Reset Failed", "Could not reset the password for " + selectedStudent.getFullName() + ". Check application logs for details.");
-                System.err.println("Password reset failed for: " + selectedStudent.getEmail());
+                showAlert(Alert.AlertType.ERROR, "Password Reset Failed", "Could not reset the password for " + selectedStudent.getFullName() + ". Please check the application logs for more details.");
+                System.err.println("Password reset failed for student: " + selectedStudent.getEmail());
             }
         });
     }
@@ -240,36 +241,43 @@ public class TeacherAnalyticsController {
 
     //<editor-fold desc="Utility Methods">
     /**
-     * Switches the scene on the current stage to the view specified by the FXML file.
-     * Uses fixed dimensions (e.g., 820x435, adjust as needed or use constants from TailApplication).
+     * Switches the current scene of the primary stage to the view specified by the FXML file.
      *
-     * @param event        The {@link ActionEvent} from which the current stage can be derived.
-     * @param fxmlFileName The name of the FXML file to load (e.g., "my_view.fxml").
-     * Assumed to be in a path resolvable by {@link TailApplication#class#getResource(String)}.
-     * @param windowTitle  The title to set for the stage.
+     * @param event        The {@link ActionEvent} that triggered the navigation, used to find the current stage.
+     * @param fxmlFileName The name of the FXML file to be loaded (e.g., "my_view.fxml").
+     * This path is resolved relative to the location of the {@link TailApplication} class.
+     * @param windowTitle  The title to be set for the window after the scene switch.
      */
     private void switchScene(ActionEvent event, String fxmlFileName, String windowTitle) {
         Stage stage;
         try {
             Node sourceNode = (Node) event.getSource();
             if (sourceNode == null || sourceNode.getScene() == null) {
-                throw new IllegalStateException("Error switching scene: Could not get scene from event source.");
+                throw new IllegalStateException("Error switching scene: Could not get scene from the event source. Ensure the event source is part of a scene.");
             }
             stage = (Stage) sourceNode.getScene().getWindow();
             if (stage == null) {
-                throw new IllegalStateException("Error switching scene: Could not get stage from event source.");
+                throw new IllegalStateException("Error switching scene: Could not get the stage from the event source's scene.");
             }
 
+            // It's good practice to ensure FXML files are in a consistent location,
+            // e.g., a 'view' or 'fxml' subfolder in your resources, or in the same package as TailApplication.
+            // If they are in a sub-package of where TailApplication is, use relative paths like "views/teacher_dashboard_view.fxml"
+            // If they are in a completely different root package in resources, use an absolute path like "/com/example/otherpackage/view.fxml"
             URL fxmlUrl = TailApplication.class.getResource(fxmlFileName);
             if (fxmlUrl == null) {
-                throw new IOException("Cannot find FXML file: " + fxmlFileName + ". Ensure it's in the correct resources path.");
+                // Attempt with a leading slash if it's an absolute path from the classpath root
+                if (!fxmlFileName.startsWith("/")) {
+                    fxmlUrl = TailApplication.class.getResource("/" + fxmlFileName);
+                }
+                if (fxmlUrl == null) {
+                    throw new IOException("Cannot find FXML file: " + fxmlFileName + ". Ensure the file is in the correct resources path (e.g., same package as TailApplication or specify full path like '/com/example/yourpackage/view.fxml').");
+                }
             }
             FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
 
-            // Use dimensions from TailApplication or define them here
-            double sceneWidth = TailApplication.WIDTH; // Example: 818
-            double sceneHeight = TailApplication.HEIGHT; // Example: 435
-            Scene scene = new Scene(fxmlLoader.load(), sceneWidth, sceneHeight);
+            // Use dimensions from TailApplication class or define them as constants in this controller
+            Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
 
             stage.setTitle(windowTitle);
             stage.setScene(scene);
@@ -278,23 +286,25 @@ public class TeacherAnalyticsController {
         } catch (IOException e) {
             System.err.println("IOException loading FXML (" + fxmlFileName + "): " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load view: " + fxmlFileName + "\nEnsure the FXML file exists and its controller is correctly defined.");
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load the requested view: " + fxmlFileName + "\nReason: " + e.getMessage() + "\nPlease check if the FXML file exists and its controller is correctly defined.");
         } catch (IllegalStateException e) {
             System.err.println("IllegalStateException during scene switch: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not switch view. Error with current window state.");
-        } catch (Exception e) { // Catch-all for other unexpected errors
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not switch the view due to an internal state error.");
+        } catch (Exception e) { // Catch-all for other unexpected runtime errors during FXML loading or scene setup
             System.err.println("Unexpected error switching scene to " + fxmlFileName + ": " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "An unexpected error occurred while trying to navigate.");
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "An unexpected error occurred while trying to navigate to the requested view.");
         }
     }
 
     /**
-     * Displays a standard JavaFX Alert dialog. Ensures execution on the FX thread.
-     * @param alertType The type of alert (e.g., {@link Alert.AlertType#INFORMATION}).
-     * @param title     The title of the alert window.
-     * @param message   The main message content of the alert.
+     * Displays a standard JavaFX Alert dialog to the user.
+     * This method ensures that the alert is shown on the JavaFX Application Thread.
+     *
+     * @param alertType The type of alert to display (e.g., {@link Alert.AlertType#INFORMATION}, {@link Alert.AlertType#ERROR}).
+     * @param title     The title for the alert dialog window.
+     * @param message   The main content message to be displayed in the alert.
      */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         if (!Platform.isFxApplicationThread()) {
@@ -305,8 +315,9 @@ public class TeacherAnalyticsController {
     }
 
     /**
-     * Internal helper method to create and show an alert.
+     * Internal helper method to create and display an alert.
      * This method should only be called from the JavaFX Application Thread.
+     *
      * @param alertType The type of alert.
      * @param title     The title of the alert.
      * @param message   The content message of the alert.
@@ -314,7 +325,7 @@ public class TeacherAnalyticsController {
     private void displayAlertInternal(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
-        alert.setHeaderText(null); // No header text for a simpler alert
+        alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
     }

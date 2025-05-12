@@ -1,319 +1,303 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.DAO.*;
+import com.example.cab302tailproject.DAO.StudentDAO;
+import com.example.cab302tailproject.DAO.TeacherDAO;
+import com.example.cab302tailproject.DAO.SqlStudentDAO;
+import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.model.Student;
-import com.example.cab302tailproject.model.Teacher;
+// Model imports Student and Teacher are not strictly needed here if only passing data to DAO
+// import com.example.cab302tailproject.model.Student;
+// import com.example.cab302tailproject.model.Teacher;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
+import javafx.event.ActionEvent; // Import ActionEvent
 
 import java.io.IOException;
+import java.net.URL;
 
 import javafx.fxml.FXML;
 
+/**
+ * Controller for the user registration view (registration_page.fxml).
+ * Handles input validation and registration of new Student or Teacher accounts.
+ *
+ * @author Your Name/TAIL Project Team
+ * @version 1.3
+ */
 public class RegistrationController {
-    //Makes the components in the Registration.FXML readable to the program
-    @FXML
-    private TextField firstNameTextField = new TextField();
-    @FXML
-    private TextField lastNameTextField = new TextField();
-    @FXML
-    private TextField emailTextField = new TextField();
-    @FXML
-    private PasswordField registrationPasswordField = new PasswordField();
-    @FXML
-    private PasswordField registrationConfirmPasswordField = new PasswordField();
-    @FXML
-    private Button registrationButton;
-    @FXML
-    private CheckBox termsAndConditionsButton;
-    @FXML
-    private Label errorText;
-
-    // --- Getters --- //
-
-    /**
-     * Getter for the first name of the User.
-     * @return The first name inputted by the user from the registration GUI.
-     */
-    public String getFirstName() {
-        return firstNameTextField != null ? firstNameTextField.getText() : null;
-    }
-
-    /**
-     * Getter for the last name of the user.
-     * @return The last name inputted by the user from the registration GUI.
-     */
-
-    public String getLastName() {
-        return lastNameTextField.getText();
-    }
-    /**
-     * Getter for the email of the user.
-     * @return The email inputted by the user from the registration GUI.
-     */
-    public String getEmail() {
-        return emailTextField.getText();
-    }
-    /**
-     * Getter for the password of the user.
-     * @return The password inputted by the user from the registration GUI.
-     */
-
-    public String getPassword() {
-        return registrationPasswordField.getText();
-    }
-    /**
-     * Getter for the confirmation password of the user.
-     * @return The confirmed password inputted by the user from the registration GUI.
-     */
-    public String getConfirmPassword() {
-        return registrationConfirmPasswordField.getText();
-    }
-
-    // ---- Setters ---- //
-
-    public void setFirstName(String firstName) {
-        firstNameTextField.setText(firstName); // Access initialized component
-    }
-
-    public void setLastName(String lastName) {
-        lastNameTextField.setText(lastName);
-    }
-
-    public void setEmail(String email) {
-        emailTextField.setText(email);
-    }
-
-    public void setPassword(String password) {
-        registrationPasswordField.setText(password);
-    }
-
-    public void setConfirmPassword(String confirmPassword) {
-        registrationConfirmPasswordField.setText(confirmPassword);
-    }
-
-    // ---- Program --- //
-    @FXML
-    private RadioButton setStudentButton;
-    @FXML
-    private RadioButton setTeacherButton;
-    @FXML
-    private ToggleGroup userType;
-
-    /**
-     * Initializes the registration button on the GUI as disabled.
-     */
-    @FXML
-    public void initialize() {
-        registrationButton.setDisable(true); // Start with register button disabled
-    }
+    @FXML private TextField firstNameTextField;
+    @FXML private TextField lastNameTextField;
+    @FXML private TextField emailTextField;
+    @FXML private PasswordField registrationPasswordField;
+    @FXML private PasswordField registrationConfirmPasswordField;
+    @FXML private Button registrationButton;
+    @FXML private CheckBox termsAndConditionsButton;
+    @FXML private Label errorText;
+    @FXML private RadioButton setStudentButton;
+    @FXML private RadioButton setTeacherButton;
+    @FXML private ToggleGroup userType; // fx:id for the ToggleGroup in FXML
 
     private TeacherDAO teacherDao;
     private StudentDAO studentDao;
 
+    /**
+     * Constructor initializes the DAO instances.
+     */
     public RegistrationController() {
         teacherDao = new SqliteTeacherDAO();
         studentDao = new SqlStudentDAO();
+        // Database table creation should be handled once, e.g., by DatabaseInitializer in TailApplication
     }
 
-
     /**
-     * This is the registration button it uses helper functions to verify the details entered by the user through the
-     * GUI and then loads the login page so that the user can login to the application.
-     * @throws IOException Ensures that the program doesn't crash upon an unsuccessful registration.
+     * Initializes the controller after FXML loading.
+     * Sets initial state for UI elements, like disabling the registration button
+     * and adding listeners to enable it based on input.
      */
     @FXML
-    protected void onRegisterButtonClick() throws IOException {
-        if (isRegistrationValid()) {
-            createUser();
-            addToDatabase();
+    public void initialize() {
+        if (errorText != null) {
+            errorText.setText(""); // Clear any previous error messages
+            errorText.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        } else {
+            System.err.println("WARN: errorText Label is not injected in RegistrationController. Check FXML fx:id 'errorText'.");
+        }
 
-            Stage stage = (Stage) registrationButton.getScene().getWindow();
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("login_page.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-            stage.setScene(scene);
+        if (userType == null || setStudentButton == null || setTeacherButton == null || termsAndConditionsButton == null || registrationButton == null) {
+            System.err.println("WARN: One or more UI elements for registration state not injected. Check FXML fx:id attributes.");
+        } else {
+            termsAndConditionsButton.setOnAction(this::updateRegisterButtonState);
+            // Add listener to the ToggleGroup for radio button changes
+            userType.selectedToggleProperty().addListener((observable, oldValue, newValue) -> updateRegisterButtonState(null));
+            // Initial state of the button
+            updateRegisterButtonState(null); // Pass null or a dummy event if needed
         }
     }
 
     /**
-     * Depending on whether a user selects the teacher or student radio button loads their registration into the
-     * according database. It allows for allocation of privileges.
+     * Handles the registration button click. Validates input, adds the user
+     * to the appropriate database table, and navigates back to the login page on success.
+     *
+     * @param event The action event from the button click.
      */
-    private void addToDatabase() {
-        String email = emailTextField.getText();
-        String fName = firstNameTextField.getText();
-        String lName = lastNameTextField.getText();
-        String password = registrationPasswordField.getText();
+    @FXML
+    protected void onRegisterButtonClick(ActionEvent event) {
+        if (errorText != null) errorText.setText("");
 
-        // Check if student is selected
-        if (setTeacherButton.isSelected()) {
-            if (!teacherDao.checkEmail(email)) {
-                teacherDao.AddTeacher(email, fName, lName, password);
-            } else {
-                System.out.println("Email already in use.");
+        if (isRegistrationValid()) {
+            if (addToDatabase()) { // If adding to DB was successful
+                try {
+                    Node sourceNode = (Node) event.getSource();
+                    Stage stage = (Stage) sourceNode.getScene().getWindow();
+                    URL fxmlUrl = TailApplication.class.getResource("login_page.fxml");
+                    if (fxmlUrl == null) throw new IOException("Cannot find login_page.fxml. Check path in resources.");
+
+                    FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
+                    Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+                    stage.setTitle("TAIL - Login");
+                    stage.setScene(scene);
+                } catch (IOException e) {
+                    System.err.println("Error loading login_page.fxml: " + e.getMessage());
+                    e.printStackTrace();
+                    setRegistrationError("Error navigating to login page.");
+                } catch (IllegalStateException e) {
+                    System.err.println("Error getting stage/scene for navigation: " + e.getMessage());
+                    e.printStackTrace();
+                    setRegistrationError("Navigation error after registration.");
+                }
             }
+            // If addToDatabase returned false, an error message should have been set there by it
         }
-        // Check if teacher is selected
-        else if (setStudentButton.isSelected()) {
-            if (!studentDao.checkEmail(email)) {
-                studentDao.AddStudent(email, fName, lName, password);
+        // If isRegistrationValid is false, an error message should have been set by it
+    }
+
+    /**
+     * Attempts to add the new user to the database based on the selected role.
+     * The respective DAO methods (AddStudent/AddTeacher) now handle checking for existing emails.
+     * Sets error messages on failure.
+     * @return true if the user was successfully added, false otherwise.
+     */
+    private boolean addToDatabase() {
+        String email = emailTextField.getText().trim();
+        String fName = firstNameTextField.getText().trim();
+        String lName = lastNameTextField.getText().trim();
+        String password = registrationPasswordField.getText(); // Password validation already done
+
+        boolean success = false;
+        if (setTeacherButton.isSelected()) {
+            // DAO methods now check for existing email internally before adding
+            success = teacherDao.AddTeacher(email, fName, lName, password);
+            if (!success) {
+                // The DAO implementation should print a more specific error to console.
+                // We set a general error for the user.
+                setRegistrationError("Failed to register teacher. Email might already exist or a database error occurred.");
+                System.out.println("Registration failed: DAO could not add teacher for " + email);
             } else {
-                System.out.println("Email already in use.");
+                System.out.println("Teacher registered successfully: " + email);
+            }
+        } else if (setStudentButton.isSelected()) {
+            success = studentDao.AddStudent(email, fName, lName, password);
+            if (!success) {
+                setRegistrationError("Failed to register student. Email might already exist or a database error occurred.");
+                System.out.println("Registration failed: DAO could not add student for " + email);
+            } else {
+                System.out.println("Student registered successfully: " + email);
             }
         } else {
-            System.out.println("Please select a role (Student or Teacher).");
+            setRegistrationError("Please select a role (Student or Teacher).");
+            System.out.println("Registration failed: No role selected.");
         }
+        return success;
     }
 
     /**
-     * Boolean helper function which combines all validation logic to check whether a users registration is valid before
-     * allowing a user to register.
-     * @return true if all user inputs are valid.
+     * Validates all registration input fields. Sets error messages on failure using {@link #setRegistrationError(String)}.
+     * @return true if all fields are valid, false otherwise.
      */
     private boolean isRegistrationValid() {
-        // Verify first name
-        if (!verifyFirstName(firstNameTextField)) {
-            errorText.setText("Please enter a valid First Name");
+        setRegistrationError(""); // Clear previous errors
+
+        if (firstNameTextField.getText().trim().isEmpty() || !verifyName(firstNameTextField)) {
+            setRegistrationError("Please enter a valid First Name (letters only).");
             return false;
         }
-
-        // Verify last name
-        if (!verifyLastName(lastNameTextField)) {
-            errorText.setText("Please enter a valid Last Name");
+        if (lastNameTextField.getText().trim().isEmpty() || !verifyName(lastNameTextField)) {
+            setRegistrationError("Please enter a valid Last Name (letters only).");
             return false;
         }
-
-        // Verify email
         if (!verifyEmail(emailTextField)) {
-            errorText.setText("Please enter a valid Email Address");
+            // errorText is set within verifyEmail if it fails
             return false;
         }
-        // Error message is already set inside verifyPassword()
-        return verifyPassword(registrationPasswordField, registrationConfirmPasswordField);
-        // All validations passed
+        if (!verifyPassword(registrationPasswordField, registrationConfirmPasswordField)) {
+            // errorText is set within verifyPassword if it fails
+            return false;
+        }
+        if (termsAndConditionsButton == null || !termsAndConditionsButton.isSelected()) { // Added null check
+            setRegistrationError("Please accept the Terms and Conditions.");
+            return false;
+        }
+        if (userType == null || userType.getSelectedToggle() == null) { // Added null check
+            setRegistrationError("Please select whether you are a Student or Teacher.");
+            return false;
+        }
+        return true;
     }
 
     /**
-     * Validation Logic for Name TextFields which can be applied to first and last name text fields.
-     * @param nameField which is the text field in which a user inputs their name.
-     * @return true if the name entered is matches the Regex of all letters.
+     * Validates that a name field contains only letters and is not empty.
+     * @param nameField The TextField to validate.
+     * @return true if the name is valid, false otherwise.
      */
     public boolean verifyName(TextField nameField){
-        String name = nameField.getText();
-        String nameRegex = "^[A-Za-z]+$";
-        return name.matches(nameRegex);
+        String name = nameField.getText().trim();
+        String nameRegex = "^[A-Za-z]+$"; // Allows one or more letters
+        return !name.isEmpty() && name.matches(nameRegex);
     }
 
     /**
-     * Calls the verifyName function to verify the validity of the name entered by the user.
-     * @param firstNameTextField is the inputted name of the user registering for the application.
-     * @return true if the name is valid.
-     */
-    private boolean verifyFirstName(TextField firstNameTextField){
-        return verifyName(firstNameTextField);
-    }
-    /**
-     * Calls the verifyName function to verify the validity of the name entered by the user.
-     * @param lastNameTextField is the inputted name of the user registering for the application.
-     * @return true if the name is valid.
-     */
-    private boolean verifyLastName(TextField lastNameTextField){
-        return verifyName(lastNameTextField);
-    }
-
-    /**
-     * Validation logic that confirms that passwords in both fields are correct and match.
-     * @param passwordField is the field in which a user inputs their desired password.
-     * @param confirmPasswordField is the field in which a user confirms their desired password.
-     * @return true if the password entered by the user matches the regex of at least one uppercase letter, 8+
-     * characters and at least one number as well as the same password is entered again in the confirm password field.
+     * Validates the password fields. Checks if passwords match and meet complexity requirements.
+     * Sets the {@link #errorText} label if validation fails.
+     * @param passwordField The primary password field.
+     * @param confirmPasswordField The confirmation password field.
+     * @return true if passwords are valid and match, false otherwise.
      */
     public boolean verifyPassword(PasswordField passwordField, PasswordField confirmPasswordField) {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();
 
-        if (errorText == null) { errorText = new Label(); } // Just to figure out the JUnit testing for now
-
+        if (password.isEmpty()) { // Check for empty password first
+            setRegistrationError("Password cannot be empty.");
+            return false;
+        }
         if (!password.equals(confirmPassword)) {
-            errorText.setText("Passwords do not match.");
+            setRegistrationError("Passwords do not match.");
             return false;
         }
-
+        // Regex: At least 8 chars, 1 uppercase, 1 lowercase, 1 digit.
         String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-
         if (!password.matches(passwordRegex)) {
-            errorText.setText("Invalid Password");
+            setRegistrationError("Password: 8+ chars, 1 upper, 1 lower, 1 digit.");
             return false;
         }
-
         return true;
     }
 
-
     /**
-     * Handles the validation of the email in the registration form.
-     * @param emailTextField is the text field in which a user inputs their email.
-     * @return TODO Update the regex for a more stringent criteria
+     * Validates the format of the email address. Sets {@link #errorText} if invalid.
+     * @param emailTextField The TextField containing the email.
+     * @return true if the email format is valid, false otherwise.
      */
     public boolean verifyEmail(TextField emailTextField) {
-        String email = emailTextField.getText();
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-
-        return email.matches(emailRegex);
+        String email = emailTextField.getText().trim();
+        if (email.isEmpty()) {
+            setRegistrationError("Email cannot be empty.");
+            return false;
+        }
+        // Basic email regex. For production, consider a more robust library or regex.
+        String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        if (!email.matches(emailRegex)) {
+            setRegistrationError("Invalid email format. Example: user@example.com");
+            return false;
+        }
+        return true;
     }
 
     /**
-     *Used to track that a student or radio button has been selected and that the terms and conditions have been agreed
-     * to before registration.
-     * @param event is the parameter used to track the clicking of the radio and check boxes before the register button
-     *              is re-enabled.
+     * Updates the enabled state of the registration button based on whether
+     * the terms and conditions are accepted and a user type (Student/Teacher) is selected.
+     * This method is called by the onAction event of the CheckBox and RadioButtons.
+     * @param event The action event (can be null if called programmatically, e.g., from initialize).
      */
-
     @FXML
-    protected void updateRegisterButtonState(javafx.event.ActionEvent event) {
-        boolean accepted = termsAndConditionsButton.isSelected();
-        Toggle selectedToggle = userType.getSelectedToggle(); // Get the selected radio button
-
-        // Store the selected user type
-        if (selectedToggle != null) {
-            String selectedUserType = ((RadioButton) selectedToggle).getText(); // "Student" or "Teacher"
+    protected void updateRegisterButtonState(ActionEvent event) { // Changed parameter to ActionEvent
+        if (termsAndConditionsButton == null || userType == null || registrationButton == null) {
+            System.err.println("WARN: updateRegisterButtonState - UI elements not ready.");
+            return;
         }
-
-        boolean userTypeSelected = selectedToggle != null;
-        registrationButton.setDisable(!(accepted && userTypeSelected)); // Disable button if either condition fails
+        boolean termsAccepted = termsAndConditionsButton.isSelected();
+        boolean userTypeSelected = userType.getSelectedToggle() != null;
+        registrationButton.setDisable(!(termsAccepted && userTypeSelected));
     }
 
     /**
-     * Depending on which radio button is selected an object of that type is created with the first name, last name,
-     * email and password entered by the user, used as the parameters in the constructor of the object instance.
+     * Sets the text of the registration error label.
+     * @param message The error message to display.
      */
-
-    public void createUser() {
-        // Check if the student button is selected
-        if (setStudentButton.isSelected()) {
-            // Create a new student user (you can customize the User creation as needed)
-            String firstName = firstNameTextField.getText();
-            String lastName = lastNameTextField.getText();
-            String email = emailTextField.getText();
-            String password = registrationPasswordField.getText();
-
-            // Create a new student with the details
-            Student student = new Student(firstName, lastName, email, password);
-        } else if (setTeacherButton.isSelected()) {
-            // Create a new teacher user
-            String firstName = firstNameTextField.getText();
-            String lastName = lastNameTextField.getText();
-            String email = emailTextField.getText();
-            String password = registrationPasswordField.getText();
-
-            // Create a new Teacher with the details
-            Teacher teacher = new Teacher(firstName, lastName, email, password);
+    private void setRegistrationError(String message) {
+        if (errorText != null) {
+            errorText.setText(message);
+        } else {
+            System.err.println("Registration Error (Label not available): " + message);
+            showAlert(Alert.AlertType.ERROR, "Registration Error", message); // Fallback alert
         }
     }
 
+    /**
+     * Helper method to display alerts.
+     * @param alertType The type of alert.
+     * @param title The title.
+     * @param message The message.
+     */
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(alertType);
+                alert.setTitle(title);
+                alert.setHeaderText(null);
+                alert.setContentText(message);
+                alert.showAndWait();
+            });
+        } else {
+            Alert alert = new Alert(alertType);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        }
+    }
 }

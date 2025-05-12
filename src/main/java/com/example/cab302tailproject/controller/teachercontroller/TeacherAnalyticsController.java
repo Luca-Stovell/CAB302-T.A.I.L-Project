@@ -1,10 +1,9 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
-// DAO imports should be correct from previous fixes (StudentDAO, SqlStudentDAO)
 import com.example.cab302tailproject.DAO.StudentDAO;
 import com.example.cab302tailproject.DAO.SqlStudentDAO;
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.model.Student; // Ensure this is your Student model with getFullName()
+import com.example.cab302tailproject.model.Student;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -260,10 +259,6 @@ public class TeacherAnalyticsController {
                 throw new IllegalStateException("Error switching scene: Could not get the stage from the event source's scene.");
             }
 
-            // It's good practice to ensure FXML files are in a consistent location,
-            // e.g., a 'view' or 'fxml' subfolder in your resources, or in the same package as TailApplication.
-            // If they are in a sub-package of where TailApplication is, use relative paths like "views/teacher_dashboard_view.fxml"
-            // If they are in a completely different root package in resources, use an absolute path like "/com/example/otherpackage/view.fxml"
             URL fxmlUrl = TailApplication.class.getResource(fxmlFileName);
             if (fxmlUrl == null) {
                 // Attempt with a leading slash if it's an absolute path from the classpath root

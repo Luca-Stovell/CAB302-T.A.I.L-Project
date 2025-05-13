@@ -16,5 +16,13 @@ module com.example.cab302tailproject {
 
     exports com.example.cab302tailproject.model;
     exports com.example.cab302tailproject.ollama4j;
-    exports  com.example.cab302tailproject.controller;
+
+    // JUnit test access:
+    exports com.example.cab302tailproject.controller;
+    exports com.example.cab302tailproject.controller.teachercontroller;
+    exports com.example.cab302tailproject.controller.studentcontroller;
+    exports com.example.cab302tailproject.DAO;
+
+    opens com.example.cab302tailproject.model to org.junit.platform.commons;
+
 }

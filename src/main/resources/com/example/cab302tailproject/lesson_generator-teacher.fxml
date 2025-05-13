@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.* ?>
-<?import javafx.scene.text.Font ?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.shape.Circle?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
 <BorderPane xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
@@ -18,7 +13,7 @@
             prefHeight = "420"
             prefWidth="710"
             fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController"
-            style= "-fx-background-color: white;">
+            style= "-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2">
 
     <fx:define>
         <ToggleGroup fx:id="generateToggleGroup" />
@@ -26,7 +21,7 @@
 
     <left>
         <VBox prefHeight="420" prefWidth="200"
-              style = "-fx-border-color: #000000; -fx-border-width: 2;">
+              style = "-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
             <VBox prefHeight="120" alignment="TOP_LEFT" style="-fx-padding: 25 0 0 30;">
                 <HBox alignment="CENTER_LEFT" spacing="20" prefWidth="200">
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
@@ -55,44 +50,54 @@
 
             <Button text="Generate" fx:id="sidebarGenerateButton" onAction="#onSidebarGenerateClicked"
                     style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
             <Button text="Review" fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked"
                     style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
             <Button text="Analysis" fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked"
                     style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
             <Button text="A.I. Assistance" fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked"
-                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black;
+                    -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
             <Button text="Library" fx:id="sidebarLibraryButton" onAction="#onSidebarLibraryClicked"
-                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;-fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="60"/>
+                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black;
+                    -fx-font-size: 16;-fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
         </VBox>
     </left>
 
     <center>
-        <BorderPane fx:id="contentAreaBorderPane">
+        <BorderPane>
             <top>
-                <AnchorPane prefHeight="70" prefWidth="510"
-                            style = "-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
-                    <Button text="Files" fx:id="filesButton" onAction="#onFilesClicked"
-                            layoutX="80" layoutY="15" prefHeight="40" prefWidth="100"
-                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;"/>
-                    <Button text="Students" fx:id="studentsButton" onAction="#onStudentsClicked"
-                            layoutX="260" layoutY="15" prefHeight="40" prefWidth="115"
-                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;"/>
-                    <Button text="H" fx:id="homeButton" onAction="#onHomeClicked"
-                            layoutX="420" layoutY="20" prefHeight="30" prefWidth="30"
-                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;"/>
-                    <Button text="S" fx:id="settingsButton" onAction="#onSettingsClicked"
-                            layoutX="460" layoutY="20" prefHeight="30" prefWidth="30"
-                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;"/>
-                </AnchorPane>
+                <!-- TODO: Add icons for home/settings buttons -->
+                <StackPane style = "-fx-border-color: #000000; -fx-border-width: 0 0 2 0;">
+                        <AnchorPane prefHeight="70" prefWidth="510" maxWidth="510">
+                            <Button text="Files" fx:id="filesButton" onAction="#onFilesClicked"
+                                    layoutX="80" layoutY="15" prefHeight="40" prefWidth="100"
+                                    style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;"/>
+                            <Button text="Students" fx:id="studentsButton" onAction="#onStudentsClicked"
+                                    layoutX="260" layoutY="15" prefHeight="40" prefWidth="115"
+                                    style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;"/>
+                            <Button text="H" fx:id="homeButton" onAction="#onHomeClicked"
+                                    layoutX="420" layoutY="20" prefHeight="30" prefWidth="30"
+                                    style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;"/>
+                            <Button text="S" fx:id="settingsButton" onAction="#onSettingsClicked"
+                                    layoutX="460" layoutY="20" prefHeight="30" prefWidth="30"
+                                    style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;"/>
+                        </AnchorPane>
+                </StackPane>
             </top>
 
             <center>
-                <VBox alignment="TOP_CENTER" prefHeight="350" prefWidth="510" style = "-fx-border-color: #000000; -fx-border-width: 0 2 2 0;">
+                <VBox alignment="TOP_CENTER" prefHeight="350" prefWidth="510" VBox.vgrow="ALWAYS"
+                      style = "-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" fx:id="dynamicContentBox">
                     <padding>
                         <Insets top="20.0" right="20.0" bottom="20.0" left="20.0"/>
                     </padding>
@@ -116,13 +121,17 @@
                             <Label text="Create a lesson plan" style="-fx-text-fill: #757575; -fx-font-size: 16; -fx-padding: 0 0 0 27;"/>
                         </VBox>
                     </HBox>
-                    <VBox alignment="CENTER" spacing="15" prefWidth="510" style="-fx-padding: 20 0 0 0;">
-                        <VBox prefWidth="440" alignment="CENTER">
+                    <VBox alignment="CENTER" spacing="15" prefWidth="510" style="-fx-padding: 20 0 0 0;" VBox.vgrow="ALWAYS">
+                        <VBox prefWidth="440" alignment="CENTER" VBox.vgrow="ALWAYS">
                             <TextField promptText="Enter topic or description here..."
                                        fx:id="generatorTextField"
                                        prefWidth="350" prefHeight="180" minHeight="110"
-                                       minWidth="440" maxWidth="440"
-                                       style="-fx-alignment: top-left; -fx-font-size: 16; -fx-background-color: #E3E3E3;"/>
+                                       minWidth="440" VBox.vgrow="ALWAYS" maxHeight="Infinity"
+                                       style="-fx-alignment: top-left; -fx-font-size: 16; -fx-background-color: #E3E3E3;">
+                                <VBox.margin>
+                                    <Insets left="15" right = "15" />
+                                </VBox.margin>
+                            </TextField>
                         </VBox>
                         <VBox prefWidth="100" prefHeight="30" alignment="CENTER" style="-fx-padding: 8 0 8 0">
                             <Button text="Generate" fx:id = "generateButton" onAction="#onGenerateClicked"

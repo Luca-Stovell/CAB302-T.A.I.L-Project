@@ -18,7 +18,7 @@ public class TailApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("login_page.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("learning_cards.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), WIDTH, HEIGHT);
         stage.setTitle(TITLE);
         stage.setScene(scene);

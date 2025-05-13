@@ -37,12 +37,33 @@ public class LearningCardController {
      */
     @FXML private Button settingsButton;
 
+    /**
+     * Button that changes the side output of the current flashcard
+     */
     @FXML private Button flipButton;
+    /**
+     * Button that sends the current flashcard to the end of the deck
+     */
     @FXML private Button easyButton;
+    /**
+     * Button that sends the current flashcard to the start of the deck
+     */
     @FXML private Button hardButton;
+    /**
+     * Button that sends the current flashcard to the start of the deck
+     */
     @FXML private Button againButton;
+    /**
+     * Button that sends the current flashcard to the middle of the deck
+     */
     @FXML private Button mediumButton;
+    /**
+     * Button that sends the current flashcard to the end of the deck
+     */
     @FXML private Button nextButton;
+    /**
+     * Field displaying the contents of the flashcards
+     */
     @FXML private TextArea cardContent;
 
     // this is part of a common UI element
@@ -52,8 +73,15 @@ public class LearningCardController {
         // TODO: Implement navigation to the student home/dashboard view
     }
 
-    LearningCardDeck deck;
+    /**
+     * The current deck
+     */
+    private LearningCardDeck deck;
 
+    /**
+     * Retrieves a deck from the database by id, and stored it in deck
+     * @param ID Database's materialID of the selected deck
+     */
     private void getDeck(int ID){
         //TODO implement getting from database
         //also, when deck lengths are small (like this one)
@@ -61,37 +89,63 @@ public class LearningCardController {
         deck = new LearningCardDeck(mockDeck);
     }
 
+    /**
+     * Initialises learning card page by loading in the deck and setting the initial display
+     */
     @FXML public void initialize(){
         // replace this with deck id when implemented
         getDeck(-1);
         cardContent.setText(deck.getCurrentCard());
     }
 
+    /**
+     * Changes a cards face display and sends it to the main text area
+     * @param actionEvent
+     */
     @FXML
     private void onFlipClicked(ActionEvent actionEvent) {
         deck.flip();
         cardContent.setText(deck.getCurrentCard());
     }
 
-
+    /**
+     * Sends the current card to the back of the deck, and outputs the next card
+     * @param actionEvent
+     */
     @FXML private void onEasyClicked(ActionEvent actionEvent) {
         cardContent.setText(deck.easyNext());
     }
 
+    /**
+     * Sends the current card to near the front of the deck, and outputs the next card
+     * @param actionEvent
+     */
     @FXML private void onHardClicked(ActionEvent actionEvent) {
         cardContent.setText(deck.hardNext());
         System.out.println("hard");
     }
 
+    /**
+     * Sends the current card to the middle of the deck, and outputs the next card
+     * @param actionEvent
+     */
     @FXML private void onMediumClicked(ActionEvent actionEvent) {
         cardContent.setText(deck.mediumNext());
     }
 
+    /**
+     * Sends the current card to near the front of the deck, and outputs the next card
+     * @param actionEvent
+     */
     // not entirely sure what the again button is supposed to do. For now, it's just the same as hard
     @FXML private void onAgainClicked(ActionEvent actionEvent) {
         cardContent.setText(deck.hardNext());
     }
 
+    /**
+     * Sends the current card to the back of the deck, and outputs the next card
+     * @param actionEvent
+     */
     //again, not sure what this should do.
     @FXML private void onNextClicked(ActionEvent actionEvent) {
         cardContent.setText(deck.easyNext());

@@ -11,7 +11,8 @@ import java.util.Base64;
  * SQLite implementation of the {@link TeacherDAO} interface.
  * Handles database operations for the Teacher table.
  *
- * @version 1.3
+ * @author Your Name/TAIL Project Team
+ * @version 1.4
  */
 public class SqliteTeacherDAO implements TeacherDAO {
 
@@ -28,7 +29,7 @@ public class SqliteTeacherDAO implements TeacherDAO {
     /**
      * Hashes a plain text password using SHA-256 and encodes it in Base64.
      * @param password The plain text password.
-     * @return The hashed password string or null if hashing fails.
+     * @return The hashed password string or null if hashing fails or password is empty.
      */
     public static String hashPassword(String password) {
         if (password == null || password.isEmpty()) {
@@ -40,7 +41,7 @@ public class SqliteTeacherDAO implements TeacherDAO {
             byte[] hash = digest.digest(password.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(hash);
         } catch (NoSuchAlgorithmException e) {
-            System.err.println("Password hashing algorithm not found: " + e.getMessage());
+            System.err.println("Password hashing algorithm (SHA-256) not found: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -59,25 +60,28 @@ public class SqliteTeacherDAO implements TeacherDAO {
     public boolean AddTeacher(String email, String firstName, String lastName, String password) {
         String hashedPassword = hashPassword(password);
         if (hashedPassword == null) {
-            System.err.println("Password hashing failed for teacher: " + email);
+            System.err.println("Password hashing failed for teacher: " + email + ". Teacher not added.");
             return false;
         }
 
         if (checkEmail(email)) {
-            System.err.println("Cannot add teacher: Email '" + email + "' already exists.");
+            System.err.println("Cannot add teacher: Email '" + email + "' already exists in Teacher table.");
             return false;
         }
 
+        // Uses 'TeacherEmail' as the column name for email in the Teacher table.
         String query = "INSERT INTO Teacher (TeacherEmail, firstName, lastName, password) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
             statement.setString(2, firstName);
             statement.setString(3, lastName);
             statement.setString(4, hashedPassword);
-            return statement.executeUpdate() == 1;
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected == 1;
         } catch (SQLException e) {
-            if (e.getMessage().contains("UNIQUE constraint failed")) {
-                System.err.println("Duplicate teacher email detected: " + email);
+            if (e.getMessage() != null && e.getMessage().contains("UNIQUE constraint failed")) {
+                // More specific error for unique constraint violation
+                System.err.println("Database constraint violation: Email '" + email + "' already exists for Teacher.");
             } else {
                 System.err.println("Error adding teacher " + email + ": " + e.getMessage());
             }
@@ -97,17 +101,19 @@ public class SqliteTeacherDAO implements TeacherDAO {
     public boolean ChangePassword(String email, String newPassword) {
         String hashedPassword = hashPassword(newPassword);
         if (hashedPassword == null) {
-            System.err.println("Password hashing failed for " + email);
+            System.err.println("Password hashing failed for ChangePassword, teacher: " + email);
             return false;
         }
 
+        // Uses 'TeacherEmail' as the column name for email.
         String query = "UPDATE Teacher SET password = ? WHERE TeacherEmail = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, hashedPassword);
             statement.setString(2, email);
-            return statement.executeUpdate() == 1;
+            int linesChanged = statement.executeUpdate();
+            return linesChanged == 1;
         } catch (SQLException e) {
-            System.err.println("Error updating password for teacher " + email + ": " + e.getMessage());
+            System.err.println("Error changing teacher password for " + email + ": " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -121,25 +127,31 @@ public class SqliteTeacherDAO implements TeacherDAO {
      */
     @Override
     public boolean checkEmail(String email) {
+        // Uses 'TeacherEmail' as the column name for email.
         String query = "SELECT COUNT(1) FROM Teacher WHERE TeacherEmail = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.next() && resultSet.getInt(1) == 1;
+            // Ensure resultSet.next() is called before accessing data.
+            if (resultSet.next()) {
+                return resultSet.getInt(1) == 1;
+            }
         } catch (SQLException e) {
-            System.err.println("Error checking email for teacher " + email + ": " + e.getMessage());
+            System.err.println("Error checking teacher email " + email + ": " + e.getMessage());
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
 
     /**
      * Retrieves the hashed password for a teacher.
+     * Private helper method.
      *
      * @param email The teacher's email.
-     * @return The hashed password, or null if not found.
+     * @return The hashed password, or null if not found or an error occurs.
      */
     private String getStoredPasswordHash(String email) {
+        // Uses 'TeacherEmail' as the column name for email.
         String query = "SELECT password FROM Teacher WHERE TeacherEmail = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
@@ -151,7 +163,7 @@ public class SqliteTeacherDAO implements TeacherDAO {
             System.err.println("Error retrieving password for teacher " + email + ": " + e.getMessage());
             e.printStackTrace();
         }
-        return null;
+        return null; // Return null reference if not found or on error.
     }
 
     /**
@@ -165,7 +177,7 @@ public class SqliteTeacherDAO implements TeacherDAO {
     public boolean checkPassword(String email, String password) {
         String storedHash = getStoredPasswordHash(email);
         if (storedHash == null) {
-            System.err.println("No stored password found for teacher " + email);
+            System.err.println("No stored password found for teacher " + email + " or error retrieving hash.");
             return false;
         }
 
@@ -180,20 +192,24 @@ public class SqliteTeacherDAO implements TeacherDAO {
 
     /**
      * Inserts a new classroom associated with the given teacher.
+     * Assumes `TeacherDAO` interface defines this method signature.
      *
-     * @param classID The classroom ID.
-     * @param teacher The teacher's email.
+     * @param classID The classroom ID (or unique code).
+     * @param teacherEmail The teacher's email to associate with the classroom.
      */
     @Override
-    public void createClassroom(String classID, String teacher) {
+    public void createClassroom(String classID, String teacherEmail) {
+        // Assumes Classroom table has ClassID and TeacherEmail columns.
         String query = "INSERT INTO Classroom (ClassID, TeacherEmail) VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, classID);
-            statement.setString(2, teacher);
+            statement.setString(2, teacherEmail); // Parameter name matches usage
             statement.executeUpdate();
+            System.out.println("Classroom " + classID + " created for teacher " + teacherEmail);
         } catch (SQLException e) {
-            System.err.println("Error creating classroom " + classID + ": " + e.getMessage());
+            System.err.println("Error creating classroom " + classID + " for teacher " + teacherEmail + ": " + e.getMessage());
             e.printStackTrace();
+            // Depending on interface contract, might need to throw exception or return boolean
         }
     }
 
@@ -201,10 +217,11 @@ public class SqliteTeacherDAO implements TeacherDAO {
      * Retrieves the teacher's name based on email.
      *
      * @param email The teacher's email.
-     * @return A {@link UserDetail} object with first and last name, or null if not found.
+     * @return A {@link UserDetail} object with first and last name, or null if not found or on error.
      */
     @Override
     public UserDetail getUserNameDetails(String email) {
+        // Uses 'TeacherEmail' as the column name for email.
         String query = "SELECT firstName, lastName FROM Teacher WHERE TeacherEmail = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);

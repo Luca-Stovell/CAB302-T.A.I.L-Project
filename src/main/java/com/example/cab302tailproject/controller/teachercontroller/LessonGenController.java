@@ -1,5 +1,10 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
+import com.example.cab302tailproject.DAO.IContentDAO;
+import com.example.cab302tailproject.DAO.ContentDAO;
+import com.example.cab302tailproject.model.Lesson;
+import com.example.cab302tailproject.model.Material;
+import com.example.cab302tailproject.model.Worksheet;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 
 import com.example.cab302tailproject.TailApplication;
@@ -11,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -30,7 +36,6 @@ import java.io.PrintWriter;
  * @version 1.6
  */
 public class LessonGenController {
-
     //<editor-fold desc="FXML UI Element References - Main Content">
     /**
      * TextField for user input to generate lessons or worksheets.
@@ -114,6 +119,34 @@ public class LessonGenController {
      * Defines the default height for new scenes loaded on the current stage.
      */
     private static final double SCENE_HEIGHT = 600;
+
+    /**
+     * Represents the identifier of the currently selected or generated material.
+     */
+    private Material currentMaterial;
+    //</editor-fold>
+
+    //<editor-fold desc="FXML UI Element References - Dynamic content">
+    /**
+     * A reference to a VBox in the JavaFX view.
+     * Represents a dynamic content container in the user interface, allowing the content
+     * within it to be programmatically changed at runtime.
+     *
+     * This element is used in the context of lesson or worksheet generation and navigation,
+     * enabling the controller to update or switch the displayed content as required based
+     * on user interaction or application logic.
+     */
+    @FXML
+    private VBox dynamicContentBox;  // to change the content view
+
+    /**
+     * Holds a reference to the previously displayed view within the application.
+     * Used to facilitate navigation between views by tracking the last active view.
+     * Typically updated when transitioning between different scenes in the interface.
+     */
+    private static VBox previousView;
+
+
     //</editor-fold>
 
     /**
@@ -190,7 +223,10 @@ public class LessonGenController {
             String generatedContent = generateTask.getValue();
             generateButton.setDisable(false);
             generatorTextField.setDisable(false);
-            saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
+            int generatedID = saveLessonToDatabase(generatedContent, selectedGeneratorType, userInput.trim());
+            currentMaterial = new Material(generatedID, selectedGeneratorType);     // Prepare new view with the given output
+            //saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
+            navigateToGeneratedPlan(generatedID);
         });
         generateTask.setOnFailed(workerStateEvent -> {
             Throwable exception = generateTask.getException();
@@ -250,6 +286,113 @@ public class LessonGenController {
         }
     }
     //</editor-fold>
+
+    /**
+     * Saves the supplied content to the database. Assumes the teacher and classroom.
+     * @param content The full text of content to be added
+     * @param type The type of material it is: "Lesson Plan" or "Worksheet".
+     * @param topic The topic of the content. Generally the AI prompt entered to create the content.
+     */
+    private int saveLessonToDatabase(String content, String type, String topic) {
+        if (content == null) {
+            showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
+            return -1;
+        }
+        if (topic.length() > 50) topic = topic.substring(0, 50);
+        try {
+            IContentDAO contentDAO = new ContentDAO();
+
+            if (type.equals("Lesson Plan")) {
+                // Create LessonContent object
+                Lesson lessonContent = new Lesson(
+                        topic,
+                        content,                        // Generated lesson content
+                        123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
+                        654321                         // Placeholder ClassroomID  TODO: retrieve class ID
+                );
+
+                // Save to database
+                int isSaved = contentDAO.addLessonContent(lessonContent);
+
+                if (isSaved != -1) {
+                    System.out.println("Lesson plan saved successfully!");
+                    return isSaved;
+                } else {
+                    System.err.println("Failed to save lesson to the database.");
+                }
+            }
+            else if (type.equals("Worksheet")) {
+                // Create LessonContent object
+                Worksheet worksheet = new Worksheet(
+                        topic,
+                        content,                        // Generated lesson content
+                        123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
+                        654321                         // Placeholder ClassroomID  TODO: retrieve class ID
+                );
+                // Save to database
+                int isSaved = contentDAO.addWorksheetToDB(worksheet);
+
+                if (isSaved != -1) {
+                    System.out.println("Worksheet saved successfully!");
+                    return isSaved;
+                } else {
+                    System.err.println("Failed to save worksheet to the database.");
+                }
+            }
+            else {
+                System.out.println("Invalid content type: " + type + ".");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("An error occurred while saving the content: " + e.getMessage());
+        }
+        return -1;
+    }
+
+
+    /**
+     * Navigates to the generated lesson plan view for the material specified by the given ID.
+     * If no material is found with the provided ID, displays a warning alert.
+     * Saves the current view to allow navigating back later and handles the transition
+     * to the new lesson plan view with the relevant data.
+     *
+     * @param materialID The identifier of the material for which the lesson plan is to be generated.
+     */
+    private void navigateToGeneratedPlan(int materialID) {
+        try {
+            if (this.currentMaterial == null) {
+                showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
+                return;
+            }
+
+            // Save current view logic to return back to
+            previousView = new VBox();
+            previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
+
+            // Moving to new view
+            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_plan-teacher.fxml"));
+            VBox layout = fxmlLoader.load();
+            LessonPlanController controller = fxmlLoader.getController();
+            controller.initData(currentMaterial, dynamicContentBox, previousView);  // pass the data
+
+            // Replace content in the dynamic container
+            dynamicContentBox.getChildren().clear();
+            dynamicContentBox.getChildren().add(layout);
+
+            // ----- OPTION FOR THE WHOLE WINDOW VIEW. REQUIRES ADDING THE FULL LAYOUT TO FXML AND CHANGING BACK BEHAVIOUR IN PLAN CONTROLLER ------ //
+//            Stage stage = (Stage) dynamicContentBox.getScene().getWindow();
+//            Scene scene = new Scene(layout, TailApplication.WIDTH, TailApplication.HEIGHT);
+//            stage.setScene(scene);
+//            stage.show();
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error",
+                    "Could not load generated content view.\n" +e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 
     //<editor-fold desc="Sidebar Navigation Event Handlers - Direct Scene Switching">
     /**

@@ -2,100 +2,42 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            maxHeight = "-Infinity"
-            prefHeight = "420"
-            prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController"
-            style= "-fx-background-color: white;">
-    <!-- Left sidebar -->
-    <left>
-        <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 2;">
-            <!-- user info -->
-            <VBox alignment="TOP_LEFT" prefHeight="100.0" prefWidth="196.0" style="-fx-padding: 25 0 0 30;">
-                <HBox alignment="CENTER_LEFT" prefWidth="200" spacing="20">
-                    <!-- Placeholder user avatar -->
-                    <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
-                        <Image url="@../../../images/tail_logo.png" />
-                        <clip>
-                            <Circle centerX="20" centerY="20" radius="20" />
-                        </clip>
-                    </ImageView>
+<VBox fx:id="dynamicContentBox" maxHeight="Infinity" maxWidth="Infinity" prefHeight="274.0" prefWidth="510.0"
+      style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" VBox.vgrow="ALWAYS"
+      xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonPlanController">
+    <VBox alignment="CENTER">
+        <TextField fx:id="topicTextField" alignment="CENTER" editable="false" promptText="Topic name..."
+                   style="-fx-font-size: 20; -fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: black;" />
 
-                    <VBox alignment="CENTER_LEFT" prefWidth="80">
-                        <Label style="-fx-font-weight: bold; -fx-text-fill: #757575" text="Max">
-                            <font> <Font size="16" /> </font> </Label>            <!-- change when user DB is implemented -->
-                        <Label style="-fx-text-fill: #B3B3B3" text="Class 9C">
-                            <font> <Font size="16" /> </font> </Label>
-                    </VBox>
-                </HBox>
+        <padding>
+            <Insets bottom="10.0" />
+        </padding>
+    </VBox>
 
-
-                <!-- Week / time -->
-                <VBox prefHeight="48.0" prefWidth="166.0">
-                    <padding>
-                        <Insets bottom="10" left="5" right="5" top="10" />
-                    </padding>
-
-                    <Label style="-fx-text-fill: #B3B3B3" text="Week 5">
-                        <font> <Font size="12" /> </font> </Label>
-                    <Label style="-fx-text-fill: #B3B3B3" text="Time 12:34pm">
-                        <font> <Font size="12" /> </font>
-                    </Label>
-                </VBox>
-            </VBox>
-
-            <!-- Navigation sidebar -->
-
-            <Button fx:id="sidebarGenerateButton" maxHeight="292.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Learning Card" />
-
-            <Button fx:id="sidebarReviewButton" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
-
-            <Button fx:id="sidebarAnalysisButton" maxHeight="172.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Lesson Plan" />
-
-            <Button fx:id="sidebarAiAssistanceButton" maxHeight="125.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I Explan" />
+    <VBox alignment="CENTER" prefWidth="510" spacing="15" style="-fx-padding: 0 0 0 0;" VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" prefWidth="440" VBox.vgrow="ALWAYS">
+            <TextArea fx:id="generatedTextArea" maxHeight="Infinity" maxWidth="Infinity" minHeight="180"
+                      minWidth="200" prefWidth="200" style="-fx-alignment: top-left; -fx-font-size: 16;
+                      -fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: black;"
+                      text="Generated content" wrapText="true" VBox.vgrow="ALWAYS" />
         </VBox>
-    </left>
-
-
-    <center>
-        <BorderPane>
-            <!-- Top Navigation Bar -->
-            <top>
-                <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
-
-                    <HBox HBox.hgrow="ALWAYS" /> <!-- spacer -->
-
-                    <Button fx:id="homeButton" layoutX="420" layoutY="20" onAction="#onHomeClicked" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="H">
-                        <!-- insert graphic here-->
-                    </Button>
-                    <Button fx:id="settingsButton" layoutX="460" layoutY="20" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="S">
-                        <!-- insert graphic here-->
-                    </Button>
-                </AnchorPane>
-            </top>
-            <center>
-                <Pane prefHeight="365.0" prefWidth="510.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Label layoutX="56.0" layoutY="48.0" prefHeight="19.0" prefWidth="54.0" text="Week5" />
-                  <Button layoutX="48.0" layoutY="295.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="83.0" text="Back" />
-                  <Button layoutX="376.0" layoutY="295.0" mnemonicParsing="false" prefHeight="28.0" prefWidth="77.0" text="Next" />
-               </children>
-                </Pane>
-            </center>
-
-        </BorderPane>
-    </center>
-
-
-
-
-
-
-</BorderPane>
+        <HBox alignment="CENTER" spacing="50">
+            <VBox minWidth="120" prefHeight="30" prefWidth="120" style="-fx-padding: 8 0 8 0">
+                <Button fx:id="backButton" minWidth="120" onAction="#onBackClicked" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;
+                -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;
+                 -fx-background-radius: 10;" text="Redo prompt" />
+            </VBox>
+            <VBox minWidth="120" prefHeight="30" prefWidth="120" style="-fx-padding: 8 0 8 0">
+                <Button fx:id="modifyButton" minWidth="120" onAction="#onModifyClicked" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;
+                -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;
+                 -fx-background-radius: 10;" text="Save changes" />
+            </VBox>
+            <VBox minWidth="120" prefHeight="30" prefWidth="120" style="-fx-padding: 8 0 8 0">
+                <Button fx:id="saveToDisk" minWidth="120" onAction="#onSaveClicked" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;                          -fx-border-color: #767676; -fx-border-radius: 10; -fx-border-width: 1;                           -fx-background-radius: 10;" text="Export" />
+            </VBox>
+        </HBox>
+    </VBox>
+</VBox>

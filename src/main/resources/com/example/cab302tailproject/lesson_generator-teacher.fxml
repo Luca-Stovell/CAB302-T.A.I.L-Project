@@ -74,7 +74,7 @@
     </left>
 
     <center>
-        <BorderPane fx:id="contentAreaBorderPane">
+        <BorderPane>
             <top>
                 <!-- TODO: Add icons for home/settings buttons -->
                 <StackPane style = "-fx-border-color: #000000; -fx-border-width: 0 0 2 0;">

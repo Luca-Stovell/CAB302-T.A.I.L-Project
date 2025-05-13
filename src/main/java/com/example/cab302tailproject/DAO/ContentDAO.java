@@ -29,6 +29,7 @@ public class ContentDAO implements IContentDAO {
         createMaterialTable();
         createLessonTable();
         createWorksheetTable();
+        createLessonCardTable();
         try {
             // Example: Replace these values with your actual database credentials
             String url = "jdbc:sqlite:Tail.db"; // Change your URL and DB name here
@@ -131,6 +132,29 @@ public class ContentDAO implements IContentDAO {
                         + "FOREIGN KEY (materialID) REFERENCES material(materialID)"
                         + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID), "
                         + "FOREIGN KEY (ClassroomID) REFERENCES Classroom(ClassroomID)"
+                        + ")";
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates the lesson card table, which contains TODO refactor this table
+     */
+    // table is called card to make it sound less like the lesson table
+    private void createLessonCardTable() {
+        String query =
+                "CREATE TABLE IF NOT EXISTS card ("
+                        + "lessonCardID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + "lessonCardTopic TEXT, " // same as parent lesson?
+                        + "lessonCardContent TEXT, "
+                        + "lastModifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " // probably unnecessary
+                        + "TeacherID INTEGER, " // consider replacing this with parent lesson (assuming card sets are generated from lessons
+                        + "materialID INTEGER NOT NULL, "
+                        + "FOREIGN KEY (materialID) REFERENCES material(materialID)"
+                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID), "
                         + ")";
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
@@ -527,6 +551,27 @@ public class ContentDAO implements IContentDAO {
                         rs.getInt("classroomID"),
                         rs.getInt("materialID")
                 );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Gets the contents of a stored lesson card by its ID
+     * @param materialID ID of the lesson card
+     * @return String containing lesson card content as it is stored in the database
+     */
+    public String getlessonCardContent(int materialID) {
+        String sql = "SELECT lassonCardContent FROM card WHERE lessonCardID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, materialID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("lassonCardContent");
             }
         } catch (SQLException e) {
             e.printStackTrace();

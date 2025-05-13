@@ -5,17 +5,17 @@ import com.example.cab302tailproject.DAO.TeacherDAO;
 import com.example.cab302tailproject.DAO.SqlStudentDAO;
 import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.model.UserSession;     // Import UserSession
-import com.example.cab302tailproject.model.UserDetail; // Import UserDetail
+import com.example.cab302tailproject.model.UserSession;     // For storing logged-in user info
+import com.example.cab302tailproject.model.UserDetail; // For fetching user names
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.scene.Node; // Import Node
-import javafx.application.Platform; // Import Platform
+import javafx.scene.Node;
+import javafx.application.Platform; // For showAlert
 
 import java.io.IOException;
-import java.net.URL; // Import URL
+import java.net.URL; // For FXML loading
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -27,7 +27,7 @@ import javafx.event.ActionEvent;
  * Navigates to the appropriate application view upon successful login and sets UserSession.
  *
  * @author Your Name/TAIL Project Team
- * @version 1.4
+ * @version 1.3
  */
 public class LoginController {
 
@@ -36,7 +36,7 @@ public class LoginController {
     @FXML private Button registerPageButton;
     @FXML private PasswordField loginPasswordField;
     @FXML private TextField loginEmailTextField;
-    @FXML private Label loginErrorLabel; // Ensure this fx:id exists in your login_page.fxml
+    @FXML private Label loginErrorLabel; // Label to display login errors
 
     // Radio buttons and ToggleGroup for selecting user type
     @FXML private RadioButton teacherRadioButton;
@@ -52,8 +52,6 @@ public class LoginController {
      * Also ensures the database tables are created via DatabaseInitializer.
      */
     public LoginController() {
-        // It's good practice to initialize the database schema once when the application starts,
-        // e.g., in your TailApplication.start() method or a dedicated startup routine.
         new com.example.cab302tailproject.DAO.DatabaseInitializer().initialize(); // Ensure tables exist
 
         teacherDao = new SqliteTeacherDAO();
@@ -73,11 +71,13 @@ public class LoginController {
             System.err.println("WARN: loginErrorLabel is not injected. Check FXML fx:id 'loginErrorLabel'.");
         }
 
+        // Ensure radio buttons and toggle group are injected from FXML
         if (userTypeToggleGroup == null || teacherRadioButton == null || studentRadioButton == null) {
             System.err.println("WARN: User type radio buttons or toggle group not injected. Check FXML fx:id attributes (userTypeToggleGroup, teacherRadioButton, studentRadioButton).");
         } else {
+            // Set a default selection if not already done in FXML (Student is default in login_page.fxml)
             if (userTypeToggleGroup.getSelectedToggle() == null) {
-                studentRadioButton.setSelected(true); // Default selection
+                studentRadioButton.setSelected(true);
             }
         }
     }
@@ -146,28 +146,31 @@ public class LoginController {
         boolean loginSuccess = false;
         String targetFxml = null;
         String windowTitle = TailApplication.TITLE;
-        UserDetail userDetails = null; // Use the imported UserDetail
+        UserDetail userDetails = null;
         String userRole = "";
 
         if (selectedToggle == teacherRadioButton) {
             userRole = "Teacher";
+            // Use teacherDao to check credentials and get details
             if (teacherDao.checkEmail(email) && teacherDao.checkPassword(email, password)) {
                 loginSuccess = true;
                 userDetails = teacherDao.getUserNameDetails(email);
-                targetFxml = "lesson_generator-teacher.fxml";
+                targetFxml = "lesson_generator-teacher.fxml"; // Your teacher's main page
                 windowTitle = "TAIL - Teacher Dashboard";
             }
         } else if (selectedToggle == studentRadioButton) {
             userRole = "Student";
+            // Use studentDao to check credentials and get details
             if (studentDao.checkEmail(email) && studentDao.checkPassword(email, password)) {
                 loginSuccess = true;
                 userDetails = studentDao.getUserNameDetails(email);
-                targetFxml = "student-page.fxml";
+                targetFxml = "student-page.fxml"; // Your student's main page
                 windowTitle = "TAIL - Student Dashboard";
             }
         }
 
         if (loginSuccess && userDetails != null && targetFxml != null) {
+            // Set UserSession with retrieved first name, last name, email, and role
             UserSession.getInstance().loginUser(userDetails.firstName(), userDetails.lastName(), email, userRole);
             System.out.println(userRole + " login successful for: " + email);
 
@@ -185,7 +188,7 @@ public class LoginController {
                 System.err.println("Error loading target FXML (" + targetFxml + "): " + e.getMessage());
                 e.printStackTrace();
                 setLoginError("Login successful, but failed to load next page.");
-                UserSession.getInstance().logoutUser();
+                UserSession.getInstance().logoutUser(); // Clear session if navigation fails
             } catch (IllegalStateException e) {
                 System.err.println("Error getting stage/scene for navigation post-login: " + e.getMessage());
                 e.printStackTrace();
@@ -207,7 +210,7 @@ public class LoginController {
             loginErrorLabel.setText(message);
         } else {
             System.err.println("Login Error (Label not available): " + message);
-            showAlert(Alert.AlertType.ERROR, "Login Failed", message);
+            showAlert(Alert.AlertType.ERROR, "Login Failed", message); // Fallback alert
         }
     }
 
@@ -234,6 +237,4 @@ public class LoginController {
             alert.showAndWait();
         }
     }
-    // The old checkLogin and tryLogin methods have been removed as their logic is
-    // now integrated into onLoginButtonClick and uses UserSession.
 }

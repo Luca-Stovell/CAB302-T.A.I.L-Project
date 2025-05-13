@@ -1,4 +1,5 @@
 package com.example.cab302tailproject.DAO;
+
 import com.example.cab302tailproject.model.Student;
 import com.example.cab302tailproject.model.UserDetail;
 
@@ -8,12 +9,20 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Base64;
+import java.util.List;
 
 import java.sql.PreparedStatement;
 
 
 
-
+/**
+ * SQLite implementation of the {@link StudentDAO} interface.
+ * Handles database operations for the Student table.
+ *
+ * @author Your Name/TAIL Project Team
+ * @version 1.3
+ */
 public class SqlStudentDAO implements StudentDAO {
 
     private final Connection connection;
@@ -55,7 +64,7 @@ public class SqlStudentDAO implements StudentDAO {
             System.err.println("Password hashing failed for student: " + email + ". Student not added.");
             return false;
         }
-        if (checkEmail(email)) { // checkEmail is part of this class/interface (inherited or implemented)
+        if (checkEmail(email)) {
             System.err.println("Cannot add student: Email '" + email + "' already exists in Student table.");
             return false;
         }
@@ -84,26 +93,26 @@ public class SqlStudentDAO implements StudentDAO {
         String query = "SELECT StudentID, firstName, lastName, email FROM Student ORDER BY lastName, firstName";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
-
             while (rs.next()) {
-                // Using the Student constructor that takes (firstName, lastName, email)
-                // as per your Student.java model.
-                Student student = new com.example.cab302tailproject.model.Student(
+                // Assuming your Student model has a constructor that takes ID
+                // If your Student model is (firstName, lastName, email, password)
+                // and you don't want to fetch password for this list:
+                students.add(new com.example.cab302tailproject.model.Student( // Using fully qualified name to avoid conflict if Student class is also in this package
                         rs.getString("firstName"),
                         rs.getString("lastName"),
                         rs.getString("email")
-                );
-                // If your Student class has setStudentID(int id) and you need the ID:
-                // student.setStudentID(rs.getInt("StudentID")); // Assuming Student class has this setter
-                students.add(student);
+                        // studentID is available as rs.getInt("StudentID") if your model needs it
+                ));
             }
         } catch (SQLException e) {
             System.err.println("Error retrieving all students: " + e.getMessage());
             e.printStackTrace();
         }
+        for (Student s : students) {
+            System.out.println(s.getFirstName() + " " + s.getLastName() + " | " + s.getEmail());
+        }
         return students;
     }
-
 
     @Override
     public boolean checkEmail(String email) {
@@ -121,12 +130,6 @@ public class SqlStudentDAO implements StudentDAO {
         return false;
     }
 
-    /**
-     * Retrieves the stored hashed password for a student.
-     * This is a helper method and should be private.
-     * @param email The student's email.
-     * @return The hashed password, or null if not found or an error occurs.
-     */
     private String getStoredPasswordHash(String email) {
         String query = "SELECT password FROM Student WHERE email = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -146,7 +149,7 @@ public class SqlStudentDAO implements StudentDAO {
     public boolean checkPassword(String email, String password) {
         String storedHash = getStoredPasswordHash(email);
         if (storedHash == null) {
-            System.err.println("No stored hash found for student email: " + email + " (or email does not exist).");
+            System.err.println("No stored hash found for student email: " + email);
             return false;
         }
         String enteredHash = hashPassword(password);
@@ -173,63 +176,13 @@ public class SqlStudentDAO implements StudentDAO {
         return null;
     }
 
-
-    @Override
-    public boolean addStudentToClassroom(int studentID, int classroomID) {
-        String query = "INSERT OR IGNORE INTO StudentClassroom (StudentID, ClassroomID) VALUES (?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, studentID);
-            stmt.setInt(2, classroomID);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public List<Student> getStudentsByClassroomID(int classroomID) {
-        List<Student> students = new ArrayList<>();
-        String query = """
-        SELECT s.* FROM Student s
-        JOIN StudentClassroom sc ON s.StudentID = sc.StudentID
-        WHERE sc.ClassroomID = ?
-    """;
-
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, classroomID);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("StudentID");
-                String firstName = rs.getString("firstName");
-                String lastName = rs.getString("lastName");
-                String email = rs.getString("email");
-                String password = rs.getString("password");
-
-                Student student = new Student(firstName, lastName, email, password);
-                student.setStudentID(id);
-                students.add(student);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return students;
-    }
-
-    @Override
-    public boolean removeStudentFromClassroom(int studentID, int classroomID) {
-        String query = "DELETE FROM StudentClassroom WHERE StudentID = ? AND ClassroomID = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            stmt.setInt(1, studentID);
-            stmt.setInt(2, classroomID);
-            return stmt.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
+    /**
+     * Resets the password for a student identified by email.
+     * The new password is hashed before being stored in the database.
+     * @param email The email of the student whose password is to be reset.
+     * @param newPassword The new plain text password.
+     * @return true if the password was successfully updated, false otherwise.
+     */
     @Override
     public boolean resetStudentPassword(String email, String newPassword) {
         String hashedPassword = hashPassword(newPassword);
@@ -242,7 +195,7 @@ public class SqlStudentDAO implements StudentDAO {
             pstmt.setString(1, hashedPassword);
             pstmt.setString(2, email);
             int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected == 1;
+            return rowsAffected == 1; // True if one row was updated
         } catch (SQLException e) {
             System.err.println("Error resetting password for student " + email + ": " + e.getMessage());
             e.printStackTrace();
@@ -250,4 +203,3 @@ public class SqlStudentDAO implements StudentDAO {
         }
     }
 }
-

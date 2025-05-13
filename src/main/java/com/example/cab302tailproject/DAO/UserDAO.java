@@ -27,5 +27,5 @@ public interface UserDAO {
      * @param email The email of the user.
      * @return A {@link UserDetail} object containing the first and last name, or null if the user is not found or an error occurs.
      */
-    UserDetail getUserNameDetails(String email); // <<<--- THIS METHOD MUST BE DECLARED HERE
+    UserDetail getUserNameDetails(String email);
 }

@@ -23,6 +23,8 @@ public class DatabaseInitializer {
         createTeacherTable();
         createStudentTable();
         createClassroomTable();
+        createStudentClassroomTable();
+        createStudentTeacherTable();
         try {
             Statement createTable = connection.createStatement();
         } catch (SQLException e) {
@@ -49,15 +51,15 @@ public class DatabaseInitializer {
      */
     private void createStudentTable() {
         String query =
-                "CREATE TABLE IF NOT EXISTS Student ("
-                        + "StudentID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        + "email TEXT UNIQUE NOT NULL, "
-                        + "firstName TEXT NOT NULL, "
-                        + "lastName TEXT NOT NULL, "
-                        + "password TEXT NOT NULL, "
-                        + "TeacherEmail TEXT, "
-                        + "FOREIGN KEY (TeacherEmail) REFERENCES Teacher(TeacherEmail)"
-                        + ")";
+                "CREATE TABLE IF NOT EXISTS Student (" +
+                        "StudentID INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "email TEXT UNIQUE NOT NULL, " +
+                        "firstName TEXT NOT NULL, " +
+                        "lastName TEXT NOT NULL, " +
+                        "password TEXT NOT NULL, " +
+                        "TeacherEmail TEXT, " +
+                        "FOREIGN KEY (TeacherEmail) REFERENCES Teacher(TeacherEmail)" +
+                        ")";
         execute(query);
     }
     /**
@@ -72,6 +74,31 @@ public class DatabaseInitializer {
                         + ")";
                 execute(query);
     }
+
+    private void createStudentClassroomTable() {
+        String query =
+                "CREATE TABLE IF NOT EXISTS StudentClassroom (" +
+                        "StudentID INTEGER NOT NULL, " +
+                        "ClassroomID INTEGER NOT NULL, " +
+                        "PRIMARY KEY (StudentID, ClassroomID), " +
+                        "FOREIGN KEY (StudentID) REFERENCES Student(StudentID), " +
+                        "FOREIGN KEY (ClassroomID) REFERENCES Classroom(ClassroomID)" +
+                        ")";
+        execute(query);
+    }
+    private void createStudentTeacherTable() {
+        String query = """
+        CREATE TABLE IF NOT EXISTS StudentTeacher (
+            StudentID INTEGER NOT NULL,
+            TeacherID INTEGER NOT NULL,
+            PRIMARY KEY (StudentID, TeacherID),
+            FOREIGN KEY (StudentID) REFERENCES Student(StudentID),
+            FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID)
+        );
+    """;
+        execute(query);
+    }
+
 
     /**
      *Executes a given SQL query using the current database connection.

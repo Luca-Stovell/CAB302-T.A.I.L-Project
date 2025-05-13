@@ -38,28 +38,31 @@ public class SqlStudentDAO implements StudentDAO {
 
     @Override
     public List<Student> getAllStudents() {
-
         List<Student> students = new ArrayList<>();
         String query = "SELECT * FROM Student";
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
 
+            while (rs.next()) {
+                int id = rs.getInt("StudentID"); //
                 String firstName = rs.getString("firstName");
                 String lastName = rs.getString("lastName");
                 String email = rs.getString("email");
-                Student student = new Student(firstName, lastName, email, null);
+                String password = rs.getString("password");
+
+                Student student = new Student(firstName, lastName, email, password);
+                student.setStudentID(id);
+
                 students.add(student);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        for (Student s : students) {
-            System.out.println(s.getFirstName() + " " + s.getLastName() + " | " + s.getEmail());
-        }
+
         return students;
     }
+
 
     @Override
     public boolean checkEmail(String email) {
@@ -91,7 +94,7 @@ public class SqlStudentDAO implements StudentDAO {
                 return resultSet.getString("password");
             }
         } catch (Exception e) {
-            e.printStackTrace(); // TODO: fix this warning
+            e.printStackTrace();
         }
         return "null"; // not sure if this will cause problems TODO: fix this
     }
@@ -102,5 +105,64 @@ public class SqlStudentDAO implements StudentDAO {
         String HPassword = hashPassword(password);
         return actualPassword.equals(HPassword);
     }
+
+    @Override
+    public boolean addStudentToClassroom(int studentID, int classroomID) {
+        String query = "INSERT OR IGNORE INTO StudentClassroom (StudentID, ClassroomID) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, studentID);
+            stmt.setInt(2, classroomID);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
+    @Override
+    public List<Student> getStudentsByClassroomID(int classroomID) {
+        List<Student> students = new ArrayList<>();
+        String query = """
+        SELECT s.* FROM Student s
+        JOIN StudentClassroom sc ON s.StudentID = sc.StudentID
+        WHERE sc.ClassroomID = ?
+    """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, classroomID);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("StudentID");
+                String firstName = rs.getString("firstName");
+                String lastName = rs.getString("lastName");
+                String email = rs.getString("email");
+                String password = rs.getString("password");
+
+                Student student = new Student(firstName, lastName, email, password);
+                student.setStudentID(id);
+                students.add(student);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return students;
+    }
+
+    @Override
+    public boolean removeStudentFromClassroom(int studentID, int classroomID) {
+        String query = "DELETE FROM StudentClassroom WHERE StudentID = ? AND ClassroomID = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, studentID);
+            stmt.setInt(2, classroomID);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
 

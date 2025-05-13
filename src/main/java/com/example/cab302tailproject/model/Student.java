@@ -73,11 +73,10 @@ public class Student extends User {
     public void setClassroomID(int classroomID) {
         this.classroomID = classroomID;
     }
-    @Override
-    public String toString() {
-        return getFirstName() + " " + getLastName();
-    }
-
+//    @Override
+//    public String toString() {
+//        return getFirstName() + " " + getLastName();
+//    }
 }
 
 

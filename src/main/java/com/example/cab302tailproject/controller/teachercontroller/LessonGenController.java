@@ -480,17 +480,8 @@ public class LessonGenController {
      */
     @FXML
     private void onStudentsClicked(ActionEvent event) throws IOException {
-        // Load the FXML
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("classroom-teacher-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-
-        // Get the controller associated with the FXML
-        ClassroomViewController controller = fxmlLoader.getController();
-
-        // Now call the method on the actual instance
-        controller.loadStudentData();
-
-        // Set the new scene
         Stage stage = (Stage) studentsButton.getScene().getWindow();
         stage.setScene(scene);
     }

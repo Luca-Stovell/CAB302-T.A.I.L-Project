@@ -1,10 +1,12 @@
 package com.example.cab302tailproject.DAO;
 
 import com.example.cab302tailproject.model.Student;
+
 import java.util.List;
 
 public interface StudentDAO extends UserDAO {
 
+    List<Student> getAllStudents();
     /**
      * Adds a new student to the database.
      * @param email Student's email.
@@ -18,16 +20,16 @@ public interface StudentDAO extends UserDAO {
      * Retrieves a list of all students.
      * @return A list of {@link Student} objects.
      */
-    List<Student> getAllStudents(); // For analytics page, if needed by other parts
 
     boolean checkEmail(String email);
-    /**
-     * Checks an input password against the stored password of an account
-     * @param email email of the account being checked
-     * @param password the input password
-     * @return true if passwords match, false if not
-     */
-    public boolean checkPassword(String email ,String password);
+
+    boolean checkPassword(String email, String password);
+
+    List<Student> getStudentsByClassroomID(int classroomID);
+
+    boolean addStudentToClassroom(int studentID, int classroomID);
+
+    boolean removeStudentFromClassroom(int studentID, int classroomID);
 
     /**
      * Resets the password for a specific student identified by their email.

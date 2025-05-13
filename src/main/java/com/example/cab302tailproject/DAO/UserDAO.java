@@ -5,9 +5,6 @@ import com.example.cab302tailproject.model.UserDetail;
 /**
  * Base Data Access Object interface for user operations.
  * Defines common methods for checking email, password, and retrieving basic user details.
- *
- * @author Your Name/TAIL Project Team
- * @version 1.1
  */
 public interface UserDAO {
     /**

@@ -1,9 +1,11 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
+// Corrected DAO imports to use StudentDAO and its implementation
 import com.example.cab302tailproject.DAO.StudentDAO;
 import com.example.cab302tailproject.DAO.SqlStudentDAO;
+// Other necessary imports
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.model.Student;
+import com.example.cab302tailproject.model.Student; // Your Student model
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,9 +24,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Controller for the Teacher Analytics view (analytics-teacher.fxml).
- * Displays a list of students and allows the teacher to view details
- * and reset passwords for selected students. Also shows placeholder class average.
+ * Controller for the Teacher Analytics view (e.g., analytics-teacher.fxml).
+ * This controller is responsible for displaying a list of students,
+ * showing details for a selected student, and allowing the teacher
+ * to perform actions such as resetting a student's password.
+ * It interacts with the {@link StudentDAO} to retrieve and update student data.
  *
  * @author Your Name/TAIL Project Team
  * @version 1.5
@@ -41,42 +45,43 @@ public class TeacherAnalyticsController {
     //</editor-fold>
 
     //<editor-fold desc="FXML UI Element References - Main Content">
-    /** ListView to display the names of students. */
+    /** ListView component to display the list of students. */
     @FXML private ListView<Student> studentListView;
-    /** Label to display the class average (placeholder). */
+    /** Label to display the calculated class average (currently a placeholder). */
     @FXML private Label classAverageLabel;
-    /** VBox container for displaying selected student's details. */
+    /** VBox container used to display the detailed information of the student selected from the ListView. */
     @FXML private VBox studentDetailPane;
-    /** Label to display the selected student's first name. */
+    /** Label to display the first name of the selected student. */
     @FXML private Label firstNameLabel;
-    /** Label to display the selected student's last name. */
+    /** Label to display the last name of the selected student. */
     @FXML private Label lastNameLabel;
-    /** Label to display the selected student's email. */
+    /** Label to display the email address of the selected student. */
     @FXML private Label emailLabel;
-    /** Button to initiate the password reset process for the selected student. */
+    /** Button that allows the teacher to initiate the password reset process for the selected student. */
     @FXML private Button resetPasswordButton;
-    /** Label providing instructions to the user. */
+    /** Label providing instructions to the user, visible when no student is selected. */
     @FXML private Label instructionLabel;
     //</editor-fold>
 
     //<editor-fold desc="Other Fields">
-    /** Data Access Object for interacting with student data. */
+    /** Data Access Object for interacting with student-specific data in the database. */
     private StudentDAO studentDao;
-    /** Observable list to hold student data for the ListView. */
+    /** An ObservableList that holds Student objects for populating the studentListView. */
     private ObservableList<Student> studentObservableList;
-    /** Holds the currently selected student from the list. */
+    /** Stores the Student object that is currently selected in the studentListView. */
     private Student selectedStudent = null;
     //</editor-fold>
 
     /**
      * Initializes the controller class. This method is automatically called
-     * after the FXML file has been loaded. It initializes the DAO, loads student data,
-     * sets up the ListView listener, and configures initial UI states.
+     * by the FXMLLoader after the FXML file has been loaded.
+     * It sets up the DAO, populates the student list, configures listeners,
+     * and sets the initial state of UI components.
      */
     @FXML
     public void initialize() {
         System.out.println("TeacherAnalyticsController initializing...");
-        studentDao = new SqlStudentDAO();
+        studentDao = new SqlStudentDAO(); // Use the concrete implementation for StudentDAO
 
         studentObservableList = FXCollections.observableArrayList();
         if (studentListView != null) {
@@ -89,8 +94,9 @@ public class TeacherAnalyticsController {
             showAlert(Alert.AlertType.ERROR, "UI Error", "Student list component could not be initialized.");
         }
 
-        loadStudentList();
+        loadStudentList(); // Populate the student list
 
+        // Set initial visibility and state of UI components
         if (studentDetailPane != null) studentDetailPane.setVisible(false);
         if (resetPasswordButton != null) resetPasswordButton.setDisable(true);
         if (instructionLabel != null) instructionLabel.setVisible(true);
@@ -100,8 +106,8 @@ public class TeacherAnalyticsController {
     }
 
     /**
-     * Loads the list of students from the database and populates the ListView.
-     * Handles potential errors during data fetching.
+     * Fetches the list of all students from the database using the studentDao
+     * and populates the studentListView.
      */
     private void loadStudentList() {
         if (studentDao == null) {
@@ -126,11 +132,10 @@ public class TeacherAnalyticsController {
     }
 
     /**
-     * Displays the details of the selected student in the central pane.
-     * Updates labels and enables the reset password button. Hides the instruction label.
-     * If no student is selected (newValue is null), it hides the detail pane and shows instructions.
+     * Updates the UI to display the details of the specified student.
+     * If the provided student is null, it resets the detail view.
      *
-     * @param student The {@link Student} object selected in the ListView, or null if selection is cleared.
+     * @param student The Student whose details are to be displayed.
      */
     private void displayStudentDetails(Student student) {
         selectedStudent = student;
@@ -142,7 +147,6 @@ public class TeacherAnalyticsController {
             if (studentDetailPane != null) studentDetailPane.setVisible(true);
             if (resetPasswordButton != null) resetPasswordButton.setDisable(false);
             if (instructionLabel != null) instructionLabel.setVisible(false);
-            // Using getFullName() from the Student model
             System.out.println("Displayed details for student: " + student.getFullName());
         } else {
             if (firstNameLabel != null) firstNameLabel.setText("-");
@@ -158,9 +162,9 @@ public class TeacherAnalyticsController {
 
     //<editor-fold desc="Event Handlers - Navigation">
     /**
-     * Handles the action for the "Back" button.
-     * Navigates the user back to the previous screen (e.g., teacher dashboard or lesson generator).
-     * @param event The action event.
+     * Handles the action event for the "Back" button.
+     * Navigates the user to a previous screen.
+     * @param event The ActionEvent triggered by the button click.
      */
     @FXML
     private void onBackButtonClicked(ActionEvent event) {
@@ -169,9 +173,9 @@ public class TeacherAnalyticsController {
     }
 
     /**
-     * Handles the action for the "Home" button in the top navigation bar.
+     * Handles the action event for the "Home" button in the top navigation bar.
      * Navigates the user to the main teacher dashboard.
-     * @param event The {@link ActionEvent} triggered by the button click.
+     * @param event The ActionEvent triggered by the button click.
      */
     @FXML
     private void onHomeClicked(ActionEvent event) {
@@ -180,9 +184,9 @@ public class TeacherAnalyticsController {
     }
 
     /**
-     * Handles the action for the "Settings" button in the top navigation bar.
+     * Handles the action event for the "Settings" button in the top navigation bar.
      * Navigates the user to the application settings view.
-     * @param event The {@link ActionEvent} triggered by the button click.
+     * @param event The ActionEvent triggered by the button click.
      */
     @FXML
     private void onSettingsClicked(ActionEvent event) {
@@ -193,15 +197,14 @@ public class TeacherAnalyticsController {
 
     //<editor-fold desc="Event Handler - Student Actions">
     /**
-     * Handles the action for the "Reset Student Password" button.
-     * Prompts the teacher for a new password and updates the selected student's
-     * password in the database via the DAO.
-     * @param event The action event.
+     * Handles the action event for the "Reset Student Password" button.
+     * Prompts for a new password and updates it via the DAO.
+     * @param event The ActionEvent triggered by the button click.
      */
     @FXML
     private void onResetPasswordClicked(ActionEvent event) {
         if (selectedStudent == null) {
-            showAlert(Alert.AlertType.WARNING, "No Student Selected", "Please select a student from the list first to reset their password.");
+            showAlert(Alert.AlertType.WARNING, "No Student Selected", "Please select a student from the list before attempting to reset their password.");
             return;
         }
         if (studentDao == null) {
@@ -212,7 +215,6 @@ public class TeacherAnalyticsController {
 
         TextInputDialog passwordDialog = new TextInputDialog();
         passwordDialog.setTitle("Reset Student Password");
-        // Using getFullName() from the Student model
         passwordDialog.setHeaderText("Resetting password for: " + selectedStudent.getFullName());
         passwordDialog.setContentText("Please enter the new password:");
 
@@ -242,17 +244,16 @@ public class TeacherAnalyticsController {
     /**
      * Switches the current scene of the primary stage to the view specified by the FXML file.
      *
-     * @param event        The {@link ActionEvent} that triggered the navigation, used to find the current stage.
-     * @param fxmlFileName The name of the FXML file to be loaded (e.g., "my_view.fxml").
-     * This path is resolved relative to the location of the {@link TailApplication} class.
-     * @param windowTitle  The title to be set for the window after the scene switch.
+     * @param event        The ActionEvent that triggered the navigation.
+     * @param fxmlFileName The name of the FXML file to be loaded.
+     * @param windowTitle  The title to be set for the window.
      */
     private void switchScene(ActionEvent event, String fxmlFileName, String windowTitle) {
         Stage stage;
         try {
             Node sourceNode = (Node) event.getSource();
             if (sourceNode == null || sourceNode.getScene() == null) {
-                throw new IllegalStateException("Error switching scene: Could not get scene from the event source. Ensure the event source is part of a scene.");
+                throw new IllegalStateException("Error switching scene: Could not get scene from the event source.");
             }
             stage = (Stage) sourceNode.getScene().getWindow();
             if (stage == null) {
@@ -261,17 +262,14 @@ public class TeacherAnalyticsController {
 
             URL fxmlUrl = TailApplication.class.getResource(fxmlFileName);
             if (fxmlUrl == null) {
-                // Attempt with a leading slash if it's an absolute path from the classpath root
-                if (!fxmlFileName.startsWith("/")) {
+                if (!fxmlFileName.startsWith("/")) { // Try with a leading slash for absolute classpath lookup
                     fxmlUrl = TailApplication.class.getResource("/" + fxmlFileName);
                 }
                 if (fxmlUrl == null) {
-                    throw new IOException("Cannot find FXML file: " + fxmlFileName + ". Ensure the file is in the correct resources path (e.g., same package as TailApplication or specify full path like '/com/example/yourpackage/view.fxml').");
+                    throw new IOException("Cannot find FXML file: " + fxmlFileName + ". Ensure it's in the correct resources path.");
                 }
             }
             FXMLLoader fxmlLoader = new FXMLLoader(fxmlUrl);
-
-            // Use dimensions from TailApplication class or define them as constants in this controller
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
 
             stage.setTitle(windowTitle);
@@ -281,25 +279,23 @@ public class TeacherAnalyticsController {
         } catch (IOException e) {
             System.err.println("IOException loading FXML (" + fxmlFileName + "): " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load the requested view: " + fxmlFileName + "\nReason: " + e.getMessage() + "\nPlease check if the FXML file exists and its controller is correctly defined.");
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not load view: " + fxmlFileName + "\nReason: " + e.getMessage());
         } catch (IllegalStateException e) {
             System.err.println("IllegalStateException during scene switch: " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not switch the view due to an internal state error.");
-        } catch (Exception e) { // Catch-all for other unexpected runtime errors during FXML loading or scene setup
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Could not switch view due to an internal state error.");
+        } catch (Exception e) {
             System.err.println("Unexpected error switching scene to " + fxmlFileName + ": " + e.getMessage());
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "An unexpected error occurred while trying to navigate to the requested view.");
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "An unexpected error occurred while trying to navigate.");
         }
     }
 
     /**
-     * Displays a standard JavaFX Alert dialog to the user.
-     * This method ensures that the alert is shown on the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert to display (e.g., {@link Alert.AlertType#INFORMATION}, {@link Alert.AlertType#ERROR}).
-     * @param title     The title for the alert dialog window.
-     * @param message   The main content message to be displayed in the alert.
+     * Displays a standard JavaFX Alert dialog.
+     * @param alertType The type of alert.
+     * @param title     The title of the alert window.
+     * @param message   The main message content.
      */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         if (!Platform.isFxApplicationThread()) {
@@ -309,14 +305,7 @@ public class TeacherAnalyticsController {
         }
     }
 
-    /**
-     * Internal helper method to create and display an alert.
-     * This method should only be called from the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert.
-     * @param title     The title of the alert.
-     * @param message   The content message of the alert.
-     */
+    /** Internal helper to show alert (must be called on FX thread). */
     private void displayAlertInternal(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

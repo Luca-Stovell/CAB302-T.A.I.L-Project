@@ -15,7 +15,7 @@ import java.util.List;
  * Handles database operations for the Student table.
  *
  * @author Your Name/TAIL Project Team
- * @version 1.3
+ * @version 1.4
  */
 public class SqlStudentDAO implements StudentDAO {
 
@@ -58,7 +58,7 @@ public class SqlStudentDAO implements StudentDAO {
             System.err.println("Password hashing failed for student: " + email + ". Student not added.");
             return false;
         }
-        if (checkEmail(email)) {
+        if (checkEmail(email)) { // checkEmail is part of this class/interface
             System.err.println("Cannot add student: Email '" + email + "' already exists in Student table.");
             return false;
         }
@@ -84,40 +84,29 @@ public class SqlStudentDAO implements StudentDAO {
     @Override
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
+        // Select only necessary fields for the list display.
+        // StudentID is useful if your Student model needs it for other operations.
         String query = "SELECT StudentID, firstName, lastName, email FROM Student ORDER BY lastName, firstName";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
-        String query = "SELECT * FROM Student";
-
-        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int id = rs.getInt("StudentID"); //
-                String firstName = rs.getString("firstName");
-                String lastName = rs.getString("lastName");
-                String email = rs.getString("email");
-                String password = rs.getString("password");
-
-                Student student = new Student(firstName, lastName, email, password);
-                student.setStudentID(id);
-
-                students.add(student);
-                // Assuming your Student model has a constructor that takes ID
-                // If your Student model is (firstName, lastName, email, password)
-                // and you don't want to fetch password for this list:
-                students.add(new com.example.cab302tailproject.model.Student( // Using fully qualified name to avoid conflict if Student class is also in this package
+                // Using the Student constructor that takes (firstName, lastName, email)
+                // as per your Student.java model.
+                // If your Student model also needs studentID, ensure it has a constructor/setter for it.
+                Student student = new com.example.cab302tailproject.model.Student(
                         rs.getString("firstName"),
                         rs.getString("lastName"),
                         rs.getString("email")
-                        // studentID is available as rs.getInt("StudentID") if your model needs it
-                ));
+                );
+                // If your Student class has setStudentID(int id) and you need the ID:
+                // student.setStudentID(rs.getInt("StudentID"));
+                students.add(student);
             }
         } catch (SQLException e) {
             System.err.println("Error retrieving all students: " + e.getMessage());
             e.printStackTrace();
         }
-
         return students;
     }
 
@@ -138,6 +127,12 @@ public class SqlStudentDAO implements StudentDAO {
         return false;
     }
 
+    /**
+     * Retrieves the stored hashed password for a student.
+     * This is a helper method and should be private.
+     * @param email The student's email.
+     * @return The hashed password, or null if not found or an error occurs.
+     */
     private String getStoredPasswordHash(String email) {
         String query = "SELECT password FROM Student WHERE email = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -149,17 +144,23 @@ public class SqlStudentDAO implements StudentDAO {
         } catch (SQLException e) {
             System.err.println("Error getting student password hash for " + email + ": " + e.getMessage());
             e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
 
     @Override
-    public boolean checkPassword(String email ,String password){
-        String actualPassword = GetPassword(email);
-        String HPassword = hashPassword(password);
-        return actualPassword.equals(HPassword);
+    public boolean checkPassword(String email, String password) {
+        String storedHash = getStoredPasswordHash(email);
+        if (storedHash == null) {
+            System.err.println("No stored hash found for student email: " + email + " (or email does not exist).");
+            return false;
+        }
+        String enteredHash = hashPassword(password);
+        if (enteredHash == null) {
+            System.err.println("Hashing of entered password failed for student email: " + email);
+            return false;
+        }
+        return storedHash.equals(enteredHash);
     }
 
     @Override
@@ -175,35 +176,28 @@ public class SqlStudentDAO implements StudentDAO {
         }
     }
 
-
-
     @Override
     public List<Student> getStudentsByClassroomID(int classroomID) {
         List<Student> students = new ArrayList<>();
-        String query = """
-        SELECT s.* FROM Student s
-        JOIN StudentClassroom sc ON s.StudentID = sc.StudentID
-        WHERE sc.ClassroomID = ?
-    """;
-
+        String query = "SELECT s.StudentID, s.firstName, s.lastName, s.email FROM Student s " +
+                "JOIN StudentClassroom sc ON s.StudentID = sc.StudentID " +
+                "WHERE sc.ClassroomID = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, classroomID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                int id = rs.getInt("StudentID");
-                String firstName = rs.getString("firstName");
-                String lastName = rs.getString("lastName");
-                String email = rs.getString("email");
-                String password = rs.getString("password");
-
-                Student student = new Student(firstName, lastName, email, password);
-                student.setStudentID(id);
+                Student student = new Student(
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("email")
+                );
+                // If your Student model has setStudentID and you need it:
+                // student.setStudentID(rs.getInt("StudentID"));
                 students.add(student);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return students;
     }
 
@@ -218,21 +212,6 @@ public class SqlStudentDAO implements StudentDAO {
             e.printStackTrace();
             return false;
         }
-    }
-
-}
-    public boolean checkPassword(String email, String password) {
-        String storedHash = getStoredPasswordHash(email);
-        if (storedHash == null) {
-            System.err.println("No stored hash found for student email: " + email);
-            return false;
-        }
-        String enteredHash = hashPassword(password);
-        if (enteredHash == null) {
-            System.err.println("Hashing of entered password failed for student email: " + email);
-            return false;
-        }
-        return storedHash.equals(enteredHash);
     }
 
     @Override
@@ -251,13 +230,6 @@ public class SqlStudentDAO implements StudentDAO {
         return null;
     }
 
-    /**
-     * Resets the password for a student identified by email.
-     * The new password is hashed before being stored in the database.
-     * @param email The email of the student whose password is to be reset.
-     * @param newPassword The new plain text password.
-     * @return true if the password was successfully updated, false otherwise.
-     */
     @Override
     public boolean resetStudentPassword(String email, String newPassword) {
         String hashedPassword = hashPassword(newPassword);
@@ -270,7 +242,7 @@ public class SqlStudentDAO implements StudentDAO {
             pstmt.setString(1, hashedPassword);
             pstmt.setString(2, email);
             int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected == 1; // True if one row was updated
+            return rowsAffected == 1;
         } catch (SQLException e) {
             System.err.println("Error resetting password for student " + email + ": " + e.getMessage());
             e.printStackTrace();

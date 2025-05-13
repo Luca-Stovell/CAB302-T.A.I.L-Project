@@ -1,32 +1,39 @@
 package com.example.cab302tailproject.controller;
 
-import com.example.cab302tailproject.DAO.*;
+import com.example.cab302tailproject.DAO.StudentDAO;
+import com.example.cab302tailproject.DAO.TeacherDAO;
+import com.example.cab302tailproject.DAO.SqlStudentDAO;
+import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.model.Session;
+import com.example.cab302tailproject.model.UserSession;     // Import UserSession
+import com.example.cab302tailproject.model.UserDetail; // Import UserDetail
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.Node; // Import Node
+import javafx.application.Platform; // Import Platform
 
 import java.io.IOException;
+import java.net.URL; // Import URL
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.PasswordField;
+import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 
-
+/**
+ * Controller for the login view (login_page.fxml).
+ * Handles user authentication based on email, password, and selected user type (Student/Teacher).
+ * Navigates to the appropriate application view upon successful login and sets UserSession.
+ */
 public class LoginController {
 
-    @FXML
-    private Button loginButton;
-    @FXML
-    private Button registerPageButton;
-    @FXML
-    private PasswordField loginPasswordField;
-    @FXML
-    private TextField loginEmailTextField;
-    @FXML
+    // --- FXML UI Element References ---
+    @FXML private Button loginButton;
+    @FXML private Button registerPageButton;
+    @FXML private PasswordField loginPasswordField;
+    @FXML private TextField loginEmailTextField;
+    @FXML private Label loginErrorLabel; // Ensure this fx:id exists in your login_page.fxml
 
     // Radio buttons and ToggleGroup for selecting user type
     @FXML private RadioButton teacherRadioButton;
@@ -42,6 +49,8 @@ public class LoginController {
      * Also ensures the database tables are created via DatabaseInitializer.
      */
     public LoginController() {
+        // It's good practice to initialize the database schema once when the application starts,
+        // e.g., in your TailApplication.start() method or a dedicated startup routine.
         new com.example.cab302tailproject.DAO.DatabaseInitializer().initialize(); // Ensure tables exist
 
         teacherDao = new SqliteTeacherDAO();
@@ -61,13 +70,11 @@ public class LoginController {
             System.err.println("WARN: loginErrorLabel is not injected. Check FXML fx:id 'loginErrorLabel'.");
         }
 
-        // Ensure radio buttons and toggle group are injected from FXML
         if (userTypeToggleGroup == null || teacherRadioButton == null || studentRadioButton == null) {
             System.err.println("WARN: User type radio buttons or toggle group not injected. Check FXML fx:id attributes (userTypeToggleGroup, teacherRadioButton, studentRadioButton).");
         } else {
-            // Set a default selection if not already done in FXML (Student is default in login_page.fxml)
             if (userTypeToggleGroup.getSelectedToggle() == null) {
-                studentRadioButton.setSelected(true);
+                studentRadioButton.setSelected(true); // Default selection
             }
         }
     }
@@ -136,31 +143,28 @@ public class LoginController {
         boolean loginSuccess = false;
         String targetFxml = null;
         String windowTitle = TailApplication.TITLE;
-        UserDetail userDetails = null;
+        UserDetail userDetails = null; // Use the imported UserDetail
         String userRole = "";
 
         if (selectedToggle == teacherRadioButton) {
             userRole = "Teacher";
-            // Use teacherDao to check credentials and get details
             if (teacherDao.checkEmail(email) && teacherDao.checkPassword(email, password)) {
                 loginSuccess = true;
                 userDetails = teacherDao.getUserNameDetails(email);
-                targetFxml = "lesson_generator-teacher.fxml"; // Your teacher's main page
+                targetFxml = "lesson_generator-teacher.fxml";
                 windowTitle = "TAIL - Teacher Dashboard";
             }
         } else if (selectedToggle == studentRadioButton) {
             userRole = "Student";
-            // Use studentDao to check credentials and get details
             if (studentDao.checkEmail(email) && studentDao.checkPassword(email, password)) {
                 loginSuccess = true;
                 userDetails = studentDao.getUserNameDetails(email);
-                targetFxml = "student-page.fxml"; // Your student's main page
+                targetFxml = "student-page.fxml";
                 windowTitle = "TAIL - Student Dashboard";
             }
         }
 
         if (loginSuccess && userDetails != null && targetFxml != null) {
-            // Set UserSession with retrieved first name, last name, email, and role
             UserSession.getInstance().loginUser(userDetails.firstName(), userDetails.lastName(), email, userRole);
             System.out.println(userRole + " login successful for: " + email);
 
@@ -178,7 +182,7 @@ public class LoginController {
                 System.err.println("Error loading target FXML (" + targetFxml + "): " + e.getMessage());
                 e.printStackTrace();
                 setLoginError("Login successful, but failed to load next page.");
-                UserSession.getInstance().logoutUser(); // Clear session if navigation fails
+                UserSession.getInstance().logoutUser();
             } catch (IllegalStateException e) {
                 System.err.println("Error getting stage/scene for navigation post-login: " + e.getMessage());
                 e.printStackTrace();
@@ -192,30 +196,40 @@ public class LoginController {
     }
 
     /**
-     * Boolean function that checks whether the user has registered by using the inputted email and password and checking
-     * it against the database.
-     * @return true if the credentials inputted are valid.
+     * Sets the text of the login error label.
+     * @param message The error message to display.
      */
-    private boolean checkLogin() {
-        String email = loginEmailTextField.getText();
-        String password = loginPasswordField.getText();
-
-        if (tryLogin(teacherDao, email, password)) {
-            Session.setLoggedInTeacherEmail(email);
-            return true;
+    private void setLoginError(String message) {
+        if (loginErrorLabel != null) {
+            loginErrorLabel.setText(message);
+        } else {
+            System.err.println("Login Error (Label not available): " + message);
+            showAlert(Alert.AlertType.ERROR, "Login Failed", message);
         }
-
-        if (tryLogin(studentDAO, email, password)) {
-            Session.setLoggedInStudentEmail(email);
-            return true;
-        }
-
-        return false;
     }
 
-    private boolean tryLogin(UserDAO dao, String email, String password) {
-        return dao.checkEmail(email) && dao.checkPassword(email, password);
+    /**
+     * Helper method to display alerts.
+     * @param alertType The type of alert.
+     * @param title The title.
+     * @param message The message.
+     */
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(alertType);
+                alert.setTitle(title);
+                alert.setHeaderText(null);
+                alert.setContentText(message);
+                alert.showAndWait();
+            });
+        } else {
+            Alert alert = new Alert(alertType);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        }
     }
-
+    // The old checkLogin and tryLogin methods have been removed as their logic is now integrated into onLoginButtonClick and uses UserSession.
 }
-

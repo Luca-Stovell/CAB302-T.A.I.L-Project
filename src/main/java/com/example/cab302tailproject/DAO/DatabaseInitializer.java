@@ -69,7 +69,7 @@ public class DatabaseInitializer {
         String query =
                 "CREATE TABLE IF NOT EXISTS Classroom ("
                         + "ClassroomID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                        + "TeacherEmail TEXT NOT NULL, "
+                        + "TeacherEmail TEXT, "
                         + "FOREIGN KEY (TeacherEmail) REFERENCES Teacher(TeacherEmail)"
                         + ")";
                 execute(query);

@@ -30,9 +30,10 @@ public class LearningCardDeckTest {
 
     }
 
+
     @Test
     public void testTurnStringIntoReadableFormat(){
-        String input = "question:answer,question2:answer2,question3:answer3";
+        String input = "question::answer,,question2::answer2,,question3::answer3";
         List<String[]> expected = new ArrayList<String[]>() {
             {
                 add(new String[]{"question", "answer"});
@@ -103,10 +104,26 @@ public class LearningCardDeckTest {
     @Test
     public void testFlipStatusResetsProperly(){
         deck.flip();
-        deck.hardNext(); // probably shouldn't be able to do this in the real program
+        deck.hardNext();
         deck.next();
         assertEquals("question1", deck.getCurrentCard());
     }
 
+    @Test
+    public void testExhaustDeck(){
+    for (int i = 0; i < 16; i++ ){
+        deck.easyNext();
+    }
+        assertEquals("Congratulations, you have finished the deck!", deck.getCurrentCard());
+    }
+    @Test
+    public void testJustBeforeDeckIsExhausted(){
+        for (int i = 0; i < 15; i++ ){
+            deck.easyNext();
+        }
+        assertEquals("question8", deck.getCurrentCard());
+    }
+
 
 }
+

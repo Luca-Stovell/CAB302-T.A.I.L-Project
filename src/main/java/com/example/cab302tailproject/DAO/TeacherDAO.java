@@ -1,7 +1,15 @@
 package com.example.cab302tailproject.DAO;
 
 public interface TeacherDAO extends UserDAO {
-    public boolean AddTeacher(String email, String firstName, String lastName, String password);
+    /**
+     * Adds a new teacher to the database.
+     * @param email Teacher's email.
+     * @param firstName Teacher's first name.
+     * @param lastName Teacher's last name.
+     * @param password Teacher's plain text password (to be hashed by implementation).
+     * @return true if the teacher was added successfully, false otherwise.
+     */
+    boolean AddTeacher(String email, String firstName, String lastName, String password);
 
     /**
      * Checks if an email has been registered to the database
@@ -10,13 +18,12 @@ public interface TeacherDAO extends UserDAO {
      */
     public boolean checkEmail(String email);
     /**
-     * changes the password of an existing account
-     * @param email email of the existing account
-     * @param newPassword The new password
-     * @return true if successful, false if account doesn't exist
+     * Changes the password for an existing teacher account.
+     * @param email The email of the teacher.
+     * @param newPassword The new plain text password (to be hashed by implementation).
+     * @return true if the password was changed successfully, false otherwise.
      */
-    public  boolean ChangePassword(String email, String newPassword);
-
+    boolean ChangePassword(String email, String newPassword);
 
     /**
      * Checks an input password against the stored password of an account

@@ -33,7 +33,12 @@ public interface TeacherDAO extends UserDAO {
      */
     public boolean checkPassword(String email ,String password);
 
-
-
+    /**
+     * This creates a new classroom instance in the database.
+     *
+     * @param ClassID is the primary key in the database.
+     * @param Teacher is the teacher associated with the class.
+     */
+    public void createClassroom(String ClassID, String Teacher);
 
 }

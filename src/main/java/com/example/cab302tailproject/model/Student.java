@@ -62,19 +62,7 @@ public class Student extends User {
     public String toString() {
         return getFullName(); // ListView will use this to display student names
     }
-
-
-    public int getClassroomID() {
-        return classroomID;
-    }
-
-    public void setClassroomID(int classroomID) {
-        this.classroomID = classroomID;
-    }
-    @Override
-    public String toString() {
-        return getFirstName() + " " + getLastName();
-    }
-
 }
+
+
 

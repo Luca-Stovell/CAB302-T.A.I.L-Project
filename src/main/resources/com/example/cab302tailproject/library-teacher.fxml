@@ -110,6 +110,10 @@
                         <Font size="17.0" />
                      </font>
                   </Label>
+                        <ListView fx:id="fileList"
+                                  layoutX="100" layoutY="250"
+                                  prefHeight="100" prefWidth="300"
+                                  style="-fx-border-color: black;" />
                     </children>
                 </Pane>
          </center>

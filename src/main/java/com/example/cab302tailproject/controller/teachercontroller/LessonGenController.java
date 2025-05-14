@@ -2,9 +2,8 @@ package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.DAO.ContentDAO;
-import com.example.cab302tailproject.model.Lesson;
-import com.example.cab302tailproject.model.Material;
-import com.example.cab302tailproject.model.Worksheet;
+import com.example.cab302tailproject.DAO.SqliteClassroomDAO;
+import com.example.cab302tailproject.model.*;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 
 import com.example.cab302tailproject.TailApplication;
@@ -19,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import java.util.List;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -307,16 +307,31 @@ public class LessonGenController {
                 Lesson lessonContent = new Lesson(
                         topic,
                         content,                        // Generated lesson content
-                        123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
-                        654321                         // Placeholder ClassroomID  TODO: retrieve class ID
+                        123456                         // Placeholder TeacherID    TODO: retrieve teacher ID
                 );
 
                 // Save to database
                 int isSaved = contentDAO.addLessonContent(lessonContent);
 
                 if (isSaved != -1) {
-                    System.out.println("Lesson plan saved successfully!");
-                    return isSaved;
+                    UserSession userSession = UserSession.getInstance();
+                    String teacherEmail = userSession.getEmail();
+                    int defaultClassroomId = 0; // default classroom
+
+                    if (teacherEmail == null) {
+                        contentDAO.updateWeekandClass(1, defaultClassroomId, isSaved);
+                        System.out.println("Lesson plan saved successfully!");
+                        return isSaved;
+                    }
+                    else if (teacherEmail != null) {
+                        SqliteClassroomDAO classroomDAO = new SqliteClassroomDAO();
+                        List<Classroom> classrooms = classroomDAO.getClassroomsByTeacherEmail(teacherEmail);
+                        // TODO: update the add classroom feature. It currently doesnt associate teachers
+                        //defaultClassroomId = (classrooms.getFirst().getClassroomID());          // Retrieve first classroom
+                        contentDAO.updateWeekandClass(1, defaultClassroomId, isSaved);    // Set week and class
+                        System.out.println("Lesson plan saved successfully!");
+                        return isSaved;
+                    }
                 } else {
                     System.err.println("Failed to save lesson to the database.");
                 }
@@ -326,8 +341,7 @@ public class LessonGenController {
                 Worksheet worksheet = new Worksheet(
                         topic,
                         content,                        // Generated lesson content
-                        123456,                         // Placeholder TeacherID    TODO: retrieve teacher ID
-                        654321                         // Placeholder ClassroomID  TODO: retrieve class ID
+                        123456                         // Placeholder TeacherID    TODO: retrieve teacher ID
                 );
                 // Save to database
                 int isSaved = contentDAO.addWorksheetToDB(worksheet);

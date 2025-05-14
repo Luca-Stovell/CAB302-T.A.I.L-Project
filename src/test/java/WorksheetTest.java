@@ -23,8 +23,8 @@ public class WorksheetTest {
 
     @BeforeEach
     public void setUp() {
-        worksheet1 = new Worksheet(TOPIC1, WORKSHEET_CONTENT_ONE, VALID_DATE_TIME_1, VALID_ID1, VALID_ID2, VALID_ID3);
-        worksheet2 = new Worksheet(TOPIC2, WORKSHEET_CONTENT_TWO, VALID_ID1, VALID_ID2);
+        worksheet1 = new Worksheet(TOPIC1, WORKSHEET_CONTENT_ONE, VALID_DATE_TIME_1, VALID_ID1, VALID_ID2);
+        worksheet2 = new Worksheet(TOPIC2, WORKSHEET_CONTENT_TWO, VALID_ID1);
     }
 
     // Testing the full constructor (all parameters)
@@ -62,17 +62,6 @@ public class WorksheetTest {
     }
 
     @Test
-    public void testGetClassroomID() {
-        assertEquals(VALID_ID2, worksheet1.getClassroomID());
-    }
-
-    @Test
-    public void testSetClassroomID(){
-        worksheet1.setClassroomID(VALID_ID3);
-        assertEquals(VALID_ID3, worksheet1.getClassroomID());
-    }
-
-    @Test
     public void testGetMaterialID() {
         assertEquals(VALID_ID3, worksheet1.getMaterialID());
     }
@@ -106,11 +95,6 @@ public class WorksheetTest {
     @Test
     public void testGetTeacherID_Lesson2() {
         assertEquals(VALID_ID1, worksheet2.getTeacherID());
-    }
-
-    @Test
-    public void testGetClassroomID_Lesson2() {
-        assertEquals(VALID_ID2, worksheet2.getClassroomID());
     }
 
     @Test
@@ -156,12 +140,5 @@ public class WorksheetTest {
         worksheet1.setTeacherID(VALID_ID1);
         worksheet1.setTeacherID(INVALID_ID);
         assertNotEquals(INVALID_ID, worksheet1.getTeacherID());
-    }
-
-    @Test
-    public void testSetClassroomID_BadValue() {
-        worksheet1.setClassroomID(VALID_ID1);
-        worksheet1.setClassroomID(INVALID_ID);
-        assertNotEquals(INVALID_ID, worksheet1.getClassroomID());
     }
 }

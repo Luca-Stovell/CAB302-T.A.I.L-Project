@@ -5,6 +5,7 @@ import com.example.cab302tailproject.DAO.TeacherDAO;
 import com.example.cab302tailproject.DAO.SqlStudentDAO;
 import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.Session;
 import com.example.cab302tailproject.model.UserSession;     // For storing logged-in user info
 import com.example.cab302tailproject.model.UserDetail; // For fetching user names
 
@@ -157,6 +158,7 @@ public class LoginController {
                 userDetails = teacherDao.getUserNameDetails(email);
                 targetFxml = "lesson_generator-teacher.fxml"; // Your teacher's main page
                 windowTitle = "TAIL - Teacher Dashboard";
+                Session.setLoggedInTeacherEmail(email);
             }
         } else if (selectedToggle == studentRadioButton) {
             userRole = "Student";

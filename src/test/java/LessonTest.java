@@ -24,8 +24,8 @@ public class LessonTest {
 
     @BeforeEach
     public void setUp() {
-        lesson1 = new Lesson(TOPIC1, LESSON_CONTENT_ONE, VALID_DATE_TIME_1, VALID_ID1, VALID_ID2, VALID_ID3);
-        lesson2 = new Lesson(TOPIC2, LESSON_CONTENT_TWO, VALID_ID1, VALID_ID2);
+        lesson1 = new Lesson(TOPIC1, LESSON_CONTENT_ONE, VALID_DATE_TIME_1, VALID_ID1, VALID_ID2);
+        lesson2 = new Lesson(TOPIC2, LESSON_CONTENT_TWO, VALID_ID1);
     }
 
     // Testing the full constructor (all parameters)
@@ -63,17 +63,6 @@ public class LessonTest {
     }
 
     @Test
-    public void testGetClassroomID() {
-        assertEquals(VALID_ID2, lesson1.getClassroomID());
-    }
-
-    @Test
-    public void testSetClassroomID(){
-        lesson1.setClassroomID(VALID_ID3);
-        assertEquals(VALID_ID3, lesson1.getClassroomID());
-    }
-
-    @Test
     public void testGetMaterialID() {
         assertEquals(VALID_ID3, lesson1.getMaterialID());
     }
@@ -107,11 +96,6 @@ public class LessonTest {
     @Test
     public void testGetTeacherID_Lesson2() {
         assertEquals(VALID_ID1, lesson2.getTeacherID());
-    }
-
-    @Test
-    public void testGetClassroomID_Lesson2() {
-        assertEquals(VALID_ID2, lesson2.getClassroomID());
     }
 
     @Test
@@ -157,12 +141,5 @@ public class LessonTest {
         lesson1.setTeacherID(VALID_ID1);
         lesson1.setTeacherID(INVALID_ID);
         assertNotEquals(INVALID_ID, lesson1.getTeacherID());
-    }
-
-    @Test
-    public void testSetClassroomID_BadValue() {
-        lesson1.setClassroomID(VALID_ID1);
-        lesson1.setClassroomID(INVALID_ID);
-        assertNotEquals(INVALID_ID, lesson1.getClassroomID());
     }
 }

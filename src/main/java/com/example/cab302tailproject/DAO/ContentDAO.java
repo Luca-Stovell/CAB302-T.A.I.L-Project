@@ -1,5 +1,6 @@
 package com.example.cab302tailproject.DAO;
 
+import com.example.cab302tailproject.model.LearningCardCreator;
 import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
@@ -29,6 +30,7 @@ public class ContentDAO implements IContentDAO {
         createMaterialTable();
         createLessonTable();
         createWorksheetTable();
+        createLearningCardTable();
         try {
             // Example: Replace these values with your actual database credentials
             String url = "jdbc:sqlite:Tail.db"; // Change your URL and DB name here
@@ -61,7 +63,10 @@ public class ContentDAO implements IContentDAO {
         String query =
                 "CREATE TABLE IF NOT EXISTS material ("
                         + "materialID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        + "materialType TEXT NOT NULL"
+                        + "materialType TEXT NOT NULL, "
+                        + "week INTEGER, "
+                        + "ClassroomID INTEGER, "
+                        + "FOREIGN KEY (ClassroomID) REFERENCES Classroom(ClassroomID)"
                         + ")";
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
@@ -92,11 +97,9 @@ public class ContentDAO implements IContentDAO {
                         + "lessonContent TEXT, "
                         + "lastModifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
                         + "TeacherID INTEGER, "
-                        + "ClassroomID INTEGER, "
                         + "materialID INTEGER NOT NULL, "
                         + "FOREIGN KEY (materialID) REFERENCES material(materialID), "
-                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID), "
-                        + "FOREIGN KEY (ClassroomID) REFERENCES Classroom(ClassroomID)"
+                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID)"
                         + ")";
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
@@ -126,11 +129,34 @@ public class ContentDAO implements IContentDAO {
                         + "worksheetContent TEXT, "
                         + "lastModifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
                         + "TeacherID INTEGER, "
-                        + "ClassroomID INTEGER, "
                         + "materialID INTEGER NOT NULL, "
                         + "FOREIGN KEY (materialID) REFERENCES material(materialID)"
-                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID), "
-                        + "FOREIGN KEY (ClassroomID) REFERENCES Classroom(ClassroomID)"
+                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID)"
+                        + ")";
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates the lesson card table, which contains information about learning cards.
+     * <p>Includes: learningCardID, learningCardTopic, learningCardContent, materialID</p>
+     * materialID is a foreign key, that references the material table.
+     */
+    // Some of the fields are disabled, add them back in if needed
+    private void createLearningCardTable() {
+        String query =
+                "CREATE TABLE IF NOT EXISTS learningCard ("
+                        + "learningCardID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + "learningCardTopic TEXT, " // same as parent lesson?
+                        + "learningCardContent TEXT, "
+                        //+ "lastModifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " // probably unnecessary
+                        //+ "TeacherID INTEGER, " // consider replacing this with parent lesson (assuming card sets are generated from lessons
+                        + "materialID INTEGER NOT NULL, "
+                        + "FOREIGN KEY (materialID) REFERENCES material(materialID)"
+                        //+ "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID), "
                         + ")";
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
@@ -166,6 +192,78 @@ public class ContentDAO implements IContentDAO {
         return -1; // Error case, failed to insert
     }
 
+    /**
+     * Updates the ClassroomID for a specific material in the database identified by its materialID.
+     *
+     * @param classroomID The new ClassroomID to be set for the specified material.
+     * @param materialID The unique identifier of the material whose ClassroomID is to be updated.
+     * @return true if the ClassroomID was successfully updated; false if the operation fails
+     *         or an SQLException is encountered.
+     * @throws IllegalStateException if the database connection is not active.
+     */
+    public boolean updateClassroomID(int classroomID, int materialID) {
+        String sql = "UPDATE material SET ClassroomID = ? WHERE materialID = ?";
+        if (connection == null) {
+            throw new IllegalStateException("Database connection is not active.");
+        }
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, classroomID);
+            statement.setInt(2, materialID);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Updates the "week" field of a material in the database based on the provided material ID.
+     *
+     * @param week The new week value to set for the specified material.
+     * @param materialID The unique identifier of the material whose week value is to be updated.
+     * @return true if the "week" field was successfully updated; false otherwise.
+     * @throws IllegalStateException if the database connection is not active.
+     */
+    public boolean updateWeek(int week, int materialID) {
+        String sql = "UPDATE material SET week = ? WHERE materialID = ?";
+        if (connection == null) {
+            throw new IllegalStateException("Database connection is not active.");
+        }
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, week);
+            statement.setInt(2, materialID);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Retrieves the week number associated with a specific material from the database.
+     *
+     * @param materialID The unique identifier of the material whose week value is to be retrieved.
+     * @return The week value associated with the specified material ID, or -1 if an error occurs
+     *         or no record is found.
+     */
+    public int getWeek(int materialID) {
+        String sql = "SELECT * FROM material WHERE materialID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, materialID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("week");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 
     /**
      * Adds a new lesson entry to the database, including its attributes.
@@ -181,8 +279,8 @@ public class ContentDAO implements IContentDAO {
      */
     public int addLessonContent(Lesson content) {
         String sql = "INSERT INTO lesson (lessonTopic, lessonContent, " +
-                "TeacherID, ClassroomID, materialID) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                "TeacherID, materialID) " +
+                "VALUES (?, ?, ?, ?)";
         String sqlRetrieveDate = "SELECT lastModifiedDate FROM lesson WHERE rowid = last_insert_rowid()";
         String sqlUpdateDate = "UPDATE lesson SET lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') " +
                 "WHERE rowid = last_insert_rowid()";
@@ -204,8 +302,7 @@ public class ContentDAO implements IContentDAO {
             statement.setString(1, content.getTopic());
             statement.setString(2, content.getContent());
             statement.setInt(3, content.getTeacherID());
-            statement.setInt(4, content.getClassroomID());
-            statement.setInt(5, content.getMaterialID());
+            statement.setInt(4, content.getMaterialID());
             statement.executeUpdate();
 
             // Update the lastModifiedDate with '+10 hours' offset
@@ -243,8 +340,8 @@ public class ContentDAO implements IContentDAO {
      */
     public int addWorksheetToDB(Worksheet content) {
         String sql = "INSERT INTO worksheet (worksheetTopic, worksheetContent, " +
-                "TeacherID, ClassroomID, materialID) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                "TeacherID, materialID) " +
+                "VALUES (?, ?, ?, ?)";
         String sqlRetrieveDate = "SELECT lastModifiedDate FROM worksheet WHERE rowid = last_insert_rowid()";
         String sqlUpdateDate = "UPDATE worksheet SET lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') " +
                 "WHERE rowid = last_insert_rowid()";
@@ -267,8 +364,7 @@ public class ContentDAO implements IContentDAO {
             statement.setString(1, content.getTopic());
             statement.setString(2, content.getContent());
             statement.setInt(3, content.getTeacherID());
-            statement.setInt(4, content.getClassroomID());
-            statement.setInt(5, content.getMaterialID());
+            statement.setInt(4, content.getMaterialID());
             statement.executeUpdate();
 
             // Update the lastModifiedDate with '+10 hours' offset
@@ -286,6 +382,39 @@ public class ContentDAO implements IContentDAO {
                     }
                 }
             }
+            return content.getMaterialID();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public int addLearningCardToDB(LearningCardCreator content) {
+        String sql = "INSERT INTO learningCard (learningCardTopic, learningCardContent, " +
+                " materialID) " +
+                "VALUES (?, ?, ?)";
+
+        // Ensure the materialID exists by inserting into the material table if necessary
+        if (content.getMaterialID() <= 0) {
+            int generatedMaterialID = addMaterial("worksheet");
+            if (generatedMaterialID == -1) {
+                throw new IllegalStateException("Failed to create a material entry in the material table.");
+            }
+            content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
+        }
+
+
+        if (connection == null) {
+            throw new IllegalStateException("Database connection is not active.");
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, content.getTopic());
+            statement.setString(2, content.getContent());
+            statement.setInt(3, content.getMaterialID());
+            statement.executeUpdate();
+
+
             return content.getMaterialID();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -313,7 +442,6 @@ public class ContentDAO implements IContentDAO {
                                 ? rs.getTimestamp("lastModifiedDate").toInstant()
                                 : null ,    // for null case of timestamp
                         rs.getInt("teacherID"),
-                        rs.getInt("classroomID"),
                         rs.getInt("materialID")
                         );
             }
@@ -524,9 +652,68 @@ public class ContentDAO implements IContentDAO {
                                 ? rs.getTimestamp("lastModifiedDate").toInstant()
                                 : null ,    // for null case of timestamp
                         rs.getInt("teacherID"),
-                        rs.getInt("classroomID"),
                         rs.getInt("materialID")
                 );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updateTeacherID(String teacherEmail, int materialID, String type){
+        // Accept different ways of saying the same thing
+        if (type.equals("Lesson Plan")) {
+            type = "lesson";
+        }
+        if (type.equals("Worksheet")) {
+            type = "worksheet";
+        }
+        // Validate input type to prevent SQL injection or errors
+        if (!type.equalsIgnoreCase("worksheet") && !type.equalsIgnoreCase("lesson")) {
+            System.out.println("Type is " + type + ".");
+            throw new IllegalArgumentException("Invalid table type specified. Must be 'worksheet' or 'lesson'.");
+        }
+
+        String findTeacherQuery = "SELECT TeacherID FROM Teacher WHERE TeacherEmail = ?";
+        String sqlUpdate = "UPDATE " + type + " SET TeacherID = ? WHERE materialID = ?";
+
+
+        try (PreparedStatement statement = connection.prepareStatement(findTeacherQuery)) {
+            statement.setString(1, teacherEmail);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                int teacherID = rs.getInt("TeacherID");
+
+                try (PreparedStatement updateStatement = connection.prepareStatement(sqlUpdate)) {
+                    updateStatement.setInt(1, teacherID);
+                    updateStatement.setInt(2, materialID);
+
+                    int rowsUpdated = updateStatement.executeUpdate();
+                    return rowsUpdated > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Gets the contents of a stored learning card by its ID
+     * @param learningCardID ID of the learning card
+     * @return String containing learning card content as it is stored in the database
+     */
+    public String getLearningCardContent(int learningCardID) {
+        String sql = "SELECT learningCardContent FROM learningCard WHERE learningCardID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, learningCardID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("learningCardContent");
             }
         } catch (SQLException e) {
             e.printStackTrace();

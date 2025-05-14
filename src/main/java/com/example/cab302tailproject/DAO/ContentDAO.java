@@ -192,21 +192,76 @@ public class ContentDAO implements IContentDAO {
         return -1; // Error case, failed to insert
     }
 
-    public boolean updateWeekandClass(int week, int classroomID, int materialID) {
-        String sql = "UPDATE material SET week = ?, ClassroomID = ? WHERE materialID = ?";
+    /**
+     * Updates the ClassroomID for a specific material in the database identified by its materialID.
+     *
+     * @param classroomID The new ClassroomID to be set for the specified material.
+     * @param materialID The unique identifier of the material whose ClassroomID is to be updated.
+     * @return true if the ClassroomID was successfully updated; false if the operation fails
+     *         or an SQLException is encountered.
+     * @throws IllegalStateException if the database connection is not active.
+     */
+    public boolean updateClassroomID(int classroomID, int materialID) {
+        String sql = "UPDATE material SET ClassroomID = ? WHERE materialID = ?";
         if (connection == null) {
             throw new IllegalStateException("Database connection is not active.");
         }
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, week);
-            statement.setInt(2, classroomID);
-            statement.setInt(3, materialID);
+            statement.setInt(1, classroomID);
+            statement.setInt(2, materialID);
             statement.executeUpdate();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Updates the "week" field of a material in the database based on the provided material ID.
+     *
+     * @param week The new week value to set for the specified material.
+     * @param materialID The unique identifier of the material whose week value is to be updated.
+     * @return true if the "week" field was successfully updated; false otherwise.
+     * @throws IllegalStateException if the database connection is not active.
+     */
+    public boolean updateWeek(int week, int materialID) {
+        String sql = "UPDATE material SET week = ? WHERE materialID = ?";
+        if (connection == null) {
+            throw new IllegalStateException("Database connection is not active.");
+        }
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, week);
+            statement.setInt(2, materialID);
+            statement.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Retrieves the week number associated with a specific material from the database.
+     *
+     * @param materialID The unique identifier of the material whose week value is to be retrieved.
+     * @return The week value associated with the specified material ID, or -1 if an error occurs
+     *         or no record is found.
+     */
+    public int getWeek(int materialID) {
+        String sql = "SELECT * FROM material WHERE materialID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, materialID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("week");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
 
@@ -604,6 +659,45 @@ public class ContentDAO implements IContentDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean updateTeacherID(String teacherEmail, int materialID, String type){
+        // Accept different ways of saying the same thing
+        if (type.equals("Lesson Plan")) {
+            type = "lesson";
+        }
+        if (type.equals("Worksheet")) {
+            type = "worksheet";
+        }
+        // Validate input type to prevent SQL injection or errors
+        if (!type.equalsIgnoreCase("worksheet") && !type.equalsIgnoreCase("lesson")) {
+            System.out.println("Type is " + type + ".");
+            throw new IllegalArgumentException("Invalid table type specified. Must be 'worksheet' or 'lesson'.");
+        }
+
+        String findTeacherQuery = "SELECT TeacherID FROM Teacher WHERE TeacherEmail = ?";
+        String sqlUpdate = "UPDATE " + type + " SET TeacherID = ? WHERE materialID = ?";
+
+
+        try (PreparedStatement statement = connection.prepareStatement(findTeacherQuery)) {
+            statement.setString(1, teacherEmail);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                int teacherID = rs.getInt("TeacherID");
+
+                try (PreparedStatement updateStatement = connection.prepareStatement(sqlUpdate)) {
+                    updateStatement.setInt(1, teacherID);
+                    updateStatement.setInt(2, materialID);
+
+                    int rowsUpdated = updateStatement.executeUpdate();
+                    return rowsUpdated > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

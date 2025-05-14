@@ -170,7 +170,7 @@ public class ClassroomViewController {
      */
     @FXML
     private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
-        loadScene("Student_Ai_Assist.fxml");
+        loadScene("lesson_generator-teacher.fxml");
     }
 
     /**

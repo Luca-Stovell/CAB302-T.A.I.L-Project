@@ -12,7 +12,7 @@
             maxHeight = "-Infinity"
             prefHeight = "420"
             prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController"
+            fx:controller="com.example.cab302tailproject.controller.studentcontroller.LearningCardController"
             style= "-fx-background-color: white;">
     <!-- Left sidebar -->
     <left>
@@ -83,13 +83,13 @@
             <center>
                 <Pane prefHeight="365.0" prefWidth="510.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button layoutX="219.0" layoutY="238.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="55.0" style="-fx-background-color: #EEFF00;" text="Flip" />
-                  <Button layoutX="158.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="46.0" style="-fx-background-color: #00FF22;" text="Easy" />
-                  <Button layoutX="287.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="51.0" style="-fx-background-color: #EC221F;" text="Hard" />
-                  <Button layoutX="223.0" layoutY="292.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="51.0" style="-fx-background-color: #2c2c2c;" text="Again" textFill="#fffdfd" />
-                  <Button layoutX="211.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="72.0" text="Medium" />
-                  <Button layoutX="403.0" layoutY="299.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="91.0" text="Next" />
-                  <TextArea layoutX="91.0" layoutY="25.0" prefHeight="161.0" prefWidth="325.0" text="                                   ax+b=bx+a" />
+                  <Button fx:id="flipButton" onAction="#onFlipClicked" layoutX="219.0" layoutY="238.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="55.0" style="-fx-background-color: #EEFF00;" text="Flip" />
+                  <Button fx:id="easyButton" onAction="#onEasyClicked" layoutX="158.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="46.0" style="-fx-background-color: #00FF22;" text="Easy" />
+                  <Button fx:id="hardButton" onAction="#onHardClicked" layoutX="287.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="51.0" style="-fx-background-color: #EC221F;" text="Hard" />
+                  <Button fx:id="againButton" onAction="#onAgainClicked" layoutX="223.0" layoutY="292.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="51.0" style="-fx-background-color: #2c2c2c;" text="Again" textFill="#fffdfd" />
+                  <Button fx:id="mediumButton" onAction="#onMediumClicked" layoutX="211.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="72.0" text="Medium" />
+                  <Button fx:id="nextButton" onAction="#onNextClicked" layoutX="403.0" layoutY="299.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="91.0" text="Next" />
+                  <TextArea fx:id="cardContent" layoutX="91.0" layoutY="25.0" prefHeight="161.0" prefWidth="325.0" wrapText="true" text="                                   ax+b=bx+a" />
                </children>
                 </Pane>
             </center>

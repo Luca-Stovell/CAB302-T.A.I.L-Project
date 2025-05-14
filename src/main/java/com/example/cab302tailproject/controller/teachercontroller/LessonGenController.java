@@ -21,9 +21,7 @@ import javafx.stage.Stage;
 import java.util.List;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 
 /**
@@ -344,19 +342,29 @@ public class LessonGenController {
             int teacherClassroomId = 0;     // Start with default classroom
             int assignedWeek = 1;           // Start with week 1 as default
 
-            IContentDAO contentDAO = new ContentDAO();
-            if (teacherEmail == null) {     // Still save something to the db
-                contentDAO.updateWeekandClass(assignedWeek, teacherClassroomId, materialID);
-                System.out.println("Placeholder week and class saved successfully!");
-                return true;
-            } else if (teacherEmail != null) {
-                SqliteClassroomDAO classroomDAO = new SqliteClassroomDAO();
-                List<Classroom> classrooms = classroomDAO.getClassroomsByTeacherEmail(teacherEmail);
-                teacherClassroomId = (classrooms.getLast().getClassroomID());                   // Retrieve last classroom
-                contentDAO.updateWeekandClass(assignedWeek, teacherClassroomId, materialID);       // Set week and class
-                System.out.println("Week and class saved successfully!");
-                return true;
+            try {
+                IContentDAO contentDAO = new ContentDAO();
+                if (teacherEmail == null) {     // Still save something to the db
+                    contentDAO.updateClassroomID(teacherClassroomId, materialID);
+                    contentDAO.updateWeek(0, materialID);
+                    System.out.println("Placeholder week and class saved successfully!");
+                    return true;
+                } else if (teacherEmail != null) {
+                    SqliteClassroomDAO classroomDAO = new SqliteClassroomDAO();
+                    List<Classroom> classrooms = classroomDAO.getClassroomsByTeacherEmail(teacherEmail);
+                    teacherClassroomId = (classrooms.getLast().getClassroomID());                   // Retrieve last classroom
+                    contentDAO.updateClassroomID(teacherClassroomId, materialID);       // Set week and class
+                    contentDAO.updateWeek(0, materialID);
+                    System.out.println("Week and class saved successfully!");
+                    return true;
+                }
             }
+            catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("An error occurred while saving the week and class: " + e.getMessage());
+                showAlert(Alert.AlertType.INFORMATION, "Generation error","Failed to assign a classroom to the content.\n Check if any classrooms exist in the \"Students\" tab.");
+            }
+
         }
         return false;
     }

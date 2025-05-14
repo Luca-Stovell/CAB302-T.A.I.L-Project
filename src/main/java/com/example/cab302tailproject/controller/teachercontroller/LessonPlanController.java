@@ -5,6 +5,10 @@ import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -23,6 +27,12 @@ import java.io.PrintWriter;
 public class LessonPlanController {
 
     //<editor-fold desc="Field declarations">
+    /**
+     * Represents a ChoiceBox component that allows the user to select a specific week.
+     */
+    @FXML
+    public ChoiceBox weekCheckBox;
+
     /**
      * A JavaFX TextField component used for displaying and editing the topic or title
      * associated with the material being managed in the `LessonPlanController`.
@@ -108,6 +118,8 @@ public class LessonPlanController {
         this.dynamicContentBox = dynamicContentBox;
         this.previousView = previousView;
         materialID = currentMaterial.getMaterialID();
+        setUpCheckBox();
+        setupLabelToggleBehavior();
 
         if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
             Lesson lesson = contentDAO.getLessonContent(materialID);
@@ -141,7 +153,6 @@ public class LessonPlanController {
                     "The material type is invalid: " + currentMaterial.getMaterialType());
             return;
         }
-        setupLabelToggleBehavior();
     }
     //</editor-fold>
 
@@ -295,6 +306,53 @@ public class LessonPlanController {
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
+        }
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Week selection logic">
+
+    public void setUpCheckBox() {
+        // Populate weekCheckBox with week numbers (1-13)
+        ObservableList<Integer> weeks = FXCollections.observableArrayList();
+        for (int i = 1; i <= 13; i++) {
+            weeks.add(i);
+        }
+        weekCheckBox.setItems(weeks);
+
+        // Add a listener to handle the selection of a week
+        weekCheckBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
+            @Override
+            public void changed(ObservableValue<? extends Integer> observableValue, Integer oldValue, Integer newValue) {
+                if (newValue != null) {
+                    handleWeekSelection(newValue);
+                }
+            }
+        });
+    }
+
+    /**
+     * Handles the selection of a specific week for a material and updates the
+     * corresponding week value in the database. Displays appropriate messages
+     * and alerts based on the success or failure of the update operation.
+     *
+     * @param weekNumber the week number to be updated for the current material
+     */
+    private void handleWeekSelection(int weekNumber) {
+        try {
+            boolean updated = contentDAO.updateWeek(weekNumber, materialID);
+
+            if (updated) {
+                System.out.println("Week updated: " + weekNumber + " for " + materialID);
+            }
+            else {
+                System.out.println("Week update failed: " + weekNumber);
+                showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update week.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error updating week: " + e.getMessage());
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update week. Error: " + e.getMessage());
         }
     }
     //</editor-fold>

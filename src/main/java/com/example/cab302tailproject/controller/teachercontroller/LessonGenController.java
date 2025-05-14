@@ -267,7 +267,7 @@ public class LessonGenController {
                 Lesson lessonContent = new Lesson(
                         topic,
                         content,                        // Generated lesson content
-                        999                             // Placeholder TeacherID    TODO: retrieve teacher ID
+                        999                             // Placeholder TeacherID, update later
                 );
 
                 // Save content to database
@@ -276,14 +276,15 @@ public class LessonGenController {
                 // Update the material database with a week number and classroomID
                 // TODO: Determine which week should be assigned (for both lessons and worksheets)
                 if (isSaved != -1) {
+                    boolean validTeacherID = updateTeacherIdToContent(isSaved, type);
                     boolean classroomSaved = assignWeekAndClassroomToContent(isSaved);
-                    if (classroomSaved) {
-                        return isSaved;
-                    }
-                    else {
+                    if (!classroomSaved) {
                         System.err.println("Failed to save week and classroom to the database.");
-                        return isSaved;
                     }
+                    else if (!validTeacherID) {
+                        System.err.println("Failed to save teacher to the database.");
+                    }
+                    return isSaved;
                 }
                 else {
                     System.err.println("Failed to save lesson to the database.");
@@ -300,14 +301,15 @@ public class LessonGenController {
                 int isSaved = contentDAO.addWorksheetToDB(worksheet);
 
                 if (isSaved != -1) {
+                    boolean validTeacherID = updateTeacherIdToContent(isSaved, type);
                     boolean classroomSaved = assignWeekAndClassroomToContent(isSaved);
-                    if (classroomSaved) {
-                        return isSaved;
-                    }
-                    else {
+                    if (!classroomSaved) {
                         System.err.println("Failed to save week and classroom to the database.");
-                        return isSaved;
                     }
+                    else if (!validTeacherID) {
+                        System.err.println("Failed to save teacher to the database.");
+                    }
+                    return isSaved;
                 }
                 else {
                     System.err.println("Failed to save worksheet to the database.");
@@ -364,7 +366,34 @@ public class LessonGenController {
                 System.err.println("An error occurred while saving the week and class: " + e.getMessage());
                 showAlert(Alert.AlertType.INFORMATION, "Generation error","Failed to assign a classroom to the content.\n Check if any classrooms exist in the \"Students\" tab.");
             }
+        }
+        return false;
+    }
 
+    public boolean updateTeacherIdToContent(int materialID, String type) {
+        System.out.println("materialID: " + materialID);
+        if (materialID != -1) {
+            UserSession userSession = UserSession.getInstance();
+            String teacherEmail = userSession.getEmail();
+
+            try {
+                IContentDAO contentDAO = new ContentDAO();
+                if (teacherEmail == null) {
+                    System.out.println("No email found in the session. Skipping update to teacher id.");
+                    return true;
+                } else if (teacherEmail != null) {
+                    boolean isSaved = contentDAO.updateTeacherID(teacherEmail, materialID, type);
+                    if (isSaved) {
+                        System.out.println("Week and class saved successfully!");
+                        return true;
+                    }
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+                System.err.println("An error occurred while saving the week and class: " + e.getMessage());
+                showAlert(Alert.AlertType.INFORMATION, "Generation error","Failed to assign a classroom to the content.\n Check if any classrooms exist in the \"Students\" tab.");
+            }
         }
         return false;
     }

@@ -101,4 +101,6 @@ public interface IContentDAO {
      */
     public int getWeek(int materialID);
 
+    public boolean updateTeacherID(String teacherEmail, int materialID, String type);
+
 }

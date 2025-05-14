@@ -600,4 +600,43 @@ public class ContentDAO implements IContentDAO {
         }
         return null;
     }
+
+    public boolean updateTeacherID(String teacherEmail, int materialID, String type){
+        // Accept different ways of saying the same thing
+        if (type.equals("Lesson Plan")) {
+            type = "lesson";
+        }
+        if (type.equals("Worksheet")) {
+            type = "worksheet";
+        }
+        // Validate input type to prevent SQL injection or errors
+        if (!type.equalsIgnoreCase("worksheet") && !type.equalsIgnoreCase("lesson")) {
+            System.out.println("Type is " + type + ".");
+            throw new IllegalArgumentException("Invalid table type specified. Must be 'worksheet' or 'lesson'.");
+        }
+
+        String findTeacherQuery = "SELECT TeacherID FROM Teacher WHERE TeacherEmail = ?";
+        String sqlUpdate = "UPDATE " + type + " SET TeacherID = ? WHERE materialID = ?";
+
+
+        try (PreparedStatement statement = connection.prepareStatement(findTeacherQuery)) {
+            statement.setString(1, teacherEmail);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                int teacherID = rs.getInt("TeacherID");
+
+                try (PreparedStatement updateStatement = connection.prepareStatement(sqlUpdate)) {
+                    updateStatement.setInt(1, teacherID);
+                    updateStatement.setInt(2, materialID);
+
+                    int rowsUpdated = updateStatement.executeUpdate();
+                    return rowsUpdated > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

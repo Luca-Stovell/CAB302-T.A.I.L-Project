@@ -71,4 +71,6 @@ public interface IContentDAO {
      */
     boolean deleteContent(int materialID);
 
+    public boolean updateWeekandClass(int week, int classroomID, int materialID);
+
 }

@@ -7,7 +7,6 @@ public class Worksheet {
     private String content; // Actual content of the worksheet
     private Instant lastModifiedDate;
     private int teacherID;
-    private int classroomID;
     private int materialID;
 
     /**
@@ -15,23 +14,20 @@ public class Worksheet {
      * @param topic The topic of the lesson
      * @param content The actual content of the lesson
      * @param teacherID The ID of the teacher
-     * @param classroomID The ID of the classroom
      */
     public Worksheet(String topic, String content,
-                  int teacherID, int classroomID) {
+                  int teacherID) {
         this.topic = topic;
         this.content = content;
         this.teacherID = teacherID;
-        this.classroomID = classroomID;
     }
 
     public Worksheet(String topic, String content, Instant lastModifiedDate,
-                         int teacherID, int classroomID, int materialID) {
+                         int teacherID, int materialID) {
         this.topic = topic;
         this.content = content;
         this.lastModifiedDate = (lastModifiedDate == null) ? Instant.now() : lastModifiedDate;;
         this.teacherID = teacherID;
-        this.classroomID = classroomID;
         this.materialID = materialID;
     }
 
@@ -42,13 +38,6 @@ public class Worksheet {
 
     public void setMaterialID(int materialID) {
         this.materialID = materialID;
-    }
-
-    public int getClassroomID() {
-        return classroomID;
-    }
-    public void setClassroomID(int classroomID) {
-        this.classroomID = classroomID;
     }
 
     public int getTeacherID() {

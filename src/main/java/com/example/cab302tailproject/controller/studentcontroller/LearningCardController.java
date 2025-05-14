@@ -1,6 +1,8 @@
 package com.example.cab302tailproject.controller.studentcontroller;
 
+import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.LearningCards.LearningCardDeck;
+import com.example.cab302tailproject.model.LearningCardCreator;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -78,16 +80,23 @@ public class LearningCardController {
      */
     private LearningCardDeck deck;
 
+    private ContentDAO contentDAO;
+
     /**
      * Retrieves a deck from the database by id, and stored it in deck
      * @param ID Database's materialID of the selected deck
      */
     private void getDeck(int ID){
         //TODO implement getting from database
+        //String mockDeck = "1. What is Java?::A high-level, object-oriented programming language developed by Sun Microsystems,, 2. What does JVM stand for?::Java Virtual Machine,, 3. What is the purpose of the JVM?::To execute Java bytecode on any platform, enabling platform independence,, 4. What is the difference between JDK and JRE?::JDK includes tools for developing Java programs, while JRE is for running them,, 5. What is bytecode in Java?::An intermediate code generated after compiling Java code, which runs on the JVM,, 6. What keyword is used to create a class in Java?::class,, 7. What keyword is used to inherit a class in Java?::extends,, 8. What is the default value of an int in Java?::0,, 9. What does the 'static' keyword mean in Java?::It means the method or variable belongs to the class rather than instances of it,, 10. What is method overloading?::Defining multiple methods with the same name but different parameters,, 11. What is method overriding?::Redefining a method in a subclass that is already defined in the superclass,, 12. What is the 'main' method signature in Java?::public static void main(String[] args),, 13. What is the purpose of the 'final' keyword?::To declare constants, prevent method overriding or inheritance,, 14. What is the difference between == and .equals() in Java?::'==' compares references, '.equals()' compares values (usually),, 15. What is an interface in Java?::An abstract type used to specify a set of methods that a class must implement";
+
+        contentDAO = new ContentDAO();
+        //LearningCardCreator testDeck = new LearningCardCreator("Java",mockDeck);
+        //contentDAO.addLearningCardToDB(testDeck);
+        String dbDeck = contentDAO.getLearningCardContent(1);
 
         // Nicer looking mockDeck, from chatGPT
-        String mockDeck = "1. What is Java?::A high-level, object-oriented programming language developed by Sun Microsystems,, 2. What does JVM stand for?::Java Virtual Machine,, 3. What is the purpose of the JVM?::To execute Java bytecode on any platform, enabling platform independence,, 4. What is the difference between JDK and JRE?::JDK includes tools for developing Java programs, while JRE is for running them,, 5. What is bytecode in Java?::An intermediate code generated after compiling Java code, which runs on the JVM,, 6. What keyword is used to create a class in Java?::class,, 7. What keyword is used to inherit a class in Java?::extends,, 8. What is the default value of an int in Java?::0,, 9. What does the 'static' keyword mean in Java?::It means the method or variable belongs to the class rather than instances of it,, 10. What is method overloading?::Defining multiple methods with the same name but different parameters,, 11. What is method overriding?::Redefining a method in a subclass that is already defined in the superclass,, 12. What is the 'main' method signature in Java?::public static void main(String[] args),, 13. What is the purpose of the 'final' keyword?::To declare constants, prevent method overriding or inheritance,, 14. What is the difference between == and .equals() in Java?::'==' compares references, '.equals()' compares values (usually),, 15. What is an interface in Java?::An abstract type used to specify a set of methods that a class must implement";
-        deck = new LearningCardDeck(mockDeck);
+        deck = new LearningCardDeck(dbDeck);
     }
 
     /**

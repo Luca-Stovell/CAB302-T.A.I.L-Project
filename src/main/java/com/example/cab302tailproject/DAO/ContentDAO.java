@@ -1,5 +1,6 @@
 package com.example.cab302tailproject.DAO;
 
+import com.example.cab302tailproject.model.LearningCardCreator;
 import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
@@ -29,7 +30,7 @@ public class ContentDAO implements IContentDAO {
         createMaterialTable();
         createLessonTable();
         createWorksheetTable();
-        createLessonCardTable();
+        createLearningCardTable();
         try {
             // Example: Replace these values with your actual database credentials
             String url = "jdbc:sqlite:Tail.db"; // Change your URL and DB name here
@@ -141,20 +142,22 @@ public class ContentDAO implements IContentDAO {
     }
 
     /**
-     * Creates the lesson card table, which contains TODO refactor this table
+     * Creates the lesson card table, which contains information about learning cards.
+     * <p>Includes: learningCardID, learningCardTopic, learningCardContent, materialID</p>
+     * materialID is a foreign key, that references the material table.
      */
-    // table is called card to make it sound less like the lesson table
-    private void createLessonCardTable() {
+    // Some of the fields are disabled, add them back in if needed
+    private void createLearningCardTable() {
         String query =
-                "CREATE TABLE IF NOT EXISTS card ("
-                        + "lessonCardID INTEGER PRIMARY KEY AUTOINCREMENT, "
-                        + "lessonCardTopic TEXT, " // same as parent lesson?
-                        + "lessonCardContent TEXT, "
-                        + "lastModifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " // probably unnecessary
-                        + "TeacherID INTEGER, " // consider replacing this with parent lesson (assuming card sets are generated from lessons
+                "CREATE TABLE IF NOT EXISTS learningCard ("
+                        + "learningCardID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + "learningCardTopic TEXT, " // same as parent lesson?
+                        + "learningCardContent TEXT, "
+                        //+ "lastModifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " // probably unnecessary
+                        //+ "TeacherID INTEGER, " // consider replacing this with parent lesson (assuming card sets are generated from lessons
                         + "materialID INTEGER NOT NULL, "
                         + "FOREIGN KEY (materialID) REFERENCES material(materialID)"
-                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID), "
+                        //+ "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID), "
                         + ")";
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
@@ -310,6 +313,39 @@ public class ContentDAO implements IContentDAO {
                     }
                 }
             }
+            return content.getMaterialID();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public int addLearningCardToDB(LearningCardCreator content) {
+        String sql = "INSERT INTO learningCard (learningCardTopic, learningCardContent, " +
+                " materialID) " +
+                "VALUES (?, ?, ?)";
+
+        // Ensure the materialID exists by inserting into the material table if necessary
+        if (content.getMaterialID() <= 0) {
+            int generatedMaterialID = addMaterial("worksheet");
+            if (generatedMaterialID == -1) {
+                throw new IllegalStateException("Failed to create a material entry in the material table.");
+            }
+            content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
+        }
+
+
+        if (connection == null) {
+            throw new IllegalStateException("Database connection is not active.");
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, content.getTopic());
+            statement.setString(2, content.getContent());
+            statement.setInt(3, content.getMaterialID());
+            statement.executeUpdate();
+
+
             return content.getMaterialID();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -559,19 +595,19 @@ public class ContentDAO implements IContentDAO {
     }
 
     /**
-     * Gets the contents of a stored lesson card by its ID
-     * @param materialID ID of the lesson card
-     * @return String containing lesson card content as it is stored in the database
+     * Gets the contents of a stored learning card by its ID
+     * @param learningCardID ID of the learning card
+     * @return String containing learning card content as it is stored in the database
      */
-    public String getlessonCardContent(int materialID) {
-        String sql = "SELECT lassonCardContent FROM card WHERE lessonCardID = ?";
+    public String getLearningCardContent(int learningCardID) {
+        String sql = "SELECT learningCardContent FROM learningCard WHERE learningCardID = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, materialID);
+            statement.setInt(1, learningCardID);
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-                return rs.getString("lassonCardContent");
+                return rs.getString("learningCardContent");
             }
         } catch (SQLException e) {
             e.printStackTrace();

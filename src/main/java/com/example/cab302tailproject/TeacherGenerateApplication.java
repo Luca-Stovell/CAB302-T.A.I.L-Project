@@ -2,6 +2,10 @@
 
 package com.example.cab302tailproject;
 
+import com.example.cab302tailproject.DAO.DatabaseInitializer;
+import com.example.cab302tailproject.model.Session;
+import com.example.cab302tailproject.model.UserDetail;
+import com.example.cab302tailproject.model.UserSession;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -22,9 +26,14 @@ public class TeacherGenerateApplication extends Application {
         stage.setTitle(TITLE);
         stage.setScene(scene);
         stage.show();
+
+        // Set user
+        Session.setLoggedInTeacherEmail("mrs_liat@tail.com");
+        UserSession.getInstance().loginUser("Mrs", "Liat", "mrs_liat@tail.com", "Teacher");
     }
 
     public static void main(String[] args) {
+        new DatabaseInitializer().initialize();
         launch();
     }
 }

@@ -36,6 +36,7 @@ import java.io.PrintWriter;
  * @version 1.6
  */
 public class LessonGenController {
+    //<editor-fold desc="Field declarations">
     //<editor-fold desc="FXML UI Element References - Main Content">
     /**
      * TextField for user input to generate lessons or worksheets.
@@ -148,7 +149,9 @@ public class LessonGenController {
 
 
     //</editor-fold>
+    //</editor-fold>
 
+    //<editor-fold desc="Initialisation">
     /**
      * Initializes the controller after its root element has been completely processed.
      * Sets up the radio button toggle group and the file chooser.
@@ -176,6 +179,7 @@ public class LessonGenController {
 
         System.out.println("LessonGenController initialized.");
     }
+    //</editor-fold>
 
     //<editor-fold desc="AI Content Generation Logic">
     /**
@@ -247,47 +251,6 @@ public class LessonGenController {
     }
 
     /**
-     * Prompts the user to select a file location and saves the provided content.
-     * @param content The string content to save.
-     * @param type    The type of content (e.g., "Worksheet").
-     * @param topic   The topic of the content.
-     */
-    private void saveContentToFile(String content, String type, String topic) {
-        if (content == null) {
-            showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
-            return;
-        }
-        String safeTopic = topic.replaceAll("[^a-zA-Z0-9\\-_ ]", "").replace(" ", "_");
-        if (safeTopic.length() > 50) safeTopic = safeTopic.substring(0, 50);
-        String suggestedFileName = String.format("%s-%s.txt", type.replace(" ", "_"), safeTopic);
-        fileChooser.setInitialFileName(suggestedFileName);
-
-        Stage stage = null;
-        if (generateButton != null && generateButton.getScene() != null) {
-            stage = (Stage) generateButton.getScene().getWindow();
-        } else if (homeButton != null && homeButton.getScene() != null) { // Fallback
-            stage = (Stage) homeButton.getScene().getWindow();
-        }
-
-        if (stage == null) {
-            showAlert(Alert.AlertType.ERROR, "UI Error", "Could not display save dialog (cannot get current stage).");
-            return;
-        }
-        File file = fileChooser.showSaveDialog(stage);
-        if (file != null) {
-            try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-                writer.println(content);
-                showAlert(Alert.AlertType.INFORMATION, "Save Successful", "Content saved to " + file.getName());
-            } catch (IOException e) {
-                System.err.println("Error saving file '" + file.getAbsolutePath() + "': " + e.getMessage());
-                e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Save Failed", "Could not save file. Error: " + e.getMessage());
-            }
-        }
-    }
-    //</editor-fold>
-
-    /**
      * Saves the supplied content to the database. Assumes the teacher and classroom.
      * @param content The full text of content to be added
      * @param type The type of material it is: "Lesson Plan" or "Worksheet".
@@ -301,38 +264,30 @@ public class LessonGenController {
         if (topic.length() > 50) topic = topic.substring(0, 50);
         try {
             IContentDAO contentDAO = new ContentDAO();
-
             if (type.equals("Lesson Plan")) {
                 // Create LessonContent object
                 Lesson lessonContent = new Lesson(
                         topic,
                         content,                        // Generated lesson content
-                        123456                         // Placeholder TeacherID    TODO: retrieve teacher ID
+                        999                             // Placeholder TeacherID    TODO: retrieve teacher ID
                 );
 
-                // Save to database
+                // Save content to database
                 int isSaved = contentDAO.addLessonContent(lessonContent);
 
+                // Update the material database with a week number and classroomID
+                // TODO: Determine which week should be assigned (for both lessons and worksheets)
                 if (isSaved != -1) {
-                    UserSession userSession = UserSession.getInstance();
-                    String teacherEmail = userSession.getEmail();
-                    int defaultClassroomId = 0; // default classroom
-
-                    if (teacherEmail == null) {
-                        contentDAO.updateWeekandClass(1, defaultClassroomId, isSaved);
-                        System.out.println("Lesson plan saved successfully!");
+                    boolean classroomSaved = assignWeekAndClassroomToContent(isSaved);
+                    if (classroomSaved) {
                         return isSaved;
                     }
-                    else if (teacherEmail != null) {
-                        SqliteClassroomDAO classroomDAO = new SqliteClassroomDAO();
-                        List<Classroom> classrooms = classroomDAO.getClassroomsByTeacherEmail(teacherEmail);
-                        // TODO: update the add classroom feature. It currently doesnt associate teachers
-                        //defaultClassroomId = (classrooms.getFirst().getClassroomID());          // Retrieve first classroom
-                        contentDAO.updateWeekandClass(1, defaultClassroomId, isSaved);    // Set week and class
-                        System.out.println("Lesson plan saved successfully!");
+                    else {
+                        System.err.println("Failed to save week and classroom to the database.");
                         return isSaved;
                     }
-                } else {
+                }
+                else {
                     System.err.println("Failed to save lesson to the database.");
                 }
             }
@@ -341,15 +296,22 @@ public class LessonGenController {
                 Worksheet worksheet = new Worksheet(
                         topic,
                         content,                        // Generated lesson content
-                        123456                         // Placeholder TeacherID    TODO: retrieve teacher ID
+                        999                             // Placeholder TeacherID    TODO: retrieve teacher ID
                 );
                 // Save to database
                 int isSaved = contentDAO.addWorksheetToDB(worksheet);
 
                 if (isSaved != -1) {
-                    System.out.println("Worksheet saved successfully!");
-                    return isSaved;
-                } else {
+                    boolean classroomSaved = assignWeekAndClassroomToContent(isSaved);
+                    if (classroomSaved) {
+                        return isSaved;
+                    }
+                    else {
+                        System.err.println("Failed to save week and classroom to the database.");
+                        return isSaved;
+                    }
+                }
+                else {
                     System.err.println("Failed to save worksheet to the database.");
                 }
             }
@@ -363,7 +325,44 @@ public class LessonGenController {
         return -1;
     }
 
+    /**
+     * Assigns a week number and classroom ID to the specified material in the database.
+     * The method determines the appropriate week and classroom based on the current
+     * teacher's session information. If the teacher information is unavailable, default
+     * values are used to update the material.
+     *
+     * @param materialID The unique identifier of the material to which a week and classroom
+     *                   are to be assigned. Must not be -1.
+     * @return true if the operation to assign week and classroom to the material is successful,
+     *         false otherwise.
+     */
+    public boolean assignWeekAndClassroomToContent(int materialID) {
+        // TODO: Determine which week should be assigned (for both lessons and worksheets)
+        if (materialID != -1) {
+            UserSession userSession = UserSession.getInstance();
+            String teacherEmail = userSession.getEmail();
+            int teacherClassroomId = 0;     // Start with default classroom
+            int assignedWeek = 1;           // Start with week 1 as default
 
+            IContentDAO contentDAO = new ContentDAO();
+            if (teacherEmail == null) {     // Still save something to the db
+                contentDAO.updateWeekandClass(assignedWeek, teacherClassroomId, materialID);
+                System.out.println("Placeholder week and class saved successfully!");
+                return true;
+            } else if (teacherEmail != null) {
+                SqliteClassroomDAO classroomDAO = new SqliteClassroomDAO();
+                List<Classroom> classrooms = classroomDAO.getClassroomsByTeacherEmail(teacherEmail);
+                teacherClassroomId = (classrooms.getLast().getClassroomID());                   // Retrieve last classroom
+                contentDAO.updateWeekandClass(assignedWeek, teacherClassroomId, materialID);       // Set week and class
+                System.out.println("Week and class saved successfully!");
+                return true;
+            }
+        }
+        return false;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Page navigation">
     /**
      * Navigates to the generated lesson plan view for the material specified by the given ID.
      * If no material is found with the provided ID, displays a warning alert.
@@ -405,8 +404,7 @@ public class LessonGenController {
             e.printStackTrace();
         }
     }
-
-
+    //</editor-fold>
 
     //<editor-fold desc="Sidebar Navigation Event Handlers - Direct Scene Switching">
     /**

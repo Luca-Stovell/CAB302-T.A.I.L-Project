@@ -15,9 +15,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-
+/**
+ * Controller class responsible for managing the lesson plan and worksheet functionalities
+ * after generating. It provides logic to handle UI interactions, manage material data,
+ * and facilitate the saving or navigation between views.
+ */
 public class LessonPlanController {
 
+    //<editor-fold desc="Field declarations">
     /**
      * A JavaFX TextField component used for displaying and editing the topic or title
      * associated with the material being managed in the `LessonPlanController`.
@@ -76,14 +81,17 @@ public class LessonPlanController {
      */
     private int materialID;
 
+    //</editor-fold>
+
+    //<editor-fold desc="Initialisation">
+
     /**
-     * LessonPlanController constructor intentionally blank due to this
-     * controller requiring input to be passed to it (incompatible with JavaFX constructors)
+     * Initializes the controller after the root element has been completely loaded.
      */
-    public LessonPlanController(){
+    @FXML
+    public void initialize() {
         ;
     }
-
     /**
      * Initializes the material data and sets up the user interface components based on the provided material type.
      * Handles different material types such as "lesson" and "worksheet", retrieves their content from the database,
@@ -135,12 +143,9 @@ public class LessonPlanController {
         }
         setupLabelToggleBehavior();
     }
+    //</editor-fold>
 
-    @FXML
-    public void initialize() {
-        ;
-    }
-
+    //<editor-fold desc="Button functionality">
     /**
      * Handles the event triggered when the "Back" button is clicked.
      *
@@ -152,7 +157,7 @@ public class LessonPlanController {
      * when there is no previous view to navigate back to.
      */
     @FXML
-    private void onBackClicked() { // TODO: make it delete the entry as well
+    private void onBackClicked() {
         if (previousView != null) {
             System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
             contentDAO.deleteContent(materialID);
@@ -211,7 +216,6 @@ public class LessonPlanController {
                 showAlert(Alert.AlertType.ERROR, "Save Failed", "Could not save file. Error: " + e.getMessage());
             }
         }
-
     }
 
     /**
@@ -293,21 +297,9 @@ public class LessonPlanController {
             showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
         }
     }
+    //</editor-fold>
 
-    /**
-     * Displays an alert dialog to the user with the specified alert type, title, and content.
-     *
-     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
-     * @param title the title of the alert dialog
-     * @param content the text content to be displayed within the alert dialog
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
+    //<editor-fold desc="Utility methods">
     /**
      * Configures the behavior of the `topicTextField` to allow editing when clicked and
      * disable editing upon losing focus or pressing Enter. Validates input to ensure the
@@ -355,5 +347,20 @@ public class LessonPlanController {
         });
 
     }
+
+    /**
+     * Displays an alert dialog to the user with the specified alert type, title, and content.
+     *
+     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
+     * @param title the title of the alert dialog
+     * @param content the text content to be displayed within the alert dialog
+     */
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    //</editor-fold>
 
 }

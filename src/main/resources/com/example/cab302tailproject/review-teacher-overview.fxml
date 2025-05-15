@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="dynamicContentBox" maxHeight="Infinity" maxWidth="Infinity" prefHeight="274.0" prefWidth="510.0" style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.teachercontroller.ReviewTeacherOverviewController">
+    <HBox VBox.vgrow="ALWAYS">
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="Infinity" maxWidth="144.0" minHeight="100" minWidth="50.0" prefHeight="274" prefWidth="144.0" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+            <VBox alignment="TOP_LEFT" style="-fx-padding: 0;">
+                <Button defaultButton="true" prefHeight="65" prefWidth="144" text="Week 1" />
+                <Button prefHeight="65" prefWidth="144" text="Week 2" />
+                <Button prefHeight="65" prefWidth="144" text="Week 3" />
+                <Button prefHeight="65" prefWidth="144" text="Week 4" />
+                <Button prefHeight="65" prefWidth="144" text="Week 5" />
+                <Button prefHeight="65" prefWidth="144" text="Week 6" />
+                <Button prefHeight="65" prefWidth="144" text="Week 7" />
+                <Button prefHeight="65" prefWidth="144" text="Week 8" />
+                <Button prefHeight="65" prefWidth="144" text="Week 9" />
+                <Button prefHeight="65" prefWidth="144" text="Week 10" />
+                <Button prefHeight="65" prefWidth="144" text="Week 11" />
+                <Button prefHeight="65" prefWidth="144" text="Week 12" />
+                <Button prefHeight="65" prefWidth="144" text="Week 13" />
+            </VBox>
+        </ScrollPane>
+        <VBox alignment="CENTER" maxWidth="Infinity" minWidth="150" prefHeight="200.0" spacing="30" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets bottom="15" top="15" />
+            </padding>
+            <Button mnemonicParsing="false" prefHeight="60" prefWidth="150" style="-fx-font-size: 20;" text="View Lesson" />
+            <Button mnemonicParsing="false" prefHeight="60" prefWidth="150" style="-fx-font-size: 20;" text="View Cards" />
+            <Button mnemonicParsing="false" prefHeight="60" prefWidth="150" style="-fx-font-size: 18;" text="View Worksheet" />
+        </VBox>
+    </HBox>
+</VBox>

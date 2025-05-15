@@ -101,7 +101,7 @@ public class AiAssistantController_Student {
     @FXML
     private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
         Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("Student_Ai_Assist.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("learning_cards.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         stage.setScene(scene);
     }

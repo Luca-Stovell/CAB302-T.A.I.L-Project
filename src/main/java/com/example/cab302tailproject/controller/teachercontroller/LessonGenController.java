@@ -295,7 +295,7 @@ public class LessonGenController {
                 Worksheet worksheet = new Worksheet(
                         topic,
                         content,                        // Generated lesson content
-                        999                             // Placeholder TeacherID    TODO: retrieve teacher ID
+                        999                             // Placeholder TeacherID
                 );
                 // Save to database
                 int isSaved = contentDAO.addWorksheetToDB(worksheet);

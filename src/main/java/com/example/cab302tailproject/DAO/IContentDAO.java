@@ -4,6 +4,8 @@ import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
 
+import java.util.List;
+
 public interface IContentDAO {
     /**
      * Adds a lesson to the database
@@ -102,5 +104,9 @@ public interface IContentDAO {
     public int getWeek(int materialID);
 
     public boolean updateTeacherID(String teacherEmail, int materialID, String type);
+
+    public int getClassroomID(int materialID);
+
+    public List<Integer> getClassroomList(String teacherEmail);
 
 }

@@ -7,6 +7,8 @@ import com.example.cab302tailproject.model.Worksheet;
 
 import javax.xml.transform.Result;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 // the controllers for the login/register page should use these
 public class ContentDAO implements IContentDAO {
@@ -262,6 +264,40 @@ public class ContentDAO implements IContentDAO {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public int getClassroomID(int materialID) {
+        String sql = "SELECT * FROM material WHERE materialID = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, materialID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("classroomID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public List<Integer> getClassroomList(String teacherEmail) {
+        String findClassroomsQuery = "SELECT ClassroomID FROM Classroom WHERE TeacherEmail = ?";
+        List<Integer> classroomList = new ArrayList<>();
+
+        try (PreparedStatement statement = connection.prepareStatement(findClassroomsQuery)) {
+            statement.setString(1, teacherEmail);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                int classroomID = rs.getInt("ClassroomID");
+                classroomList.add(classroomID);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return classroomList;
     }
 
 

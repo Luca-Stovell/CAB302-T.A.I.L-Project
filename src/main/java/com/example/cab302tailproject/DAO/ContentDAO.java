@@ -300,6 +300,24 @@ public class ContentDAO implements IContentDAO {
         return classroomList;
     }
 
+    public int getMaterialByWeek(int weekNumber, String type) { // TODO: Add classroomID as parameter
+        String sql = "SELECT materialID FROM material WHERE week = ? AND materialType = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, weekNumber);
+            statement.setString(2, type);
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                int materialID = result.getInt("materialID");
+                return materialID;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 
     /**
      * Adds a new lesson entry to the database, including its attributes.

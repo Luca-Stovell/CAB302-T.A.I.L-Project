@@ -123,7 +123,9 @@ public class ReviewTeacherLessonViewController {
             this.materialType = currentMaterial.getMaterialType();
 
             if (worksheet != null) {
-                //generatedTextArea.setText(worksheet.getContent());
+                TextFlow formattedContent = formatTextWithBold(worksheet.getContent());
+                generatedTextArea.getChildren().add(formattedContent);
+
                 topicTextField.setText(worksheet.getTopic());
             } else {
                 showAlert(Alert.AlertType.WARNING, "No worksheet found",

@@ -1,5 +1,6 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
+import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Material;
@@ -12,13 +13,29 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.util.List;
 
 public class ReviewTeacherOverviewController {
 
     //<editor-fold desc="Field declarations">
-    @FXML public Button viewLesson;
-    @FXML public Button viewCards;
-    @FXML public Button viewWorksheet;
+    @FXML Button viewLesson;
+    @FXML Button viewCards;
+    @FXML Button viewWorksheet;
+    @FXML Button week1Button;
+    @FXML Button week2Button;
+    @FXML Button week3Button;
+    @FXML Button week4Button;
+    @FXML Button week5Button;
+    @FXML Button week6Button;
+    @FXML Button week7Button;
+    @FXML Button week8Button;
+    @FXML Button week9Button;
+    @FXML Button week10Button;
+    @FXML Button week11Button;
+    @FXML Button week12Button;
+    @FXML Button week13Button;
+    private Button selectedButton = null;
+
 
     /**
      * Holds a reference to the previously displayed view within the application.
@@ -26,6 +43,7 @@ public class ReviewTeacherOverviewController {
      * Typically updated when transitioning between different scenes in the interface.
      */
     private static VBox previousView;
+
 
     /**
      * Represents the material currently being edited or managed by the LessonPlanController.
@@ -56,11 +74,29 @@ public class ReviewTeacherOverviewController {
      * Represents the unique identifier for the material currently being processed or displayed within LessonPlanController.
      */
     private int materialID;
+
+    private int weekNumber;
     //</editor-fold>
 
+    @FXML public void initialize() {
+        this.contentDAO = new ContentDAO();
+        List<Button> weekButtons = List.of(week1Button, week2Button, week3Button, week4Button, week5Button,
+                week6Button, week7Button, week8Button, week9Button, week10Button, week11Button, week12Button, week13Button);
+        for (Button button : weekButtons) {
+            if (button == null) {
+                System.err.println("Button is null: Check FXML file binding for this button!");
+            }
+        }
+
+        for (Button weekButton : weekButtons) {
+            weekButton.setOnAction(event -> handleWeekButtonSelection(weekButton, weekButtons));
+        }
+    }
+
     public void onViewLessonClicked(ActionEvent event) {
-        currentMaterial = new Material(6, "lesson");     // Prepare new view with the given output
-        navigateToGeneratedPlan(currentMaterial.getMaterialID());
+        int materialIdOfWeek = contentDAO.getMaterialByWeek(weekNumber, "lesson");
+        currentMaterial = new Material(materialIdOfWeek, "lesson");     // Prepare new view with the given output
+        navigateToContentPage(currentMaterial.getMaterialID());
     }
 
     public void onViewCardsClicked(ActionEvent event) {
@@ -68,11 +104,13 @@ public class ReviewTeacherOverviewController {
     }
 
     public void onViewWorksheetClicked(ActionEvent event) {
-        //navigateToGeneratedPlan(12);
+        int materialIdOfWeek = contentDAO.getMaterialByWeek(weekNumber, "worksheet");
+        currentMaterial = new Material(materialIdOfWeek, "worksheet");     // Prepare new view with the given output
+        navigateToContentPage(currentMaterial.getMaterialID());
     }
 
-    private void navigateToGeneratedPlan(int materialID) {
-        try {
+    private void navigateToContentPage(int materialID) {
+        try {   // TODO: make this a util method, using fxml file name as second parameter
             this.materialID = materialID;
             if (this.currentMaterial == null) {
                 showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
@@ -98,6 +136,21 @@ public class ReviewTeacherOverviewController {
                     "Could not load generated content view.\n" + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void handleWeekButtonSelection(Button clickedButton, List<Button> weekButtons) {
+        for (Button button : weekButtons) {
+            button.setStyle(""); // Clear styling
+        }
+        clickedButton.setStyle("-fx-background-color: #0073e6; -fx-text-fill: white;");
+
+        selectedButton = clickedButton;
+
+        String weekText = clickedButton.getText();
+        String weekNumberString = weekText.replaceAll("\\D+", ""); // Remove all non-numbers
+        int weekNumber = Integer.parseInt(weekNumberString);
+        this.weekNumber = weekNumber;
+        System.out.println("Week button clicked: " + weekNumber);
     }
 
     //<editor-fold desc="Utility methods">

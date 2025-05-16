@@ -13,6 +13,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -453,8 +454,10 @@ public class LessonGenController {
     private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
         Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_generator-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+//        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+//        stage.setScene(scene);
+        Parent root = fxmlLoader.load();
+        stage.getScene().setRoot(root);
     }
 
     /**
@@ -466,8 +469,10 @@ public class LessonGenController {
     private void onSidebarReviewClicked(ActionEvent event) throws IOException {
         Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+//        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+//        stage.setScene(scene);
+        Parent root = fxmlLoader.load();
+        stage.getScene().setRoot(root);
     }
 
     /**

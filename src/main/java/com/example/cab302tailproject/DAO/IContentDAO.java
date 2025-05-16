@@ -109,4 +109,6 @@ public interface IContentDAO {
 
     public List<Integer> getClassroomList(String teacherEmail);
 
+    public int getMaterialByWeek(int weekNumber, String type);
+
 }

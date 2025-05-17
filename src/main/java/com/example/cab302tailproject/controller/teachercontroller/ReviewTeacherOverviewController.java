@@ -8,7 +8,6 @@ import com.example.cab302tailproject.model.UserSession;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -39,10 +38,8 @@ public class ReviewTeacherOverviewController {
     @FXML Button week12Button;
     @FXML Button week13Button;
     @FXML Button allContentButton;
-    private Button selectedButton = null;
 
     @FXML private ChoiceBox<Integer> classCheckBox;
-
 
     /**
      * Holds a reference to the previously displayed view within the application.
@@ -50,7 +47,6 @@ public class ReviewTeacherOverviewController {
      * This is typically updated when transitioning between different scenes in the interface.
      */
     private VBox previousView;
-
 
     /**
      * Represents the material currently being edited or managed by the LessonPlanController.
@@ -72,12 +68,6 @@ public class ReviewTeacherOverviewController {
     private VBox dynamicContentBox;
 
     /**
-     * Represents the type of material currently being processed or displayed within the
-     * LessonPlanController.
-     */
-    private String materialType;
-
-    /**
      * Represents the unique identifier for the material currently being processed or displayed within LessonPlanController.
      */
     private int materialID;
@@ -90,9 +80,9 @@ public class ReviewTeacherOverviewController {
      * Initializes the controller and sets up the necessary data and event bindings for UI components.
      */
     @FXML public void initialize() {
-        this.contentDAO = new ContentDAO();
         List<Button> weekButtons = List.of(week1Button, week2Button, week3Button, week4Button, week5Button,
                 week6Button, week7Button, week8Button, week9Button, week10Button, week11Button, week12Button, week13Button);
+        this.contentDAO = new ContentDAO();
         for (Button button : weekButtons) {
             if (button == null) {
                 System.err.println("Button is null: Check FXML file binding for this button!");
@@ -103,11 +93,11 @@ public class ReviewTeacherOverviewController {
             weekButton.setOnAction(event -> handleWeekButtonSelection(weekButton, weekButtons));
         }
         setUpClassCheckBox();
+        handleWeekButtonSelection(week1Button, weekButtons);        // Select week 1 by default
     }
     //</editor-fold>
 
     //<editor-fold desc="Button handling">
-
     /**
      * Handles the event triggered when the "View Lesson" button is clicked.
      * This method retrieves the material ID corresponding to the selected week
@@ -115,9 +105,7 @@ public class ReviewTeacherOverviewController {
      * navigating to the appropriate content page.
      */
     public void onViewLessonClicked() {
-        int materialIdOfWeek = contentDAO.getMaterialByWeek(weekNumber, "lesson");
-        currentMaterial = new Material(materialIdOfWeek, "lesson");     // Prepare new view with the given output
-        navigateToContentPage(currentMaterial.getMaterialID());
+        viewContent("lesson");
     }
 
     /**
@@ -128,7 +116,7 @@ public class ReviewTeacherOverviewController {
      * data to navigate to the appropriate card content page.
      */
     public void onViewCardsClicked() {
-    ; // TODO: implement a way for teachers to view cards
+        viewContent("card");   // TODO: implement a way for teachers to view cards
     }
 
     /**
@@ -137,9 +125,7 @@ public class ReviewTeacherOverviewController {
      * selected week and navigating to the corresponding content page.
      */
     public void onViewWorksheetClicked() {
-        int materialIdOfWeek = contentDAO.getMaterialByWeek(weekNumber, "worksheet");
-        currentMaterial = new Material(materialIdOfWeek, "worksheet");     // Prepare new view with the given output
-        navigateToContentPage(currentMaterial.getMaterialID());
+        viewContent("worksheet");
     }
 
     /**
@@ -186,9 +172,6 @@ public class ReviewTeacherOverviewController {
             button.setStyle(""); // Clear styling
         }
         clickedButton.setStyle("-fx-background-color: #0073e6; -fx-text-fill: white;");
-
-        selectedButton = clickedButton;
-
         String weekText = clickedButton.getText();
         String weekNumberString = weekText.replaceAll("\\D+", ""); // Remove all non-numbers
         int weekNumber = Integer.parseInt(weekNumberString);
@@ -198,6 +181,34 @@ public class ReviewTeacherOverviewController {
     //</editor-fold>
 
     //<editor-fold desc="Navigation">
+    /**
+     * Retrieves and displays the specified content type for the selected classroom
+     * and current week.
+     *
+     * @param materialType The type of the material to be retrieved and displayed
+     *                     (e.g., "Lesson", "Cards", or "Worksheet").
+     */
+    private void viewContent(String materialType) {
+        if (classCheckBox.getValue() != null) {
+            try {
+                int classroomID = classCheckBox.getValue();
+
+                int materialIdOfLesson = contentDAO.getMaterialByWeekAndClassroom(weekNumber, materialType, classroomID);
+
+                currentMaterial = new Material(materialIdOfLesson, materialType);
+                navigateToContentPage(currentMaterial.getMaterialID());
+            }
+            catch (Exception e) {
+                System.err.println("Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber);
+                showAlert(Alert.AlertType.ERROR, "Retrieval error", "Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + ". \n Check 'All content' to review available content.");
+            }
+        }
+        else {
+            System.out.println("No classroom selected");
+            showAlert(Alert.AlertType.WARNING, "No classroom selected", "No classroom selected. Please select a classroom to view the content.");
+        }
+    }
+
     /**
      * Navigates to a new content page based on the provided material ID.
      * Preserves the current view to facilitate return navigation and replaces
@@ -236,7 +247,6 @@ public class ReviewTeacherOverviewController {
     //</editor-fold>
 
     //<editor-fold desc="Class selection">
-
     /**
      * Configures and initializes the `classCheckBox` component to allow the selection of
      * classrooms for the current material. Retrieves classrooms associated with a teacher
@@ -247,11 +257,13 @@ public class ReviewTeacherOverviewController {
     public void setUpClassCheckBox() {
         try{
             // Retrieve teacher's associated classrooms
-            int initialClassroomID = contentDAO.getClassroomID(materialID);
-            classCheckBox.setValue(initialClassroomID);
             UserSession userSession = UserSession.getInstance();
             String teacherEmail = userSession.getEmail();
             ObservableList<Integer> availableClasses = FXCollections.observableArrayList(contentDAO.getClassroomList(teacherEmail));
+
+            int initialClassroomID = availableClasses.getLast();
+            classCheckBox.setValue(initialClassroomID);
+
             classCheckBox.setItems(availableClasses);
 
             // Add a listener to handle the selection of a week

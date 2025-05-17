@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-// the controllers for the login/register page should use these
 public class ContentDAO implements IContentDAO {
     //<editor-fold desc="Initialisation">
     private Connection connection;
@@ -19,10 +18,8 @@ public class ContentDAO implements IContentDAO {
      * Initializes the database connection using a singleton approach provided by the
      * SqliteConnection class. Additionally, it creates the necessary database tables
      * ("material", "lesson", and "worksheet") if they do not already exist.
-     *
      * If the connection establishment process fails, this constructor throws a RuntimeException
      * with the relevant SQLException details.
-     *
      * The database file used by this connection is "Tail.db", and it is assumed to
      * reside in the application's working directory. Modify the JDBC URL if required
      * to match your configuration.
@@ -51,17 +48,9 @@ public class ContentDAO implements IContentDAO {
     //<editor-fold desc="Table creation">
     /**
      * Creates the "material" table in the database if it does not already exist.
-     * The table includes the following columns:
-     *
+     * The table includes columns:
      * - materialID: An INTEGER that serves as the primary key and is auto-incremented.
      * - materialType: A TEXT field that cannot be null, specifying the type of material.
-     *
-     * If the table creation operation encounters an exception, the error is caught,
-     * and the stack trace is printed.
-     *
-     * This method performs the table creation operation using a SQL query executed
-     * through a Statement object. The database connection used for executing the
-     * query is assumed to be active and valid.
      */
     private void createMaterialTable() {
         String query =
@@ -75,7 +64,7 @@ public class ContentDAO implements IContentDAO {
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
     }
 
@@ -84,13 +73,10 @@ public class ContentDAO implements IContentDAO {
      * Creates the "lesson" table in the database if it does not already exist.
      * The table includes columns for lesson ID, topic, content, last modified date, teacher ID,
      * classroom ID, and material ID.
-     *
      * The lessonID column serves as the primary key and is auto-incremented.
      * The materialID column is mandatory and acts as a foreign key referencing the material table.
      * The TeacherID and ClassroomID columns also feature foreign key constraints to their respective tables.
-     *
      * A default timestamp is applied to the lastModifiedDate column to capture the last update time automatically.
-     *
      * If the table creation query encounters an exception, the stack trace is printed.
      */
     private void createLessonTable() {
@@ -108,7 +94,7 @@ public class ContentDAO implements IContentDAO {
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
     }
 
@@ -117,13 +103,9 @@ public class ContentDAO implements IContentDAO {
      * The table contains columns for worksheet ID, topic, content, last modified date, teacher ID,
      * classroom ID, and material ID. It also establishes foreign key constraints between the worksheet
      * table and the material, teacher, and classroom tables.
-     *
-     * The worksheetID column is set as the primary key and auto-incremented.
-     * The materialID column is mandatory and serves as a foreign key reference to the material table.
-     *
-     * A default timestamp is set for the lastModifiedDate column to capture the time of the last update.
-     *
-     * If the table creation query fails, an exception is caught, and the stack trace is printed.
+     * - The worksheetID column is set as the primary key and auto-incremented.
+     * - The materialID column is mandatory and serves as a foreign key reference to the material table.
+     * - A default timestamp is set for the lastModifiedDate column to capture the time of the last update.
      */
     private void createWorksheetTable() {
         String query =
@@ -140,7 +122,7 @@ public class ContentDAO implements IContentDAO {
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
     }
 
@@ -165,7 +147,7 @@ public class ContentDAO implements IContentDAO {
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
     }
     //</editor-fold>
@@ -193,7 +175,7 @@ public class ContentDAO implements IContentDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return -1; // Error case, failed to insert
     }
@@ -257,7 +239,7 @@ public class ContentDAO implements IContentDAO {
             }
             return content.getMaterialID();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
             return -1;
         }
     }
@@ -318,7 +300,7 @@ public class ContentDAO implements IContentDAO {
             }
             return content.getMaterialID();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
             return -1;
         }
     }
@@ -341,7 +323,7 @@ public class ContentDAO implements IContentDAO {
         try {
             Material material = getMaterialType(materialID);
             String materialType = material.getMaterialType();
-            String updateQuery = null;
+            String updateQuery;
             if (material == null) {
                 System.err.println("No material found with ID: " + materialID);
                 return false;
@@ -370,7 +352,7 @@ public class ContentDAO implements IContentDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return false;
     }
@@ -391,7 +373,7 @@ public class ContentDAO implements IContentDAO {
         try {
             Material material = getMaterialType(materialID);
             String materialType = material.getMaterialType();
-            String updateQuery = null;
+            String updateQuery;
 
             if (material == null) {
                 System.err.println("No material found with ID: " + materialID);
@@ -422,7 +404,7 @@ public class ContentDAO implements IContentDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
             return false;
         }
     }
@@ -448,7 +430,7 @@ public class ContentDAO implements IContentDAO {
             statement.executeUpdate();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return false;
     }
@@ -472,7 +454,7 @@ public class ContentDAO implements IContentDAO {
             statement.executeUpdate();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return false;
     }
@@ -491,7 +473,7 @@ public class ContentDAO implements IContentDAO {
      * @throws IllegalArgumentException if the provided type is invalid or not recognized.
      */
     public boolean updateTeacherID(String teacherEmail, int materialID, String type){
-        // Accept different ways of saying the same thing       // TODO: Change method to not need type, let it find type itself
+        // Accept different ways of saying the same thing
         if (type.equals("Lesson Plan")) {
             type = "lesson";
         }
@@ -524,7 +506,7 @@ public class ContentDAO implements IContentDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return false;
     }
@@ -557,7 +539,7 @@ public class ContentDAO implements IContentDAO {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return null;
     }
@@ -587,7 +569,7 @@ public class ContentDAO implements IContentDAO {
                     );
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.err.println("Error: " + e.getMessage());
             }
             return null;
         }
@@ -611,7 +593,7 @@ public class ContentDAO implements IContentDAO {
             }
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return null;
     }
@@ -634,7 +616,7 @@ public class ContentDAO implements IContentDAO {
                 return rs.getInt("week");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return -1;
     }
@@ -656,7 +638,7 @@ public class ContentDAO implements IContentDAO {
                 return rs.getInt("classroomID");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return -1;
     }
@@ -680,7 +662,7 @@ public class ContentDAO implements IContentDAO {
                 classroomList.add(classroomID);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return classroomList;
     }
@@ -692,24 +674,33 @@ public class ContentDAO implements IContentDAO {
      * @param type the type of material to be retrieved
      * @return the ID of the material if found; returns -1 if no material is found or an error occurs
      */
-    public int getMaterialByWeek(int weekNumber, String type) { // TODO: Add classroomID as parameter
-        String sql = "SELECT materialID FROM material WHERE week = ? AND materialType = ?";
+    public int getMaterialByWeekAndClassroom(int weekNumber, String type, int classroomID) {
+        String sql = "SELECT materialID FROM material WHERE week = ? AND materialType = ? AND classroomID = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, weekNumber);
             statement.setString(2, type);
+            statement.setInt(3, classroomID);
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
-                int materialID = result.getInt("materialID");
-                return materialID;
+                return result.getInt("materialID");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return -1;
     }
 
+    /**
+     * Fetches content table data for the classrooms associated with a given teacher's email.
+     * The method retrieves materials from the database and populates an observable list
+     * with data for each material, including week, topic, type, classroom ID, material ID,
+     * and last modified date.
+     *
+     * @param teacherEmail The email address of the teacher whose classroom materials are to be fetched.
+     * @return An ObservableList containing ContentTableData objects representing the material details for the teacher's classrooms.
+     */
     public ObservableList<ContentTableData> fetchContentTableData(String teacherEmail) {
         String materialQuery = "SELECT * FROM material WHERE ClassroomID = ?";
         ObservableList<ContentTableData> data = FXCollections.observableArrayList();
@@ -749,7 +740,7 @@ public class ContentDAO implements IContentDAO {
             }
         }
         catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return data;
     }
@@ -783,7 +774,7 @@ public class ContentDAO implements IContentDAO {
 
             return content.getMaterialID();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
             return -1;
         }
     }
@@ -805,7 +796,7 @@ public class ContentDAO implements IContentDAO {
         try {
             Material material = getMaterialType(materialID);
             String materialType = material.getMaterialType();
-            String updateQuery = null;
+            String updateQuery;
             if (material == null) {
                 System.err.println("No material found with ID: " + materialID);
                 return false;
@@ -840,7 +831,7 @@ public class ContentDAO implements IContentDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return false;
     }
@@ -862,7 +853,7 @@ public class ContentDAO implements IContentDAO {
                 return rs.getString("learningCardContent");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
         return null;
     }

@@ -4,12 +4,16 @@ import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Material;
+import com.example.cab302tailproject.model.UserSession;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -34,15 +38,18 @@ public class ReviewTeacherOverviewController {
     @FXML Button week11Button;
     @FXML Button week12Button;
     @FXML Button week13Button;
+    @FXML Button allContentButton;
     private Button selectedButton = null;
+
+    @FXML private ChoiceBox<Integer> classCheckBox;
 
 
     /**
      * Holds a reference to the previously displayed view within the application.
      * Used to facilitate navigation between views by tracking the last active view.
-     * Typically updated when transitioning between different scenes in the interface.
+     * This is typically updated when transitioning between different scenes in the interface.
      */
-    private static VBox previousView;
+    private VBox previousView;
 
 
     /**
@@ -78,6 +85,10 @@ public class ReviewTeacherOverviewController {
     private int weekNumber;
     //</editor-fold>
 
+    //<editor-fold desc="Initialisation">
+    /**
+     * Initializes the controller and sets up the necessary data and event bindings for UI components.
+     */
     @FXML public void initialize() {
         this.contentDAO = new ContentDAO();
         List<Button> weekButtons = List.of(week1Button, week2Button, week3Button, week4Button, week5Button,
@@ -91,26 +102,111 @@ public class ReviewTeacherOverviewController {
         for (Button weekButton : weekButtons) {
             weekButton.setOnAction(event -> handleWeekButtonSelection(weekButton, weekButtons));
         }
+        setUpClassCheckBox();
     }
+    //</editor-fold>
 
-    public void onViewLessonClicked(ActionEvent event) {
+    //<editor-fold desc="Button handling">
+
+    /**
+     * Handles the event triggered when the "View Lesson" button is clicked.
+     * This method retrieves the material ID corresponding to the selected week
+     * and initializes a new lesson material. The lesson is then displayed by
+     * navigating to the appropriate content page.
+     */
+    public void onViewLessonClicked() {
         int materialIdOfWeek = contentDAO.getMaterialByWeek(weekNumber, "lesson");
         currentMaterial = new Material(materialIdOfWeek, "lesson");     // Prepare new view with the given output
         navigateToContentPage(currentMaterial.getMaterialID());
     }
 
-    public void onViewCardsClicked(ActionEvent event) {
-    ;
+    /**
+     * Handles the event triggered when the "View Cards" button is clicked.
+     * This method is responsible for initiating the display of card-based
+     * learning materials associated with the current selection. It retrieves
+     * the necessary data such as material ID and week number and uses this
+     * data to navigate to the appropriate card content page.
+     */
+    public void onViewCardsClicked() {
+    ; // TODO: implement a way for teachers to view cards
     }
 
-    public void onViewWorksheetClicked(ActionEvent event) {
+    /**
+     * Handles the event triggered when the "View Worksheet" button is clicked.
+     * This method is responsible for initializing the worksheet content based on the
+     * selected week and navigating to the corresponding content page.
+     */
+    public void onViewWorksheetClicked() {
         int materialIdOfWeek = contentDAO.getMaterialByWeek(weekNumber, "worksheet");
         currentMaterial = new Material(materialIdOfWeek, "worksheet");     // Prepare new view with the given output
         navigateToContentPage(currentMaterial.getMaterialID());
     }
 
+    /**
+     * Handles the event when the "All Content" button is clicked.
+     * This method facilitates navigation to the "All Content" view
+     * while preserving the current view for potential return navigation.
+     */
+    @FXML
+    private void onAllContentClicked() {
+        try {
+            // Save current view logic to return back to
+            previousView = new VBox();
+            previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
+
+            // Moving to new view
+            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-all_content.fxml"));
+            VBox layout = fxmlLoader.load();
+            ReviewTeacherAllContentController controller = fxmlLoader.getController();
+            controller.initData(previousView);  // pass the current page's layout over
+
+            // Replace content in the dynamic container
+            dynamicContentBox.getChildren().clear();
+            dynamicContentBox.getChildren().add(layout);
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error",
+                    "Could not load generated content view.\n" + e.getMessage());
+            //e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles the selection of a week button from a list of week buttons.
+     * This method updates the button styles by highlighting the selected button
+     * and resetting the styles of the other buttons. It also retrieves and processes
+     * the selected week's number for further use in the application.
+     *
+     * @param clickedButton The button that was clicked and selected by the user.
+     * @param weekButtons   A list of all week buttons that can be selected, including
+     *                      the clicked button.
+     */
+    private void handleWeekButtonSelection(Button clickedButton, List<Button> weekButtons) {
+        for (Button button : weekButtons) {
+            button.setStyle(""); // Clear styling
+        }
+        clickedButton.setStyle("-fx-background-color: #0073e6; -fx-text-fill: white;");
+
+        selectedButton = clickedButton;
+
+        String weekText = clickedButton.getText();
+        String weekNumberString = weekText.replaceAll("\\D+", ""); // Remove all non-numbers
+        int weekNumber = Integer.parseInt(weekNumberString);
+        this.weekNumber = weekNumber;
+        System.out.println("Week button clicked: " + weekNumber);
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Navigation">
+    /**
+     * Navigates to a new content page based on the provided material ID.
+     * Preserves the current view to facilitate return navigation and replaces
+     * the content within the dynamic container with the new view.
+     *
+     * @param materialID The ID of the material to be loaded for the new content page.
+     */
     private void navigateToContentPage(int materialID) {
-        try {   // TODO: make this a util method, using fxml file name as second parameter
+        try {
             this.materialID = materialID;
             if (this.currentMaterial == null) {
                 showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
@@ -134,24 +230,70 @@ public class ReviewTeacherOverviewController {
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
                     "Could not load generated content view.\n" + e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
+    //</editor-fold>
 
-    private void handleWeekButtonSelection(Button clickedButton, List<Button> weekButtons) {
-        for (Button button : weekButtons) {
-            button.setStyle(""); // Clear styling
+    //<editor-fold desc="Class selection">
+
+    /**
+     * Configures and initializes the `classCheckBox` component to allow the selection of
+     * classrooms for the current material. Retrieves classrooms associated with a teacher
+     * and populates the `classCheckBox` with these available classroom options.
+     * The initial value is set based on the classroom associated with the material.
+     * Also, adds a property change listener to handle selection events.
+     */
+    public void setUpClassCheckBox() {
+        try{
+            // Retrieve teacher's associated classrooms
+            int initialClassroomID = contentDAO.getClassroomID(materialID);
+            classCheckBox.setValue(initialClassroomID);
+            UserSession userSession = UserSession.getInstance();
+            String teacherEmail = userSession.getEmail();
+            ObservableList<Integer> availableClasses = FXCollections.observableArrayList(contentDAO.getClassroomList(teacherEmail));
+            classCheckBox.setItems(availableClasses);
+
+            // Add a listener to handle the selection of a week
+            classCheckBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+                if (newValue != null) {
+                    handleClassSelection(newValue);
+                }
+            });
+        } catch (Exception e) {
+            System.err.println("Error getting classroom id: " + e.getMessage());
+            //e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update classroom. Error: " + e.getMessage());
         }
-        clickedButton.setStyle("-fx-background-color: #0073e6; -fx-text-fill: white;");
 
-        selectedButton = clickedButton;
-
-        String weekText = clickedButton.getText();
-        String weekNumberString = weekText.replaceAll("\\D+", ""); // Remove all non-numbers
-        int weekNumber = Integer.parseInt(weekNumberString);
-        this.weekNumber = weekNumber;
-        System.out.println("Week button clicked: " + weekNumber);
     }
+
+    /**
+     * Handles the selection of a specific classroom for a material and updates the database
+     * with the provided classroomID. Displays confirmation or error messages based on the
+     * success or failure of the update operation.
+     *
+     * @param classroomID the identifier of the classroom to be associated with the material
+     *                    and updated in the database
+     */
+    private void handleClassSelection(int classroomID) {
+        try {
+            boolean updated = contentDAO.updateClassroomID(classroomID, materialID);
+
+            if (updated) {
+                System.out.println("ClassroomID updated: " + classroomID + " for " + materialID);
+            }
+            else {
+                System.out.println("ClassroomID update failed: " + classroomID);
+                showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update ClassroomID.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error updating ClassroomID: " + e.getMessage());
+            //e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update ClassroomID. Error: " + e.getMessage());
+        }
+    }
+    //</editor-fold>
 
     //<editor-fold desc="Utility methods">
     /**
@@ -185,5 +327,6 @@ public class ReviewTeacherOverviewController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
     //</editor-fold>
 }

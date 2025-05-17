@@ -1,8 +1,7 @@
 package com.example.cab302tailproject.DAO;
 
-import com.example.cab302tailproject.model.Lesson;
-import com.example.cab302tailproject.model.Material;
-import com.example.cab302tailproject.model.Worksheet;
+import com.example.cab302tailproject.model.*;
+import javafx.collections.ObservableList;
 
 import java.util.List;
 
@@ -110,5 +109,7 @@ public interface IContentDAO {
     public List<Integer> getClassroomList(String teacherEmail);
 
     public int getMaterialByWeek(int weekNumber, String type);
+
+    public ObservableList<ContentTableData> fetchContentTableData(String teacherEmail);
 
 }

@@ -1,12 +1,11 @@
 package com.example.cab302tailproject.DAO;
 
-import com.example.cab302tailproject.model.LearningCardCreator;
-import com.example.cab302tailproject.model.Lesson;
-import com.example.cab302tailproject.model.Material;
-import com.example.cab302tailproject.model.Worksheet;
+import com.example.cab302tailproject.model.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-import javax.xml.transform.Result;
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class ContentDAO implements IContentDAO {
             // Initialize the database connection
             connection = DriverManager.getConnection(url);
 
-            System.out.println("Database connection established.");
+            //System.out.println("Database connection established.");
         } catch (SQLException e) {
             throw new RuntimeException("Failed to connect to the database", e);
         }
@@ -711,6 +710,49 @@ public class ContentDAO implements IContentDAO {
         return -1;
     }
 
+    public ObservableList<ContentTableData> fetchContentTableData(String teacherEmail) {
+        String materialQuery = "SELECT * FROM material WHERE ClassroomID = ?";
+        ObservableList<ContentTableData> data = FXCollections.observableArrayList();
+
+        try {
+            List<Integer> classrooms = getClassroomList(teacherEmail);
+
+            for (int classroomID : classrooms) {
+                try (PreparedStatement materialStatement = connection.prepareStatement(materialQuery)) {
+                    materialStatement.setInt(1, classroomID);
+                    ResultSet resultSet = materialStatement.executeQuery();
+
+                    while (resultSet.next()) {
+                        // Add each row to the data list
+                        int week = resultSet.getInt("week");
+                        String type = resultSet.getString("materialType");
+                        int classroom = resultSet.getInt("ClassroomID");
+                        int materialID = resultSet.getInt("materialID");
+                        String topic = null;
+                        Instant lastModified = null;
+
+                        if (type.equals("lesson")) {
+                            topic = getLessonContent(materialID).getTopic();
+                            lastModified = getLessonContent(materialID).getLastModifiedDate();
+                            //lastModified = resultSet.getTimestamp("lastModifiedDate");
+                        }
+                        if (type.equals("worksheet")) {
+                            topic = getWorksheetContent(materialID).getTopic();
+                            lastModified = getWorksheetContent(materialID).getLastModifiedDate();
+                            //lastModified = resultSet.getTimestamp("lastModifiedDate");
+                        }
+                        //TODO: retrieve flashcard topic from db
+
+                        data.add(new ContentTableData(lastModified, week, topic, type, classroom, materialID));
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
     //</editor-fold>
 
     public int addLearningCardToDB(LearningCardCreator content) {

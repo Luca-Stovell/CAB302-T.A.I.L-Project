@@ -6,7 +6,6 @@ import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.Worksheet;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -50,9 +49,9 @@ public class ReviewTeacherLessonViewController {
     /**
      * Holds a reference to the previously displayed view within the application.
      * Used to facilitate navigation between views by tracking the last active view.
-     * Typically updated when transitioning between different scenes in the interface.
+     * This is typically updated when transitioning between different scenes in the interface.
      */
-    private static VBox previousView;
+    private VBox previousView;
 
     /**
      * Represents the material currently being edited or managed by the LessonPlanController.
@@ -85,6 +84,7 @@ public class ReviewTeacherLessonViewController {
     private int materialID;
     //</editor-fold>
 
+    //<editor-fold desc="Initialisation">
     /**
      * Initializes the material data and sets up the user interface components based on the provided material type.
      * Handles different material types such as "lesson" and "worksheet", retrieves their content from the database,
@@ -135,10 +135,11 @@ public class ReviewTeacherLessonViewController {
         else {
             showAlert(Alert.AlertType.WARNING, "Invalid material type",
                     "The material type is invalid: " + currentMaterial.getMaterialType());
-            return;
         }
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Text formatting">
     /**
      * Formats the given text content by applying bold styling to the portions of
      * the text enclosed between double asterisks (**). Content outside the markers
@@ -176,14 +177,25 @@ public class ReviewTeacherLessonViewController {
             }
         }
         return textFlow;
-        // TODO: move this to util class
     }
+    //</editor-fold>
 
-
+    //<editor-fold desc="Button functionality">
+    /**
+     * Handles the event triggered when the "Back" button is clicked.
+     * This restores the previous view if one is available by clearing the current dynamic content and replacing it with the
+     * children of the previous view. Also deletes the content associated with the current material ID from the database.
+     * If no previous view exists, it displays a warning alert to the user.
+     */
     @FXML
-    private void onBackClicked() { // TODO: make it delete the entry as well
+    private void onBackClicked() {
         if (previousView != null) {
             System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
+
+            Object controller = previousView.getProperties().get("controller");
+            if (controller instanceof ReviewTeacherAllContentController originController) {
+                originController.reloadTableData();
+            }
 
             dynamicContentBox.getChildren().clear();
             dynamicContentBox.getChildren().addAll(previousView.getChildren());
@@ -194,22 +206,23 @@ public class ReviewTeacherLessonViewController {
         }
     }
 
-    public void onModifyClicked(ActionEvent event) {
+    /**
+     * Handles the event triggered when the "Modify" button is clicked.
+     * This method navigates the user to the "modify" view of the generated plan
+     * for the current material.
+     */
+    public void onModifyClicked() {
         navigateToGeneratedPlan(materialID);
     }
 
     /**
-     * Handles the save operation when the "Save" button is clicked.
-     *
-     * This method determines the type of material (lesson or worksheet) and attempts
+     * Handles the save operation when the "Export" button is clicked.
+     * Determines the type of material (lesson or worksheet) and attempts
      * to retrieve the corresponding content from the database. If the content is found,
      * it triggers any necessary modifications, retrieves the updated content, and saves
      * it to a file. The file save operation includes suggesting a file name based on the
      * material type and topic. If no content or an invalid material type is provided,
      * an appropriate alert is displayed to notify the user.
-     *
-     * - If an invalid material type is detected, a warning alert is displayed.
-     * - If no content is found, a warning alert is displayed referencing the material ID.
      */
     @FXML
     private void onSaveClicked(){
@@ -239,10 +252,12 @@ public class ReviewTeacherLessonViewController {
             }
         }
         else {
-            showAlert(Alert.AlertType.WARNING, "No material found", "No material found with this materialID: " + materialID + ". Current ID is " + currentMaterial);
+            showAlert(Alert.AlertType.WARNING, "No material found", "Provided MaterialID is null");
         }
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Export file">
     /**
      * Saves the provided content to a file, allowing the user to choose the file's location and name.
      * The file name is automatically suggested based on the supplied type and topic. If the content is
@@ -284,26 +299,23 @@ public class ReviewTeacherLessonViewController {
                 showAlert(Alert.AlertType.INFORMATION, "Save Successful", "Content saved to " + file.getName());
             } catch (IOException e) {
                 System.err.println("Error saving file '" + file.getAbsolutePath() + "': " + e.getMessage());
-                e.printStackTrace();
+                //e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Save Failed", "Could not save file. Error: " + e.getMessage());
             }
         }
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Navigation">
     /**
-     * Displays an alert dialog to the user with the specified alert type, title, and content.
+     * Navigates to the generated plan view based on the given material ID.
+     * On successful navigation, the dynamic content view is replaced with
+     * the content for the selected material. Unlike other versions of this method,
+     * it does not track this current page as a "previousView".
      *
-     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
-     * @param title the title of the alert dialog
-     * @param content the text content to be displayed within the alert dialog
+     * @param materialID the unique identifier of the material to load and display
+     *                   in the generated plan view
      */
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
     private void navigateToGeneratedPlan(int materialID) {
         try {
             this.materialID = materialID;
@@ -311,10 +323,6 @@ public class ReviewTeacherLessonViewController {
                 showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
                 return;
             }
-
-            // Save current view logic to return back to
-            //previousView = new VBox();
-            //previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
 
             // Moving to new view
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-lesson_modify.fxml"));
@@ -329,7 +337,25 @@ public class ReviewTeacherLessonViewController {
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
                     "Could not load generated content view.\n" + e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Util methods">
+    /**
+     * Displays an alert dialog to the user with the specified alert type, title, and content.
+     *
+     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
+     * @param title the title of the alert dialog
+     * @param content the text content to be displayed within the alert dialog
+     */
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    //</editor-fold>
 }

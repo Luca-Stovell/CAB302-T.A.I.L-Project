@@ -179,6 +179,21 @@ public class ReviewTeacherLessonModify {
             showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
         }
     }
+
+    @FXML
+    public void onDeleteClicked() {
+        if (previousView != null) {
+            System.out.println("Deleting content with materialID: " + materialID);
+            contentDAO.deleteContent(materialID);
+
+            dynamicContentBox.getChildren().clear();
+            dynamicContentBox.getChildren().addAll(previousView.getChildren());
+        }
+        else {
+            showAlert(Alert.AlertType.WARNING, "No Previous View",
+                    "No previous state to navigate back to.");
+        }
+    }
     //</editor-fold>
 
     //<editor-fold desc="Week selection logic">
@@ -234,7 +249,6 @@ public class ReviewTeacherLessonModify {
     //</editor-fold>
 
     //<editor-fold desc="Class selection">
-
     /**
      * Configures and initializes the `classCheckBox` component to allow the selection of
      * classrooms for the current material. Retrieves classrooms associated with a teacher
@@ -339,20 +353,6 @@ public class ReviewTeacherLessonModify {
         alert.setTitle(title);
         alert.setContentText(content);
         alert.showAndWait();
-    }
-
-    public void onDeleteClicked() {
-        if (previousView != null) {
-            System.out.println("Deleting content with materialID: " + materialID);
-            contentDAO.deleteContent(materialID);
-
-            dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().addAll(previousView.getChildren());
-        }
-        else {
-            showAlert(Alert.AlertType.WARNING, "No Previous View",
-                    "No previous state to navigate back to.");
-        }
     }
     //</editor-fold>
 

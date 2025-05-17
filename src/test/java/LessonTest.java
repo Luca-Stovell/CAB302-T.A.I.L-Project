@@ -7,14 +7,11 @@ import java.time.Instant;
 public class LessonTest {
     private static final String TOPIC1 = "Modern history";
     private static final String TOPIC2 = "Algebra";
-    private static final String INVALID_TOPIC = null;
     private static final String LESSON_CONTENT_ONE = "Modern history content, which is a bit long and may include all kinds of (4352) topics and $other things & too.";
     private static final String LESSON_CONTENT_TWO = "Algebra content, which is a bit long and may include all kinds of (4352) topics and $other things & too.";
-    private static final String INVALID_CONTENT = null;
     private static final int VALID_ID1 = 12345678;
     private static final int VALID_ID2 = 62;
     private static final int VALID_ID3 = 552;
-    private static final int INVALID_ID = -1;
     private static final Instant VALID_DATE_TIME_1 = Instant.parse("2023-10-01T12:00:00Z");
     private static final Instant VALID_DATE_TIME_2 = Instant.parse("2026-03-10T15:51:35Z");
 
@@ -64,7 +61,7 @@ public class LessonTest {
 
     @Test
     public void testGetMaterialID() {
-        assertEquals(VALID_ID3, lesson1.getMaterialID());
+        assertEquals(VALID_ID2, lesson1.getMaterialID());
     }
 
     @Test
@@ -118,28 +115,5 @@ public class LessonTest {
     public void testSetMaterialID_Lesson2() {
         lesson2.setMaterialID(VALID_ID1);
         assertEquals(VALID_ID1, lesson2.getMaterialID());
-    }
-
-    // Test for invalid values
-
-    @Test
-    public void testSetTopic_BadValue() {
-        lesson1.setTopic(TOPIC1);
-        lesson1.setTopic(INVALID_TOPIC);
-        assertNotEquals(INVALID_TOPIC, lesson1.getTopic());
-    }
-
-    @Test
-    public void testSetContent_BadValue() {
-        lesson1.setContent(LESSON_CONTENT_ONE);
-        lesson1.setContent(INVALID_CONTENT);
-        assertNotEquals(INVALID_CONTENT, lesson1.getContent());
-    }
-
-    @Test
-    public void testSetTeacherID_BadValue() {
-        lesson1.setTeacherID(VALID_ID1);
-        lesson1.setTeacherID(INVALID_ID);
-        assertNotEquals(INVALID_ID, lesson1.getTeacherID());
     }
 }

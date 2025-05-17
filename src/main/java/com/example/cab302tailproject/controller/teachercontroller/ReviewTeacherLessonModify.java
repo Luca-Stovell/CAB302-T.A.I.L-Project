@@ -7,31 +7,27 @@ import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.UserSession;
 import com.example.cab302tailproject.model.Worksheet;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 public class ReviewTeacherLessonModify {
-    @FXML public ChoiceBox classCheckBox;
+
     //<editor-fold desc="Field declarations">
     /**
      * Represents a ChoiceBox component that allows the user to select a specific week.
      */
     @FXML
-    public ChoiceBox weekCheckBox;
+    private ChoiceBox<Integer> weekCheckBox;
+
+    /**
+     * Represents a ChoiceBox component that allows the user to select a specific classroom.
+     */
+    @FXML private ChoiceBox<Integer> classCheckBox;
 
     /**
      * A JavaFX TextField component used for displaying and editing the topic or title
@@ -52,9 +48,9 @@ public class ReviewTeacherLessonModify {
     /**
      * Holds a reference to the previously displayed view within the application.
      * Used to facilitate navigation between views by tracking the last active view.
-     * Typically updated when transitioning between different scenes in the interface.
+     * This is typically updated when transitioning between different scenes in the interface.
      */
-    private static VBox previousView;
+    private VBox previousView;
 
     /**
      * Represents the material currently being edited or managed by the LessonPlanController.
@@ -76,12 +72,6 @@ public class ReviewTeacherLessonModify {
     private VBox dynamicContentBox;
 
     /**
-     * Represents the type of material currently being processed or displayed within the
-     * LessonPlanController.
-     */
-    private String materialType;
-
-    /**
      * Represents the unique identifier for the material currently being processed or displayed within LessonPlanController.
      */
     private int materialID;
@@ -94,9 +84,7 @@ public class ReviewTeacherLessonModify {
      * Initializes the controller after the root element has been completely loaded.
      */
     @FXML
-    public void initialize() {
-        ;
-    }
+    public void initialize() {}
     /**
      * Initializes the material data and sets up the user interface components based on the provided material type.
      * Handles different material types such as "lesson" and "worksheet", retrieves their content from the database,
@@ -113,14 +101,13 @@ public class ReviewTeacherLessonModify {
         this.dynamicContentBox = dynamicContentBox;
         this.previousView = previousView;
         materialID = currentMaterial.getMaterialID();
-        setUpCheckBox();
+        setUpWeekCheckBox();
         setUpClassCheckBox();
         setupLabelToggleBehavior();
 
         if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
             Lesson lesson = contentDAO.getLessonContent(materialID);
             currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
-            this.materialType = currentMaterial.getMaterialType();
 
             if (lesson != null) {
                 generatedTextArea.setText(lesson.getContent());
@@ -133,8 +120,6 @@ public class ReviewTeacherLessonModify {
         else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
             Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
             currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
-            this.materialType = currentMaterial.getMaterialType();
-
 
             if (worksheet != null) {
                 generatedTextArea.setText(worksheet.getContent());
@@ -147,7 +132,6 @@ public class ReviewTeacherLessonModify {
         else {
             showAlert(Alert.AlertType.WARNING, "Invalid material type",
                     "The material type is invalid: " + currentMaterial.getMaterialType());
-            return;
         }
     }
     //</editor-fold>
@@ -155,13 +139,8 @@ public class ReviewTeacherLessonModify {
     //<editor-fold desc="Button functionality">
     /**
      * Handles the event triggered when the "Back" button is clicked.
-     *
-     * Restores the previous view if one is available by clearing the current dynamic content and replacing it with the
-     * children of the previous view. Also deletes the content associated with the current material ID from the database.
-     * If no previous view exists, it displays a warning alert to the user.
-     *
-     * The method interacts with the contentDAO to delete content and utilizes the showAlert helper method to notify users
-     * when there is no previous view to navigate back to.
+     * Restores the previous view if one is available by clearing the current dynamic content
+     * and replacing it with the previousView.
      */
     @FXML
     private void onBackClicked() {
@@ -176,16 +155,10 @@ public class ReviewTeacherLessonModify {
 
     /**
      * Handles the event triggered when the "Modify" button is clicked.
-     *
-     * This method validates the current state and modifies the content and topic
+     * Validates the current state and modifies the content and topic
      * of a material if valid inputs are provided. It verifies that both "generatedTextArea"
      * and "currentMaterial" are not null before proceeding. On successful modification,
      * the updated content and topic name are sent to the `contentDAO` for updating the database.
-     *
-     * If the `generatedTextArea` or `currentMaterial` is null, an error alert is displayed
-     * to inform the user that there is no content to modify. In the event of a database
-     * update failure, the method handles the exception and displays an error alert with
-     * the respective error message.
      */
     @FXML
     private void onSaveClicked() {
@@ -209,21 +182,17 @@ public class ReviewTeacherLessonModify {
     //</editor-fold>
 
     //<editor-fold desc="Week selection logic">
-
     /**
      * Configures and initializes the behavior and contents of the `weekCheckBox` component.
-     *
-     * This method populates the `weekCheckBox` with week numbers ranging from 1 to 13
+     * Populates the `weekCheckBox` with week numbers ranging from 1 to 13
      * and sets its default value to the week associated with the current material,
      * as retrieved from the `contentDAO`. It also attaches a listener to detect and
      * handle changes in the selected week value.
-     *
-     * The listener invokes the `handleWeekSelection` method whenever a new week is selected,
-     * ensuring that the selected week is processed and updated accordingly in the backend.
      */
-    public void setUpCheckBox() {
+    public void setUpWeekCheckBox() {
         // Populate weekCheckBox with week numbers (1-13)
-        weekCheckBox.setValue(contentDAO.getWeek(materialID));
+        int initialWeek = contentDAO.getWeek(materialID);
+        weekCheckBox.setValue(initialWeek);
         ObservableList<Integer> weeks = FXCollections.observableArrayList();
         for (int i = 1; i <= 13; i++) {
             weeks.add(i);
@@ -231,12 +200,9 @@ public class ReviewTeacherLessonModify {
         weekCheckBox.setItems(weeks);
 
         // Add a listener to handle the selection of a week
-        weekCheckBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
-            @Override
-            public void changed(ObservableValue<? extends Integer> observableValue, Integer oldValue, Integer newValue) {
-                if (newValue != null) {
-                    handleWeekSelection(newValue);
-                }
+        weekCheckBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue != null) {
+                handleWeekSelection(newValue);
             }
         });
     }
@@ -261,39 +227,53 @@ public class ReviewTeacherLessonModify {
             }
         } catch (Exception e) {
             System.err.println("Error updating week: " + e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update week. Error: " + e.getMessage());
         }
     }
     //</editor-fold>
 
     //<editor-fold desc="Class selection">
+
+    /**
+     * Configures and initializes the `classCheckBox` component to allow the selection of
+     * classrooms for the current material. Retrieves classrooms associated with a teacher
+     * and populates the `classCheckBox` with these available classroom options.
+     * The initial value is set based on the classroom associated with the material.
+     * Also, adds a property change listener to handle selection events.
+     */
     public void setUpClassCheckBox() {
-        // Populate weekCheckBox with week numbers (1-13)
         try{
-            classCheckBox.setValue(contentDAO.getClassroomID(materialID));
+            // Retrieve teacher's associated classrooms
+            int initialClassroomID = contentDAO.getClassroomID(materialID);
+            classCheckBox.setValue(initialClassroomID);
             UserSession userSession = UserSession.getInstance();
             String teacherEmail = userSession.getEmail();
-            ObservableList<Integer> weeks = FXCollections.observableArrayList(contentDAO.getClassroomList(teacherEmail));
-            classCheckBox.setItems(weeks);
+            ObservableList<Integer> availableClasses = FXCollections.observableArrayList(contentDAO.getClassroomList(teacherEmail));
+            classCheckBox.setItems(availableClasses);
 
             // Add a listener to handle the selection of a week
-            classCheckBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
-                @Override
-                public void changed(ObservableValue<? extends Integer> observableValue, Integer oldValue, Integer newValue) {
-                    if (newValue != null) {
-                        handleClassSelection(newValue);
-                    }
+            classCheckBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+                if (newValue != null) {
+                    handleClassSelection(newValue);
                 }
             });
         } catch (Exception e) {
             System.err.println("Error getting classroom id: " + e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update classroom. Error: " + e.getMessage());
         }
 
     }
 
+    /**
+     * Handles the selection of a specific classroom for a material and updates the database
+     * with the provided classroomID. Displays confirmation or error messages based on the
+     * success or failure of the update operation.
+     *
+     * @param classroomID the identifier of the classroom to be associated with the material
+     *                    and updated in the database
+     */
     private void handleClassSelection(int classroomID) {
         try {
             boolean updated = contentDAO.updateClassroomID(classroomID, materialID);
@@ -307,7 +287,7 @@ public class ReviewTeacherLessonModify {
             }
         } catch (Exception e) {
             System.err.println("Error updating ClassroomID: " + e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update ClassroomID. Error: " + e.getMessage());
         }
     }
@@ -318,17 +298,6 @@ public class ReviewTeacherLessonModify {
      * Configures the behavior of the `topicTextField` to allow editing when clicked and
      * disable editing upon losing focus or pressing Enter. Validates input to ensure the
      * topic name is not empty, displaying an error alert if the validation fails.
-     *
-     * The method sets the following behaviors on the `topicTextField`:
-     * - Initially disables editing by setting it as non-editable.
-     * - Enables editing when the user clicks on the field.
-     * - Disables editing when the field loses focus or the Enter key is pressed.
-     * - Validates the entered text, ensuring it is not empty. An error alert is displayed
-     *   if the validation fails.
-     *
-     * This method utilizes the `showAlert` helper method to display error messages for
-     * invalid inputs, ensuring proper feedback is given to the user in case of empty or
-     * invalid topic names.
      */
     private void setupLabelToggleBehavior() {
         topicTextField.setEditable(false); // Disable editing initially
@@ -343,8 +312,6 @@ public class ReviewTeacherLessonModify {
                 String newTopicName = topicTextField.getText();
                 if (newTopicName.trim().isEmpty()) {
                     showAlert(Alert.AlertType.ERROR, "Invalid Input", "Topic name cannot be empty");
-                } else {
-                    ;
                 }
             }
         });
@@ -355,8 +322,6 @@ public class ReviewTeacherLessonModify {
             String newTopicName = topicTextField.getText();
             if (newTopicName.trim().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Invalid Input", "Topic name cannot be empty");
-            } else {
-                ;
             }
         });
 
@@ -376,7 +341,7 @@ public class ReviewTeacherLessonModify {
         alert.showAndWait();
     }
 
-    public void onDeleteClicked(ActionEvent event) {
+    public void onDeleteClicked() {
         if (previousView != null) {
             System.out.println("Deleting content with materialID: " + materialID);
             contentDAO.deleteContent(materialID);
@@ -391,6 +356,7 @@ public class ReviewTeacherLessonModify {
     }
     //</editor-fold>
 
+    //<editor-fold desc="Page navigation">
     private void navigateToGeneratedPlan(int materialID) {
         try {
             this.materialID = materialID;
@@ -412,7 +378,8 @@ public class ReviewTeacherLessonModify {
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
                     "Could not load generated content view.\n" + e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
+    //</editor-fold>
 }

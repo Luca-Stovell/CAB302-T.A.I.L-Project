@@ -10,7 +10,6 @@ import com.example.cab302tailproject.TailApplication;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import java.util.List;
 
 import java.io.File;
@@ -61,10 +61,6 @@ public class LessonGenController {
 
     //<editor-fold desc="FXML UI Element References - Navigation & Layout">
     /**
-     * ListView for dashboard items, if applicable to this view.
-     */
-    @FXML private ListView<String> dashboardListView;
-    /**
      * Button for navigating to a "Files" section.
      */
     @FXML private Button filesButton;
@@ -106,19 +102,6 @@ public class LessonGenController {
     //</editor-fold>
 
     //<editor-fold desc="Other Fields">
-    /**
-     * FileChooser for saving generated content.
-     */
-    private FileChooser fileChooser;
-
-    /**
-     * Defines the default width for new scenes loaded on the current stage.
-     */
-    private static final double SCENE_WIDTH = 900;
-    /**
-     * Defines the default height for new scenes loaded on the current stage.
-     */
-    private static final double SCENE_HEIGHT = 600;
 
     /**
      * Represents the identifier of the currently selected or generated material.
@@ -131,20 +114,12 @@ public class LessonGenController {
      * A reference to a VBox in the JavaFX view.
      * Represents a dynamic content container in the user interface, allowing the content
      * within it to be programmatically changed at runtime.
-     *
      * This element is used in the context of lesson or worksheet generation and navigation,
      * enabling the controller to update or switch the displayed content as required based
      * on user interaction or application logic.
      */
     @FXML
     private VBox dynamicContentBox;  // to change the content view
-
-    /**
-     * Holds a reference to the previously displayed view within the application.
-     * Used to facilitate navigation between views by tracking the last active view.
-     * Typically updated when transitioning between different scenes in the interface.
-     */
-    private static VBox previousView;
 
 
     //</editor-fold>
@@ -170,11 +145,11 @@ public class LessonGenController {
             lessonPlanRadioButton.setToggleGroup(generateToggleGroup);
         }
 
-        this.fileChooser = new FileChooser();
-        this.fileChooser.setTitle("Save Generated Content");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Generated Content");
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Text files (*.txt)", "*.txt");
-        this.fileChooser.getExtensionFilters().add(extFilter);
-        this.fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().add(extFilter);
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
         System.out.println("LessonGenController initialized.");
     }
@@ -185,10 +160,9 @@ public class LessonGenController {
      * Handles the action event when the "Generate" button (for lessons/worksheets) is clicked.
      * Validates input, constructs a prompt, runs the Ollama generation
      * in a background task, and handles success (saving file) or failure (alert).
-     * @param event The action event.
      */
     @FXML
-    private void onGenerateClicked(ActionEvent event) {
+    private void onGenerateClicked() {
         System.out.println("Lesson/Worksheet Generate button clicked.");
         if (generateToggleGroup == null || generatorTextField == null || generateButton == null ||
                 worksheetRadioButton == null || lessonPlanRadioButton == null) {
@@ -228,13 +202,12 @@ public class LessonGenController {
             generatorTextField.setDisable(false);
             int generatedID = saveLessonToDatabase(generatedContent, selectedGeneratorType, userInput.trim());
             currentMaterial = new Material(generatedID, selectedGeneratorType);     // Prepare new view with the given output
-            //saveContentToFile(generatedContent, selectedGeneratorType, userInput.trim());
             navigateToGeneratedPlan(generatedID);
         });
         generateTask.setOnFailed(workerStateEvent -> {
             Throwable exception = generateTask.getException();
             System.err.println("Ollama generation task failed: " + exception.getClass().getName() + " - " + exception.getMessage());
-            exception.printStackTrace();
+            //exception.printStackTrace();
             String errorMessage = "Could not generate content.";
             if (exception instanceof IOException) errorMessage += " Network/server issue.";
             else if (exception instanceof OllamaBaseException) errorMessage += " AI API error.";
@@ -320,7 +293,7 @@ public class LessonGenController {
                 System.out.println("Invalid content type: " + type + ".");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             System.err.println("An error occurred while saving the content: " + e.getMessage());
         }
         return -1;
@@ -343,27 +316,27 @@ public class LessonGenController {
             UserSession userSession = UserSession.getInstance();
             String teacherEmail = userSession.getEmail();
             int teacherClassroomId = 0;     // Start with default classroom
-            int assignedWeek = 1;           // Start with week 1 as default
+            int assignedWeek = 0;           // Start with week 1 as default
 
             try {
                 IContentDAO contentDAO = new ContentDAO();
                 if (teacherEmail == null) {     // Still save something to the db
                     contentDAO.updateClassroomID(teacherClassroomId, materialID);
-                    contentDAO.updateWeek(0, materialID);
+                    contentDAO.updateWeek(assignedWeek, materialID);
                     System.out.println("Placeholder week and class saved successfully!");
                     return true;
-                } else if (teacherEmail != null) {
+                } else {
                     SqliteClassroomDAO classroomDAO = new SqliteClassroomDAO();
                     List<Classroom> classrooms = classroomDAO.getClassroomsByTeacherEmail(teacherEmail);
                     teacherClassroomId = (classrooms.getLast().getClassroomID());                   // Retrieve last classroom
                     contentDAO.updateClassroomID(teacherClassroomId, materialID);       // Set week and class
-                    contentDAO.updateWeek(0, materialID);
+                    contentDAO.updateWeek(assignedWeek, materialID);
                     System.out.println("Week and class saved successfully!");
                     return true;
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 System.err.println("An error occurred while saving the week and class: " + e.getMessage());
                 showAlert(Alert.AlertType.INFORMATION, "Generation error","Failed to assign a classroom to the content.\n Check if any classrooms exist in the \"Students\" tab.");
             }
@@ -371,6 +344,18 @@ public class LessonGenController {
         return false;
     }
 
+    /**
+     * Updates the teacher ID associated with a specific content material in the database.
+     * The method retrieves the teacher's email from the user session and assigns it to the
+     * corresponding content identified by the material ID and type. If no email is found
+     * in the session, the operation is skipped.
+     *
+     * @param materialID The unique identifier of the material to which the teacher ID is to be assigned.
+     *                   A value of -1 indicates invalid material and will prevent the update.
+     * @param type       The type of content material (e.g., "Lesson Plan", "Worksheet") to be updated.
+     * @return true if the operation is successful or if no email exists in the session,
+     *         false otherwise (e.g., an exception occurs or the material ID is invalid).
+     */
     public boolean updateTeacherIdToContent(int materialID, String type) {
         System.out.println("materialID: " + materialID);
         if (materialID != -1) {
@@ -382,7 +367,7 @@ public class LessonGenController {
                 if (teacherEmail == null) {
                     System.out.println("No email found in the session. Skipping update to teacher id.");
                     return true;
-                } else if (teacherEmail != null) {
+                } else {
                     boolean isSaved = contentDAO.updateTeacherID(teacherEmail, materialID, type);
                     if (isSaved) {
                         System.out.println("Week and class saved successfully!");
@@ -391,7 +376,7 @@ public class LessonGenController {
                 }
             }
             catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 System.err.println("An error occurred while saving the week and class: " + e.getMessage());
                 showAlert(Alert.AlertType.INFORMATION, "Generation error","Failed to assign a classroom to the content.\n Check if any classrooms exist in the \"Students\" tab.");
             }
@@ -417,7 +402,7 @@ public class LessonGenController {
             }
 
             // Save current view logic to return back to
-            previousView = new VBox();
+            VBox previousView = new VBox();
             previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
 
             // Moving to new view
@@ -430,16 +415,10 @@ public class LessonGenController {
             dynamicContentBox.getChildren().clear();
             dynamicContentBox.getChildren().add(layout);
 
-            // ----- OPTION FOR THE WHOLE WINDOW VIEW. REQUIRES ADDING THE FULL LAYOUT TO FXML AND CHANGING BACK BEHAVIOUR IN PLAN CONTROLLER ------ //
-//            Stage stage = (Stage) dynamicContentBox.getScene().getWindow();
-//            Scene scene = new Scene(layout, TailApplication.WIDTH, TailApplication.HEIGHT);
-//            stage.setScene(scene);
-//            stage.show();
-
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
                     "Could not load generated content view.\n" +e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
     //</editor-fold>
@@ -448,14 +427,11 @@ public class LessonGenController {
     /**
      * Handles clicks on the "Generate" button in the sidebar.
      * Reloads the lesson generation view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
+    private void onSidebarGenerateClicked() throws IOException {
         Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_generator-teacher.fxml"));
-//        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-//        stage.setScene(scene);
         Parent root = fxmlLoader.load();
         stage.getScene().setRoot(root);
     }
@@ -463,14 +439,11 @@ public class LessonGenController {
     /**
      * Handles clicks on the "Review" button in the sidebar.
      * Loads the teacher review view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarReviewClicked(ActionEvent event) throws IOException {
+    private void onSidebarReviewClicked() throws IOException {
         Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher.fxml"));
-//        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-//        stage.setScene(scene);
         Parent root = fxmlLoader.load();
         stage.getScene().setRoot(root);
     }
@@ -478,10 +451,9 @@ public class LessonGenController {
     /**
      * Handles clicks on the "Analysis" button in the sidebar.
      * Loads the teacher analysis view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
+    private void onSidebarAnalysisClicked() throws IOException {
         Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-teacher.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
@@ -491,10 +463,9 @@ public class LessonGenController {
     /**
      * Handles clicks on the "A.I. Assistance" button in the sidebar.
      * Loads the teacher AI assistance view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarAiAssistanceClicked(ActionEvent event) throws IOException {
+    private void onSidebarAiAssistanceClicked() throws IOException {
         Stage stage = (Stage) sidebarAiAssistanceButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("ai_assistant-teacher.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
@@ -504,10 +475,9 @@ public class LessonGenController {
     /**
      * Handles clicks on the "Library" button in the sidebar.
      * Loads the teacher library view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarLibraryClicked(ActionEvent event) throws IOException {
+    private void onSidebarLibraryClicked() throws IOException {
         Stage stage = (Stage) sidebarLibraryButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("library-teacher.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
@@ -519,10 +489,9 @@ public class LessonGenController {
     /**
      * Handles clicks on the "Files" button in the top navigation.
      * Loads a files view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onFilesClicked(ActionEvent event) {
+    private void onFilesClicked() {
         System.out.println("Files button clicked.");
         // TODO ADD FUNCTIONALITY
     }
@@ -530,10 +499,9 @@ public class LessonGenController {
     /**
      * Handles clicks on the "Students" button in the top navigation.
      * Loads a students view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onStudentsClicked(ActionEvent event) throws IOException {
+    private void onStudentsClicked() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("classroom-teacher-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         Stage stage = (Stage) studentsButton.getScene().getWindow();
@@ -544,23 +512,21 @@ public class LessonGenController {
     /**
      * Handles clicks on the "Home" button in the top navigation.
      * Loads the main dashboard/home view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onHomeClicked(ActionEvent event) {
+    private void onHomeClicked() {
         System.out.println("Home button clicked.");
-        // TODO ADD FUNCTIONALITY
+        // TODO ADD HOME BUTTON FUNCTIONALITY
     }
 
     /**
      * Handles clicks on the "Settings" button in the top navigation.
      * Loads a settings view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSettingsClicked(ActionEvent event) {
+    private void onSettingsClicked() {
         System.out.println("Settings button clicked.");
-        // TODO ADD FUNCTIONALITY
+        // TODO ADD SETTINGS FUNCTIONALITY
     }
     //</editor-fold>
 

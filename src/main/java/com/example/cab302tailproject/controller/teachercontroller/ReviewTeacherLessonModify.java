@@ -2,6 +2,7 @@ package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
+import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.UserSession;
@@ -9,27 +10,23 @@ import com.example.cab302tailproject.model.Worksheet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-/**
- * Controller class responsible for managing the lesson plan and worksheet functionalities
- * after generating. It provides logic to handle UI interactions, manage material data,
- * and facilitate the saving or navigation between views.
- */
-public class LessonPlanController {
+public class ReviewTeacherLessonModify {
 
     //<editor-fold desc="Field declarations">
     /**
      * Represents a ChoiceBox component that allows the user to select a specific week.
      */
-    @FXML private ChoiceBox<Integer> weekCheckBox;
+    @FXML
+    private ChoiceBox<Integer> weekCheckBox;
+
+    /**
+     * Represents a ChoiceBox component that allows the user to select a specific classroom.
+     */
     @FXML private ChoiceBox<Integer> classCheckBox;
 
     /**
@@ -47,11 +44,6 @@ public class LessonPlanController {
      */
     @FXML
     private TextArea generatedTextArea;
-
-    /**
-     * FileChooser for saving generated content.
-     */
-    private FileChooser fileChooser;
 
     /**
      * Holds a reference to the previously displayed view within the application.
@@ -80,12 +72,6 @@ public class LessonPlanController {
     private VBox dynamicContentBox;
 
     /**
-     * Represents the type of material currently being processed or displayed within the
-     * LessonPlanController.
-     */
-    private String materialType;
-
-    /**
      * Represents the unique identifier for the material currently being processed or displayed within LessonPlanController.
      */
     private int materialID;
@@ -99,7 +85,6 @@ public class LessonPlanController {
      */
     @FXML
     public void initialize() {}
-
     /**
      * Initializes the material data and sets up the user interface components based on the provided material type.
      * Handles different material types such as "lesson" and "worksheet", retrieves their content from the database,
@@ -123,7 +108,6 @@ public class LessonPlanController {
         if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
             Lesson lesson = contentDAO.getLessonContent(materialID);
             currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
-            this.materialType = currentMaterial.getMaterialType();
 
             if (lesson != null) {
                 generatedTextArea.setText(lesson.getContent());
@@ -136,8 +120,6 @@ public class LessonPlanController {
         else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
             Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
             currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
-            this.materialType = currentMaterial.getMaterialType();
-
 
             if (worksheet != null) {
                 generatedTextArea.setText(worksheet.getContent());
@@ -157,14 +139,51 @@ public class LessonPlanController {
     //<editor-fold desc="Button functionality">
     /**
      * Handles the event triggered when the "Back" button is clicked.
-     * This restores the previous view if one is available by clearing the current dynamic content and replacing it with the
-     * children of the previous view. Also deletes the content associated with the current material ID from the database.
-     * If no previous view exists, it displays a warning alert to the user.
+     * Restores the previous view if one is available by clearing the current dynamic content
+     * and replacing it with the previousView.
      */
     @FXML
     private void onBackClicked() {
         if (previousView != null) {
-            System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
+            navigateToGeneratedPlan(materialID);
+        }
+        else {
+            showAlert(Alert.AlertType.WARNING, "No Previous View",
+                    "No previous state to navigate back to.");
+        }
+    }
+
+    /**
+     * Handles the event triggered when the "Modify" button is clicked.
+     * Validates the current state and modifies the content and topic
+     * of a material if valid inputs are provided. It verifies that both "generatedTextArea"
+     * and "currentMaterial" are not null before proceeding. On successful modification,
+     * the updated content and topic name are sent to the `contentDAO` for updating the database.
+     */
+    @FXML
+    private void onSaveClicked() {
+        if (generatedTextArea == null || currentMaterial == null) {
+            showAlert(Alert.AlertType.ERROR, "Error", "no content to modify");
+            return;
+        }
+        // Retrieve updated content
+        String updatedContent = generatedTextArea.getText();
+        String newTopicName = topicTextField.getText();
+
+        try {
+            contentDAO.setContent(materialID, updatedContent, newTopicName);
+
+            //showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    public void onDeleteClicked() {
+        if (previousView != null) {
+            System.out.println("Deleting content with materialID: " + materialID);
             contentDAO.deleteContent(materialID);
 
             dynamicContentBox.getChildren().clear();
@@ -175,131 +194,9 @@ public class LessonPlanController {
                     "No previous state to navigate back to.");
         }
     }
-
-    /**
-     * Saves the provided content to a file, allowing the user to choose the file's location and name.
-     * The file name is automatically suggested based on the supplied type and topic. If the content is
-     * null or the current stage cannot be retrieved, an error alert is displayed. If the file is successfully
-     * saved, an informational alert confirms the save operation. If an error occurs during the save process,
-     * an error alert is displayed with the relevant message.
-     *
-     * @param content the text content to be saved to the file; cannot be null.
-     * @param type the category or type of the content used to suggest a file name.
-     * @param topic the topic of the content used to suggest a safe and descriptive file name.
-     */
-    private void saveContentToFileFromContentView(String content, String type, String topic){
-        if (content == null) {
-            showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
-            return;
-        }
-        if (fileChooser == null) {
-            fileChooser = new FileChooser();
-        }
-
-        String safeTopic = topic.replaceAll("[^a-zA-Z0-9\\-_ ]", "").replace(" ", "_");
-        if (safeTopic.length() > 50) safeTopic = safeTopic.substring(0, 50);
-        String suggestedFileName = String.format("%s-%s.txt", type.replace(" ", "_"), safeTopic);
-        fileChooser.setInitialFileName(suggestedFileName);
-
-        Stage stage = Stage.getWindows().stream()
-                .filter(window -> window instanceof Stage && window.isShowing())
-                .map(window -> (Stage) window)
-                .findFirst()
-                .orElse(null);
-        if (stage == null) {
-            showAlert(Alert.AlertType.ERROR, "UI Error", "Could not display save dialog (cannot get current stage).");
-            return;
-        }
-        File file = fileChooser.showSaveDialog(stage);
-        if (file != null) {
-            try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
-                writer.println(content);
-                showAlert(Alert.AlertType.INFORMATION, "Save Successful", "Content saved to " + file.getName());
-            } catch (IOException e) {
-                System.err.println("Error saving file '" + file.getAbsolutePath() + "': " + e.getMessage());
-                //e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Save Failed", "Could not save file. Error: " + e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * Handles the save operation when the "Save" button is clicked.
-     * Determines the type of material (lesson or worksheet) and attempts
-     * to retrieve the corresponding content from the database. If the content is found,
-     * it triggers any necessary modifications, retrieves the updated content, and saves
-     * it to a file. The file save operation includes suggesting a file name based on the
-     * material type and topic. If no content or an invalid material type is provided,
-     * an appropriate alert is displayed to notify the user.
-     */
-    @FXML
-    private void onSaveClicked(){
-        if (currentMaterial != null) {
-            if ("lesson".equals(materialType)) {
-                Lesson lesson = contentDAO.getLessonContent(materialID);
-                if (lesson != null) {
-                    System.out.println("Lesson plan saving...");
-                    onModifyClicked(false);
-                    Lesson updated_lesson = contentDAO.getLessonContent(materialID);
-                    saveContentToFileFromContentView(updated_lesson.getContent(), "Lesson Plan", updated_lesson.getTopic());
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "No content", "No lesson found with this materialID");
-                }
-            }
-            else if ("worksheet".equals(materialType)) {
-                Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-                if (worksheet != null) {
-                    System.out.println("Worksheet saving...");
-                    onModifyClicked(false);
-                    Worksheet updated_worksheet = contentDAO.getWorksheetContent(materialID);
-                    saveContentToFileFromContentView(updated_worksheet.getContent(), "Worksheet", updated_worksheet.getTopic());
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "No content", "No worksheet found with this materialID");
-                }
-            }
-            else {
-                showAlert(Alert.AlertType.WARNING, "Invalid material type", "The material type is invalid.");
-            }
-        }
-        else {
-            showAlert(Alert.AlertType.WARNING, "No material found", "Provided MaterialID is null");
-        }
-    }
-
-    /**
-     * Handles the event triggered when the "Modify" button is clicked.
-     * This method validates the current state and modifies the content and topic
-     * of a material if valid inputs are provided. It verifies that both "generatedTextArea"
-     * and "currentMaterial" are not null before proceeding. On successful modification,
-     * the updated content and topic name are sent to the `contentDAO` for updating the database.
-     */
-    @FXML
-    private void onModifyClicked() {
-        onModifyClicked(true);
-    }
-
-    private void onModifyClicked(boolean showAlert) {
-        if (generatedTextArea == null || currentMaterial == null) {
-            showAlert(Alert.AlertType.ERROR, "Error", "no content to modify");
-            return;
-        }
-        // Retrieve updated content
-        String updatedContent = generatedTextArea.getText();
-        String newTopicName = topicTextField.getText();
-
-        try {
-            boolean isSaved = contentDAO.setContent(materialID, updatedContent, newTopicName);
-            if (isSaved && showAlert) {
-                showAlert(Alert.AlertType.CONFIRMATION, "Content Updated", "Content updated successfully.");
-            }
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
-        }
-    }
     //</editor-fold>
 
     //<editor-fold desc="Week selection logic">
-
     /**
      * Configures and initializes the behavior and contents of the `weekCheckBox` component.
      * Populates the `weekCheckBox` with week numbers ranging from 1 to 13
@@ -309,6 +206,8 @@ public class LessonPlanController {
      */
     public void setUpWeekCheckBox() {
         // Populate weekCheckBox with week numbers (1-13)
+        int initialWeek = contentDAO.getWeek(materialID);
+        weekCheckBox.setValue(initialWeek);
         ObservableList<Integer> weeks = FXCollections.observableArrayList();
         for (int i = 1; i <= 13; i++) {
             weeks.add(i);
@@ -358,8 +257,8 @@ public class LessonPlanController {
      * Also, adds a property change listener to handle selection events.
      */
     public void setUpClassCheckBox() {
-        // Retrieve teacher's associated classrooms
         try{
+            // Retrieve teacher's associated classrooms
             int initialClassroomID = contentDAO.getClassroomID(materialID);
             classCheckBox.setValue(initialClassroomID);
             UserSession userSession = UserSession.getInstance();
@@ -457,4 +356,30 @@ public class LessonPlanController {
     }
     //</editor-fold>
 
+    //<editor-fold desc="Page navigation">
+    private void navigateToGeneratedPlan(int materialID) {
+        try {
+            this.materialID = materialID;
+            if (this.currentMaterial == null) {
+                showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
+                return;
+            }
+
+            // Moving to new view
+            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-lesson_view.fxml"));
+            VBox layout = fxmlLoader.load();
+            ReviewTeacherLessonViewController controller = fxmlLoader.getController();
+            controller.initData(currentMaterial, dynamicContentBox, previousView);  // pass the data
+
+            // Replace content in the dynamic container
+            dynamicContentBox.getChildren().clear();
+            dynamicContentBox.getChildren().add(layout);
+
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Navigation Error",
+                    "Could not load generated content view.\n" + e.getMessage());
+            //e.printStackTrace();
+        }
+    }
+    //</editor-fold>
 }

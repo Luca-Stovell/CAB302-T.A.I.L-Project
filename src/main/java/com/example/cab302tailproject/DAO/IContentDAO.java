@@ -1,8 +1,9 @@
 package com.example.cab302tailproject.DAO;
 
-import com.example.cab302tailproject.model.Lesson;
-import com.example.cab302tailproject.model.Material;
-import com.example.cab302tailproject.model.Worksheet;
+import com.example.cab302tailproject.model.*;
+import javafx.collections.ObservableList;
+
+import java.util.List;
 
 public interface IContentDAO {
     /**
@@ -101,6 +102,54 @@ public interface IContentDAO {
      */
     public int getWeek(int materialID);
 
+    /**
+     * Updates the teacher ID for a specific material given the teacher's email, material ID, and type of material.
+     * The method validates the input type to ensure it matches known material types (e.g., "lesson" or "worksheet").
+     * It queries the database to find the teacher ID associated with the provided email and updates the corresponding
+     * material record with the found teacher ID.
+     *
+     * @param teacherEmail the email address of the teacher whose ID needs to be retrieved and updated.
+     * @param materialID the ID of the material (e.g., lesson or worksheet) to be updated.
+     * @param type the type of material ("lesson" or "worksheet") to specify the appropriate database table for the update.
+     * @return true if the update was successful and a record was modified, false otherwise.
+     * @throws IllegalArgumentException if the provided type is invalid or not recognized.
+     */
     public boolean updateTeacherID(String teacherEmail, int materialID, String type);
+
+    /**
+     * Retrieves the classroom ID associated with the given material ID.
+     *
+     * @param materialID the ID of the material for which the classroom ID is to be retrieved
+     * @return the classroom ID if found in the database, or -1 if no matching record is found or an error occurs
+     */
+    public int getClassroomID(int materialID);
+
+    /**
+     * Retrieves a list of classroom IDs associated with the given teacher's email.
+     *
+     * @param teacherEmail the email address of the teacher whose classrooms are to be retrieved
+     * @return a list of integers representing the classroom IDs associated with the teacher
+     */
+    public List<Integer> getClassroomList(String teacherEmail);
+
+    /**
+     * Retrieves the ID of the material associated with the specified week number and material type.
+     *
+     * @param weekNumber the week number for which the material is requested
+     * @param type the type of material to be retrieved
+     * @return the ID of the material if found; returns -1 if no material is found or an error occurs
+     */
+    public int getMaterialByWeekAndClassroom(int weekNumber, String type, int classroomID);
+
+    /**
+     * Fetches content table data for the classrooms associated with a given teacher's email.
+     * The method retrieves materials from the database and populates an observable list
+     * with data for each material, including week, topic, type, classroom ID, material ID,
+     * and last modified date.
+     *
+     * @param teacherEmail The email address of the teacher whose classroom materials are to be fetched.
+     * @return An ObservableList containing ContentTableData objects representing the material details for the teacher's classrooms.
+     */
+    public ObservableList<ContentTableData> fetchContentTableData(String teacherEmail);
 
 }

@@ -2,163 +2,272 @@ package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.DAO.*;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.Classroom;
+import com.example.cab302tailproject.model.Session;
+import com.example.cab302tailproject.model.Student;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
-import com.example.cab302tailproject.model.Student;
-import com.example.cab302tailproject.model.Teacher;
-
-import java.util.List;
 
 import java.io.IOException;
+import java.util.List;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.event.ActionEvent;
-import javafx.scene.control.ListView;
-
+/**
+ * Controller for the teacher's classroom view.
+ * Handles classroom creation, student assignment, and scene navigation for teachers.
+ */
 public class ClassroomViewController {
-    // Sidebar buttons - @FXML fields are optional if only onAction is used.
-    /**
-     * Button in the sidebar to navigate to the Library view.
-     */
+
+    // Sidebar navigation buttons
     @FXML private Button sidebarLibraryButton;
-    /**
-     * Button in the sidebar for generating content.
-     */
     @FXML private Button sidebarGenerateButton;
-    /**
-     * Button in the sidebar for reviewing content.
-     */
     @FXML private Button sidebarReviewButton;
-    /**
-     * Button in the sidebar for analysis.
-     */
     @FXML private Button sidebarAnalysisButton;
-    /**
-     * Button in the sidebar for AI assistance.
-     */
     @FXML private Button sidebarAiAssistanceButton;
-    /**
-     * Button for navigating to a "Students" section.
-     */
     @FXML private Button studentsButton;
-    /**
-     * Button for navigating to a "Home" or main dashboard.
-     */
     @FXML private Button homeButton;
-    /**
-     * Listview for displaying the students in the class.
-     */
-    @FXML private ListView classroomDisplayListview;
+
+    // Classroom controls
+    @FXML private ComboBox<Classroom> classroomComboBox;
+    @FXML private Button createClassroomButton;
+
+    // Student display + actions
+    @FXML private ListView<Student> allStudentsListView;
+    @FXML private ListView<Student> classroomDisplayListview;
+    @FXML private Button assignStudentButton;
+    @FXML private Button removeStudentButton;
 
     private TeacherDAO teacherDao;
     private StudentDAO studentDao;
+    private ClassroomDAO classroomDao;
 
-
+    /**
+     * Constructor for ClassroomViewController.
+     * Initializes DAO instances for Teacher, Student, and Classroom.
+     */
     public ClassroomViewController() {
         teacherDao = new SqliteTeacherDAO();
         studentDao = new SqlStudentDAO();
-    }
-
-    @FXML
-    private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("Student_Ai_Assist.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+        classroomDao = new SqliteClassroomDAO();
     }
 
     /**
-     * Handles action events for the "Review" button in the sidebar.
-     * Placeholder for navigation or review functionality.
-     * @param event The {@link ActionEvent} triggered by the button click.
+     * Initializes the controller after its root element has been completely processed.
+     * Loads classroom options and all students into their respective views.
+     */
+    @FXML
+    public void initialize() {
+        refreshClassroomComboBox();
+        loadAllStudents();
+
+        classroomComboBox.setOnAction(event -> {
+            Classroom selectedClassroom = classroomComboBox.getValue();
+            if (selectedClassroom != null) {
+                loadStudentsInClass(selectedClassroom.getClassroomID());
+            }
+        });
+    }
+
+    /**
+     * Refreshes the classroom combo box with the classrooms linked to the logged-in teacher.
+     */
+    private void refreshClassroomComboBox() {
+        String teacherEmail = Session.getLoggedInTeacherEmail();
+        List<Classroom> classrooms = classroomDao.getClassroomsByTeacherEmail(teacherEmail);
+        classroomComboBox.getItems().setAll(classrooms);
+    }
+
+    /**
+     * Loads all students into the "all students" ListView.
+     */
+    private void loadAllStudents() {
+        allStudentsListView.getItems().setAll(studentDao.getAllStudents());
+    }
+
+    /**
+     * Loads students enrolled in a specific classroom into the classroom ListView.
+     *
+     * @param classroomID The ID of the classroom.
+     */
+    private void loadStudentsInClass(int classroomID) {
+        classroomDisplayListview.getItems().clear();
+        List<Student> students = studentDao.getStudentsByClassroomID(classroomID);
+        classroomDisplayListview.getItems().setAll(students);
+    }
+
+    /**
+     * Assigns the selected student from the "all students" list to the selected classroom.
+     *
+     * @param event The action event triggered by clicking the assign button.
+     */
+    @FXML
+    public void onAssignStudentToClassroom(ActionEvent event) {
+        Student selectedStudent = allStudentsListView.getSelectionModel().getSelectedItem();
+        Classroom selectedClassroom = classroomComboBox.getValue();
+
+        if (selectedStudent != null && selectedClassroom != null) {
+            boolean success = studentDao.addStudentToClassroom(
+                    selectedStudent.getStudentID(),
+                    selectedClassroom.getClassroomID()
+            );
+
+            if (success) {
+                loadStudentsInClass(selectedClassroom.getClassroomID());
+            }
+        }
+    }
+
+    /**
+     * Removes the selected student from the selected classroom.
+     *
+     * @param event The action event triggered by clicking the remove button.
+     */
+    @FXML
+    public void onRemoveStudentFromClassroom(ActionEvent event) {
+        Student selectedStudent = classroomDisplayListview.getSelectionModel().getSelectedItem();
+        Classroom selectedClassroom = classroomComboBox.getValue();
+
+        if (selectedStudent != null && selectedClassroom != null) {
+            boolean success = studentDao.removeStudentFromClassroom(
+                    selectedStudent.getStudentID(),
+                    selectedClassroom.getClassroomID()
+            );
+
+            if (success) {
+                loadStudentsInClass(selectedClassroom.getClassroomID());
+                loadAllStudents();
+            }
+        }
+    }
+
+    /**
+     * Creates a new classroom linked to the logged-in teacher and updates the combo box.
+     *
+     * @param event The action event triggered by clicking the create button.
+     */
+    @FXML
+    public void onCreateClassRoom(ActionEvent event) {
+        String teacherEmail = Session.getLoggedInTeacherEmail();
+        Classroom classroom = new Classroom(teacherEmail);
+        boolean created = classroomDao.createClassroom(classroom);
+
+        if (created) {
+            refreshClassroomComboBox();
+            classroomComboBox.setValue(classroom);
+        }
+    }
+
+    // --- Navigation Handlers ---
+
+    /**
+     * Navigates to the AI assistance view.
+     *
+     * @param event The action event triggered by the sidebar button.
+     * @throws IOException If the FXML cannot be loaded.
+     */
+    @FXML
+    private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
+        loadScene("lesson_generator-teacher.fxml");
+    }
+
+    /**
+     * Navigates to the review view.
+     *
+     * @param event The action event triggered by the sidebar button.
+     * @throws IOException If the FXML cannot be loaded.
      */
     @FXML
     private void onSidebarReviewClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-student.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
-    /**
-     * Handles clicks on the "Analysis" button in the sidebar.
-     * Loads the teacher analysis view on the current stage.
-     * @param event The action event.
-     */
-    @FXML
-    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
-    /**
-     * Handles clicks on the "A.I. Assistance" button in the sidebar.
-     * Loads the teacher AI assistance view on the current stage.
-     * @param event The action event.
-     */
-    @FXML
-    private void onSidebarAiAssistanceClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarAiAssistanceButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("ai_assistant-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
-    /**
-     * Handles clicks on the "Library" button in the sidebar.
-     * Loads the teacher library view on the current stage.
-     * @param event The action event.
-     */
-    @FXML
-    private void onSidebarLibraryClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarLibraryButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("library-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+        loadScene("review-student.fxml");
     }
 
     /**
-     * Handles clicks on the "Files" button in the top navigation.
-     * Loads a files view on the current stage.
-     * @param event The action event.
+     * Navigates to the analysis view.
+     *
+     * @param event The action event triggered by the sidebar button.
+     * @throws IOException If the FXML cannot be loaded.
+     */
+    @FXML
+    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
+        loadScene("analytics-teacher.fxml");
+    }
+
+    /**
+     * Navigates to the AI assistant view.
+     *
+     * @param event The action event triggered by the sidebar button.
+     * @throws IOException If the FXML cannot be loaded.
+     */
+    @FXML
+    private void onSidebarAiAssistanceClicked(ActionEvent event) throws IOException {
+        loadScene("ai_assistant-teacher.fxml");
+    }
+
+    /**
+     * Navigates to the library view.
+     *
+     * @param event The action event triggered by the sidebar button.
+     * @throws IOException If the FXML cannot be loaded.
+     */
+    @FXML
+    private void onSidebarLibraryClicked(ActionEvent event) throws IOException {
+        loadScene("library-teacher.fxml");
+    }
+
+    /**
+     * Navigates back to the classroom view.
+     *
+     * @param event The action event triggered by the sidebar button.
+     * @throws IOException If the FXML cannot be loaded.
+     */
+    @FXML
+    private void onStudentsClicked(ActionEvent event) throws IOException {
+        loadScene("classroom-teacher-view.fxml");
+    }
+
+    /**
+     * Stub for the home button click handler.
+     *
+     * @param event The action event triggered by the home button.
+     */
+    @FXML
+    private void onHomeClicked(ActionEvent event) {
+        System.out.println("Home button clicked.");
+    }
+
+    /**
+     * Stub for the files button click handler.
+     *
+     * @param event The action event triggered by the files button.
      */
     @FXML
     private void onFilesClicked(ActionEvent event) {
         System.out.println("Files button clicked.");
-        // TODO ADD FUNCTIONALITY
     }
 
     /**
-     * Handles clicks on the "Students" button in the top navigation.
-     * Loads a students view on the current stage.
-     * @param event The action event.
+     * Stub for the settings button click handler.
+     *
+     * @param event The action event triggered by the settings button.
      */
-    @FXML
-    private void onStudentsClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) studentsButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("classroom-teacher-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
     @FXML
     private void onSettingsClicked(ActionEvent event) {
         System.out.println("Settings button clicked.");
-        // TODO ADD FUNCTIONALITY
     }
-    @FXML
-    private void onHomeClicked(ActionEvent event) {
-        System.out.println("Home button clicked.");
-        // TODO ADD FUNCTIONALITY
-    }
-    @FXML
-    public void loadStudentData() {
-        List<Student> students = studentDao.getAllStudents();
 
-        // Populate ListView with full names
-        for (Student s : students) {
-            String fullName = s.getFirstName() + " " + s.getLastName();
-            classroomDisplayListview.getItems().add(fullName);
-        }
+    /**
+     * Loads and switches to the specified FXML scene.
+     *
+     * @param fxml The FXML file name to load.
+     * @throws IOException If the file cannot be loaded.
+     */
+    private void loadScene(String fxml) throws IOException {
+        Stage stage = (Stage) studentsButton.getScene().getWindow();
+        FXMLLoader loader = new FXMLLoader(TailApplication.class.getResource(fxml));
+        Scene scene = new Scene(loader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
     }
 }

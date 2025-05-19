@@ -89,6 +89,8 @@
                   <Button fx:id="againButton" onAction="#onAgainClicked" layoutX="223.0" layoutY="292.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="51.0" style="-fx-background-color: #2c2c2c;" text="Again" textFill="#fffdfd" />
                   <Button fx:id="mediumButton" onAction="#onMediumClicked" layoutX="211.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="72.0" text="Medium" />
                   <Button fx:id="nextButton" onAction="#onNextClicked" layoutX="403.0" layoutY="299.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="91.0" text="Next" />
+                  <ComboBox fx:id="cardList" promptText="Select Deck"  layoutX="503.0" layoutY="10"  prefHeight="31.0" prefWidth="91.0"  />
+
                   <TextArea fx:id="cardContent" layoutX="91.0" layoutY="25.0" prefHeight="161.0" prefWidth="325.0" wrapText="true" text="                                   ax+b=bx+a" />
                </children>
                 </Pane>

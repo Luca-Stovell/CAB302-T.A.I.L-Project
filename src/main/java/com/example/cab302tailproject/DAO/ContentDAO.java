@@ -753,7 +753,7 @@ public class ContentDAO implements IContentDAO {
 
         // Ensure the materialID exists by inserting into the material table if necessary
         if (content.getMaterialID() <= 0) {
-            int generatedMaterialID = addMaterial("worksheet");
+            int generatedMaterialID = addMaterial("learningCard");
             if (generatedMaterialID == -1) {
                 throw new IllegalStateException("Failed to create a material entry in the material table.");
             }
@@ -852,6 +852,31 @@ public class ContentDAO implements IContentDAO {
             if (rs.next()) {
                 return rs.getString("learningCardContent");
             }
+        } catch (SQLException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Retrieves all cards from the card table of the database and returns them in a comboBox readable format
+     * @return ObservableList of all IDs and topics of learning cards
+     */
+    // change to getCardsBy[class or something] if necessary
+    public  ObservableList<LearningCardCreator> getAllCards(){
+        String sql = "SELECT learningCardID, learningCardTopic FROM learningCard";
+
+        // doesn't need to be a prepared statement, but makes refactoring easier if it changes to need something
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            //statement.setInt(1, learningCardID);
+            ResultSet rs = statement.executeQuery();
+            ObservableList<LearningCardCreator> cards = FXCollections.observableArrayList();
+            while (rs.next()) {
+                String topic = rs.getString("learningCardTopic");
+                int ID = rs.getInt("learningCardID");
+                cards.add(new LearningCardCreator(topic,ID));
+            }
+            return cards;
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());
         }

@@ -9,6 +9,11 @@ public class LearningCardCreator {
     //private int teacherID;
     private int materialID;
 
+    /**
+     * Constructor used when learning cards are added to the database
+     * @param topic String describing what the learning card is about
+     * @param content The contents of the card deck
+     */
     public LearningCardCreator(String topic, String content) {
         this.topic = topic;
         this.content = content;
@@ -18,6 +23,17 @@ public class LearningCardCreator {
     public LearningCardCreator(String topic, String content,  int materialID) {
         this.topic = topic;
         this.content = content;
+        this.materialID = materialID;
+    }
+
+    /**
+     * Constructor that doesn't accept content, for use when getting a list of materials from the database
+     * @param topic String describing what the learning card is about
+     * @param materialID ID assigned to the learning card by SQLite autoincrement
+     */
+    public LearningCardCreator(String topic, int materialID) {
+        this.topic = topic;
+        this.content = null;
         this.materialID = materialID;
     }
 
@@ -45,6 +61,11 @@ public class LearningCardCreator {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return topic;
     }
 
 }

@@ -23,6 +23,7 @@ public class DatabaseInitializer {
         createTeacherTable();
         createStudentTable();
         createClassroomTable();
+        createLibraryItemTable();
         createStudentClassroomTable();
         createStudentTeacherTable();
         try {
@@ -30,6 +31,7 @@ public class DatabaseInitializer {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -74,6 +76,20 @@ public class DatabaseInitializer {
                         + ")";
                 execute(query);
     }
+    private void createLibraryItemTable() {
+        String sql = """
+            CREATE TABLE IF NOT EXISTS library_item (
+                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                teacher_id    INTEGER,
+                stored_name   TEXT NOT NULL,
+                original_name TEXT NOT NULL,
+                size          INTEGER,
+                uploaded_at   TEXT,
+                FOREIGN KEY (teacher_id) REFERENCES Teacher(TeacherID)
+            );
+            """;
+        execute(sql);
+    }
 
     private void createStudentClassroomTable() {
         String query =
@@ -110,5 +126,6 @@ public class DatabaseInitializer {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 }

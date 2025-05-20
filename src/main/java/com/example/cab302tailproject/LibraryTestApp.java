@@ -10,8 +10,8 @@ import javafx.stage.Stage;
 public class LibraryTestApp extends Application {
 
     public static final String TITLE  = "Teacher Library Test";
-    public static final int WIDTH     = 400;
-    public static final int HEIGHT    = 500;
+    public static final int WIDTH = 818;
+    public static final int HEIGHT = 435;
 
     @Override
     public void start(Stage stage) throws Exception {

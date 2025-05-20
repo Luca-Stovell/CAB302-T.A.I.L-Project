@@ -53,15 +53,10 @@
 
             <!-- Navigation sidebar -->
 
-            <Button fx:id="sidebarGenerateButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Generate" />
-
-            <Button fx:id="sidebarReviewButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
-
-            <Button fx:id="sidebarAnalysisButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" />
-
-            <Button fx:id="sidebarAiAssistanceButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" />
-
-            <Button fx:id="sidebarLibraryButton" maxHeight="60" minHeight="60" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16;-fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Library" />
+            <Button fx:id="sidebarGenerateButton" onAction="#onSidebarGenerateClicked" maxHeight="81.0" minHeight="60" prefHeight="81.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Lesson Cards" />
+            <Button fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
+            <Button fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" />
+            <Button fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" />
         </VBox>
     </left>
 

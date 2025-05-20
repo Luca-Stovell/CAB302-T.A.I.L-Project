@@ -1,0 +1,9 @@
+module:com.example.cab302tailproject
+com.example.cab302tailproject
+com.example.cab302tailproject.controller
+com.example.cab302tailproject.controller.studentcontroller
+com.example.cab302tailproject.controller.teachercontroller
+com.example.cab302tailproject.DAO
+com.example.cab302tailproject.LearningCards
+com.example.cab302tailproject.model
+com.example.cab302tailproject.ollama4j

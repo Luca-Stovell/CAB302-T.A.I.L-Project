@@ -2,14 +2,20 @@ package com.example.cab302tailproject.controller.studentcontroller;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.LearningCards.LearningCardDeck;
+import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.LearningCardCreator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class LearningCardController {
 
@@ -128,8 +134,48 @@ public class LearningCardController {
     }
 
     /**
+     * Handler for the sidebar button that takes the user to the AI assistance page
+     * @param event The {@link ActionEvent} triggered by the button click.
+     */
+    @FXML
+    private void onSidebarAiAssistanceClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("ai_assistant-student.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
+    }
+
+    /**
+     * Handles action events for the "Review" button in the sidebar.
+     * Placeholder for navigation or review functionality.
+     * @param event The {@link ActionEvent} triggered by the button click.
+     */
+    @FXML
+    private void onSidebarReviewClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-student.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
+    }
+
+    /**
+     * Handles action events for the "Analysis" button in the sidebar.
+     * Placeholder for navigation or analysis functionality.
+     * @param event The {@link ActionEvent} triggered by the button click.
+     */
+    @FXML
+    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
+        Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
+        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-student.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        stage.setScene(scene);
+    }
+
+
+
+    /**
      * Changes a cards face display and sends it to the main text area
-     * @param actionEvent
+     * @param actionEvent Event triggered by button click
      */
     @FXML
     private void onFlipClicked(ActionEvent actionEvent) {
@@ -139,7 +185,7 @@ public class LearningCardController {
 
     /**
      * Sends the current card to the back of the deck, and outputs the next card
-     * @param actionEvent
+     * @param actionEvent The {@link ActionEvent} triggered by the button click.
      */
     @FXML private void onEasyClicked(ActionEvent actionEvent) {
         cardContent.setText(deck.easyNext());
@@ -147,7 +193,7 @@ public class LearningCardController {
 
     /**
      * Sends the current card to near the front of the deck, and outputs the next card
-     * @param actionEvent
+     * @param actionEvent The {@link ActionEvent} triggered by the button click.
      */
     @FXML private void onHardClicked(ActionEvent actionEvent) {
         cardContent.setText(deck.hardNext());
@@ -155,7 +201,7 @@ public class LearningCardController {
 
     /**
      * Sends the current card to the middle of the deck, and outputs the next card
-     * @param actionEvent
+     * @param actionEvent The {@link ActionEvent} triggered by the button click.
      */
     @FXML private void onMediumClicked(ActionEvent actionEvent) {
         cardContent.setText(deck.mediumNext());
@@ -163,7 +209,7 @@ public class LearningCardController {
 
     /**
      * Sends the current card to near the front of the deck, and outputs the next card
-     * @param actionEvent
+     * @param actionEvent The {@link ActionEvent} triggered by the button click.
      */
     // not entirely sure what the again button is supposed to do. For now, it's just the same as hard
     @FXML private void onAgainClicked(ActionEvent actionEvent) {
@@ -172,7 +218,7 @@ public class LearningCardController {
 
     /**
      * Sends the current card to the back of the deck, and outputs the next card
-     * @param actionEvent
+     * @param actionEvent The {@link ActionEvent} triggered by the button click.
      */
     //again, not sure what this should do.
     @FXML private void onNextClicked(ActionEvent actionEvent) {

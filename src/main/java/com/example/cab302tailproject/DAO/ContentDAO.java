@@ -29,6 +29,7 @@ public class ContentDAO implements IContentDAO {
         createLessonTable();
         createWorksheetTable();
         createLearningCardTable();
+        createStudentCardResponseTable();
         try {
             // Example: Replace these values with your actual database credentials
             String url = "jdbc:sqlite:Tail.db"; // Change your URL and DB name here
@@ -147,6 +148,29 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());
+        }
+    }
+    /**
+     * Creates the "StudentCardResponse" table in the database if it does not already exist.
+     * This table stores individual student responses to learning cards.
+     */
+    private void createStudentCardResponseTable() {
+        String query =
+                "CREATE TABLE IF NOT EXISTS StudentCardResponse ("
+                        + "ResponseID INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + "StudentID INTEGER NOT NULL, "
+                        + "MaterialID INTEGER NOT NULL, "
+                        + "CardQuestion TEXT NOT NULL, "
+                        + "IsCorrect BOOLEAN NOT NULL, "
+                        + "ClassroomID INTEGER, "
+                        + "FOREIGN KEY (StudentID) REFERENCES Student(StudentID) ON DELETE CASCADE, "
+                        + "FOREIGN KEY (MaterialID) REFERENCES Material(MaterialID) ON DELETE CASCADE, "
+                        + "FOREIGN KEY (ClassroomID) REFERENCES Classroom(ClassroomID) ON DELETE SET NULL"
+                        + ")";
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(query);
+        } catch (SQLException e) {
+            System.err.println("Error creating StudentCardResponse table: " + e.getMessage());
         }
     }
     //</editor-fold>

@@ -20,9 +20,9 @@
 
     <VBox alignment="CENTER" prefWidth="510" spacing="15" style="-fx-padding: 0 0 0 0;" VBox.vgrow="ALWAYS">
         <VBox alignment="CENTER" prefWidth="440" VBox.vgrow="ALWAYS">
-            <ScrollPane fx:id="contentScroll" fitToWidth="true">
-            <VBox fx:id="generatedTextArea" maxHeight="Infinity" maxWidth="Infinity" minHeight="180"
-                      minWidth="200" prefWidth="200"  prefHeight="180" style="-fx-alignment: top-left; -fx-font-size: 18;
+            <ScrollPane fx:id="contentScroll" fitToWidth="true" fitToHeight="true" minHeight="180">
+            <VBox fx:id="generatedTextArea" maxHeight="Infinity" maxWidth="Infinity"
+                  style="-fx-alignment: top-left; -fx-font-size: 18;
                       -fx-padding: 0 0 0 50;
                       -fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: black;"
                       VBox.vgrow="ALWAYS"/>

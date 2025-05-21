@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -277,56 +276,6 @@ public class ContentDAO implements IContentDAO {
     //</editor-fold>
 
     //<editor-fold desc="Setters">
-
-    //<editor-fold desc="Lesson and worksheet setters">
-    /**
-     * Updates the content of the specified material in the database, based on the given material ID.
-     * This method accepts either worksheets or lessons and executes the appropriate update query.
-     * @param materialID The unique identifier of the existing material to be updated. Must already exist as "worksheet" or "lesson".
-     * @param newContent The new content to be set for the specified material.
-     * @return true if the content was successfully updated, false otherwise.
-     */
-    public boolean setContent(int materialID, String newContent) {
-        String lessonUpdateQuery = "UPDATE lesson SET lessonContent = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?";
-        String worksheetUpdateQuery = "UPDATE worksheet SET worksheetContent = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?";
-
-        try {
-            Material material = getMaterialType(materialID);
-            String materialType = material.getMaterialType();
-            String updateQuery;
-            if (material == null) {
-                System.err.println("No material found with ID: " + materialID);
-                return false;
-            }
-
-            if ("lesson".equalsIgnoreCase(materialType)) {
-                updateQuery = lessonUpdateQuery;
-            } else if ("worksheet".equalsIgnoreCase(materialType)) {
-                updateQuery = worksheetUpdateQuery;
-            } else {
-                System.err.println("Invalid material type: " + materialType);
-                return false;
-            }
-
-            // Execute the update query
-            try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-                updateStatement.setString(1, newContent);
-                updateStatement.setInt(2, materialID);
-                int rowsAffected = updateStatement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    return true;
-                } else {
-                    System.err.println("Failed to update content for material with ID: " + materialID);
-                    return false;
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-        return false;
-    }
-
     /**
      * Updates the content and topic of a material in the database based on the provided material ID.
      * This method distinguishes between lessons and worksheets and performs the update operation accordingly.
@@ -334,51 +283,31 @@ public class ContentDAO implements IContentDAO {
      * @param materialID The unique identifier of the material to be updated.
      * @param newContent The new content to set for the specified material.
      * @param newTopic The new topic to set for the specified material.
+     * @param tableName The name of the table the material is part of ("lesson", "worksheet", or "learningCard")
      * @return true if the update operation is successful; false otherwise.
      */
-    public boolean setContent(int materialID, String newContent, String newTopic) {
-        String lessonUpdateQuery = "UPDATE lesson SET lessonContent = ?, lessonTopic = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?";
-        String worksheetUpdateQuery = "UPDATE worksheet SET worksheetContent = ?, worksheetTopic = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?";
+    public boolean setContent(int materialID, String newContent, String newTopic, String tableName) {
+        String sqlQuery = String.format("UPDATE %s SET %sContent = ?, %sTopic = ?, lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') WHERE materialID = ?", tableName, tableName, tableName);
 
-        try {
-            Material material = getMaterialType(materialID);
-            String materialType = material.getMaterialType();
-            String updateQuery;
+        try (PreparedStatement updateStatement = connection.prepareStatement(sqlQuery)) {
+            updateStatement.setString(1, newContent);
+            updateStatement.setString(2, newTopic);
+            updateStatement.setInt(3, materialID);
+            int rowsAffected = updateStatement.executeUpdate();
 
-            if (material == null) {
-                System.err.println("No material found with ID: " + materialID);
-                return false;
-            }
-
-            if ("lesson".equalsIgnoreCase(materialType)) {
-                updateQuery = lessonUpdateQuery;
-            } else if ("worksheet".equalsIgnoreCase(materialType)) {
-                updateQuery = worksheetUpdateQuery;
+            // Check if the update was successful
+            if (rowsAffected > 0) {
+                return true;
             } else {
-                System.err.println("Invalid material type: " + materialType);
+                System.err.println("Failed to update content/topic for material with ID: " + materialID);
                 return false;
             }
-            // Execute the update query
-            try (PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-                updateStatement.setString(1, newContent);
-                updateStatement.setString(2, newTopic);
-                updateStatement.setInt(3, materialID);
-                int rowsAffected = updateStatement.executeUpdate();
-
-                // Check if the update was successful
-                if (rowsAffected > 0) {
-                    return true;
-                } else {
-                    System.err.println("Failed to update content/topic for material with ID: " + materialID);
-                    return false;
-                }
-            }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());
             return false;
         }
     }
-    //</editor-fold>
 
     /**
      * Updates the ClassroomID for a specific material in the database identified by its materialID.
@@ -428,31 +357,38 @@ public class ContentDAO implements IContentDAO {
         }
         return false;
     }
+    //</editor-fold>
 
     //<editor-fold desc="Getters">
 
     //<editor-fold desc="Content Getters">
+
     /**
-     * Retrieves the content of a lesson from the database
-     * @param materialID The material identifier of the requested lesson
-     * @return the LessonContent object being requested if it exists, otherwise returns null
+     * Retrieves material content from the specified table based on the provided material ID.
+     *
+     * @param materialID The unique identifier of the material to retrieve.
+     * @param tableName The name of the database table to query for the material.
+     * @return A Material object containing the retrieved data, or null if no data is found or an error occurs.
      */
-    public Lesson getLessonContent(int materialID) {
-        String sql = "SELECT * FROM lesson WHERE materialID = ?";
+    public Material getMaterialContent(int materialID, String tableName) {
+        String sql = String.format("SELECT * FROM %s WHERE materialID = ?", tableName);
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, materialID);
             ResultSet rs = statement.executeQuery();
 
             if (rs.next()) {
-                return new Lesson(
-                        rs.getString("lessonTopic"),
-                        rs.getString("lessonContent"),
+                return new Material(
+                        rs.getString(String.format("%sTopic", tableName)),
+                        rs.getString(String.format("%sContent", tableName)),
+                        rs.getInt("teacherID"),
+                        tableName,
+                        materialID,
+                        getClassroomID(materialID),
+                        getWeek(materialID),
                         rs.getTimestamp("lastModifiedDate") != null
                                 ? rs.getTimestamp("lastModifiedDate").toInstant()
-                                : null ,    // for null case of timestamp
-                        rs.getInt("teacherID"),
-                        rs.getInt("materialID")
+                                : null    // for null case of timestamp
                 );
             }
         } catch (SQLException e) {
@@ -460,60 +396,7 @@ public class ContentDAO implements IContentDAO {
         }
         return null;
     }
-
-        /**
-         * Retrieves the content of a worksheet from the database based on the provided material ID.
-         * @param materialID The unique identifier of the material (worksheet) to be retrieved.
-         * @return A {@link Worksheet} object containing all attributes if found;
-         * otherwise, returns null if no worksheet is found or an error occurs.
-         */
-        public Worksheet getWorksheetContent(int materialID) {
-            String sql = "SELECT * FROM worksheet WHERE materialID = ?";
-
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setInt(1, materialID);
-                ResultSet rs = statement.executeQuery();
-
-                if (rs.next()) {
-                    return new Worksheet(
-                            rs.getString("worksheetTopic"),
-                            rs.getString("worksheetContent"),
-                            rs.getTimestamp("lastModifiedDate") != null
-                                    ? rs.getTimestamp("lastModifiedDate").toInstant()
-                                    : null ,    // for null case of timestamp
-                            rs.getInt("teacherID"),
-                            rs.getInt("materialID")
-                    );
-                }
-            } catch (SQLException e) {
-                System.err.println("Error: " + e.getMessage());
-            }
-            return null;
-        }
-        //</editor-fold>
-
-    /**
-     * Retrieves the material type details based on the provided material ID.
-     * @param materialID The unique identifier of the material to be retrieved.
-     * @return The Material object containing the material type and ID, or null if no material is found for the given ID or an error occurs.
-     */
-    public Material getMaterialType(int materialID) {
-        String sql = "SELECT materialType FROM material WHERE materialID = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, materialID);
-            ResultSet result = statement.executeQuery();
-
-            if (result.next()) {
-                return new Material(materialID,
-                        result.getString("materialType"));
-            }
-        }
-        catch (SQLException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-        return null;
-    }
+    //</editor-fold>
 
     /**
      * Retrieves the week number associated with a specific material from the database.
@@ -607,6 +490,29 @@ public class ContentDAO implements IContentDAO {
     }
 
     /**
+     * Retrieves the last modified date for a specific material from the specified database table.
+     *
+     * @param materialID the unique identifier of the material whose last modified date is to be retrieved
+     * @param tableName the name of the database table to query
+     * @return an Instant representing the last modified date of the material, or null if not found or in case of an error
+     */
+    public Timestamp getLastModifiedDate(int materialID, String tableName) {
+        String sql = String.format("SELECT lastModifiedDate FROM %s WHERE materialID = ?", tableName);
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, materialID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getTimestamp("lastModifiedDate");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * Retrieves the ID of the material associated with the specified week number and material type.
      *
      * @param weekNumber the week number for which the material is requested
@@ -658,20 +564,8 @@ public class ContentDAO implements IContentDAO {
                         String type = resultSet.getString("materialType");
                         int classroom = resultSet.getInt("ClassroomID");
                         int materialID = resultSet.getInt("materialID");
-                        String topic = null;
-                        Instant lastModified = null;
-
-                        if (type.equals("lesson")) {
-                            topic = getLessonContent(materialID).getTopic();
-                            lastModified = getLessonContent(materialID).getLastModifiedDate();
-                            //lastModified = resultSet.getTimestamp("lastModifiedDate");
-                        }
-                        if (type.equals("worksheet")) {
-                            topic = getWorksheetContent(materialID).getTopic();
-                            lastModified = getWorksheetContent(materialID).getLastModifiedDate();
-                            //lastModified = resultSet.getTimestamp("lastModifiedDate");
-                        }
-                        //TODO: retrieve flashcard topic from db
+                        String topic = getMaterialContent(materialID, type).getTopic();
+                        Timestamp lastModified = getLastModifiedDate(materialID, type);
 
                         data.add(new ContentTableData(lastModified, week, topic, type, classroom, materialID));
                     }
@@ -688,53 +582,32 @@ public class ContentDAO implements IContentDAO {
     //<editor-fold desc="Deletion">
     /**
      * Deletes the content associated with a specified material ID from the database.
-     * This method identifies the material type (lesson or worksheet) and performs the
+     * This method identifies the material type (lesson, worksheet, or learningCard) and performs the
      * necessary deletions in the corresponding table before removing the material record.
      *
      * @param materialID The unique identifier of the material to be deleted.
      * @return true if the material and its associated content were successfully deleted; false otherwise.
      */
-    public boolean deleteContent(int materialID){
-        String lessonUpdateQuery = "DELETE FROM lesson WHERE materialID = ?";
-        String worksheetUpdateQuery = "DELETE FROM worksheet WHERE materialID = ?";
+    public boolean deleteContent(int materialID, String tableName) {
         String materialDeleteQuery = "DELETE FROM material WHERE materialID = ?";
+        String sql = String.format("DELETE FROM %s WHERE materialID = ?", tableName);
 
-        try {
-            Material material = getMaterialType(materialID);
-            String materialType = material.getMaterialType();
-            String updateQuery;
-            if (material == null) {
-                System.err.println("No material found with ID: " + materialID);
-                return false;
-            }
+        try (PreparedStatement deleteItemStatement = connection.prepareStatement(sql)) {
+            deleteItemStatement.setInt(1, materialID);
+            int rowsAffected = deleteItemStatement.executeUpdate();
 
-            if ("lesson".equalsIgnoreCase(materialType)) {
-                updateQuery = lessonUpdateQuery;
-            } else if ("worksheet".equalsIgnoreCase(materialType)) {
-                updateQuery = worksheetUpdateQuery;
-            } else {
-                System.err.println("Invalid material type: " + materialType);
-                return false;
-            }
+            if (rowsAffected > 0) {
+                try (PreparedStatement deleteMaterialStatement = connection.prepareStatement(materialDeleteQuery)) {
+                    deleteMaterialStatement.setInt(1, materialID);
+                    int rowsAffected2 = deleteMaterialStatement.executeUpdate();
 
-            // Execute the update query
-            try (PreparedStatement deleteItemStatement = connection.prepareStatement(updateQuery)) {
-                deleteItemStatement.setInt(1, materialID);
-                int rowsAffected = deleteItemStatement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    try (PreparedStatement deleteMaterialStatement = connection.prepareStatement(materialDeleteQuery)) {
-                        deleteMaterialStatement.setInt(1, materialID);
-                        int rowsAffected2 = deleteMaterialStatement.executeUpdate();
-
-                        if (rowsAffected2 > 0){
-                            return true;
-                        }
+                    if (rowsAffected2 > 0) {
+                        return true;
                     }
-                } else {
-                    System.err.println("Failed to update content for material with ID: " + materialID);
-                    return false;
                 }
+            } else {
+                System.err.println("Failed to update content for material with ID: " + materialID);
+                return false;
             }
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());

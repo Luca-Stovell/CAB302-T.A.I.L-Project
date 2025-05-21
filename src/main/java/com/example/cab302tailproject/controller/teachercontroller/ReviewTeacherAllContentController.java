@@ -165,9 +165,10 @@ public class ReviewTeacherAllContentController {
                 return;
             }
             int materialID = selectedItem.getMaterialID();
+            String selectedType = selectedItem.getType();
 
             System.out.println("Deleting content with materialID: " + materialID);
-            contentDAO.deleteContent(materialID);
+            contentDAO.deleteContent(materialID, selectedType);
             reloadTableData();
         }
         catch (Exception e){

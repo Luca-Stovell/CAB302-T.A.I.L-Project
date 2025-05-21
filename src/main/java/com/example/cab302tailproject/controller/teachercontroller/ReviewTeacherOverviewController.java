@@ -116,7 +116,7 @@ public class ReviewTeacherOverviewController {
      * data to navigate to the appropriate card content page.
      */
     public void onViewCardsClicked() {
-        viewContent("card");   // TODO: implement a way for teachers to view cards
+        viewContent("learningCard");   //
     }
 
     /**
@@ -199,7 +199,7 @@ public class ReviewTeacherOverviewController {
                 navigateToContentPage(currentMaterial.getMaterialID());
             }
             catch (Exception e) {
-                System.err.println("Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber);
+                System.err.println("Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " (materialID: " + currentMaterial.getMaterialID() + ").");
                 showAlert(Alert.AlertType.ERROR, "Retrieval error", "Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + ". \n Check 'All content' to review available content.");
             }
         }

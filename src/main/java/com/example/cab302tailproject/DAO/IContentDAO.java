@@ -3,7 +3,6 @@ package com.example.cab302tailproject.DAO;
 import com.example.cab302tailproject.model.*;
 import javafx.collections.ObservableList;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 public interface IContentDAO {

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight = "-Infinity"
+            prefHeight = "420"
+            prefWidth="710"
+            fx:controller="com.example.cab302tailproject.controller.teachercontroller.LibraryController"
+            style= "-fx-background-color: white;">
+    <!-- Left sidebar -->
+    <left>
+        <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 2;">
+            <!-- user info -->
+            <VBox alignment="TOP_LEFT" prefHeight="120" style="-fx-padding: 25 0 0 30;">
+                <HBox alignment="CENTER_LEFT" prefWidth="200" spacing="20">
+                    <!-- Placeholder user avatar -->
+                    <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                        <Image url="@../../../images/tail_logo.png" />
+                        <clip>
+                            <Circle centerX="20" centerY="20" radius="20" />
+                        </clip>
+                    </ImageView>
+
+                    <VBox alignment="CENTER_LEFT" prefWidth="80">
+                        <Label style="-fx-font-weight: bold; -fx-text-fill: #757575" text="Mrs. Liat">
+                            <font> <Font size="16" /> </font> </Label>            <!-- change when user DB is implemented -->
+                        <Label style="-fx-text-fill: #B3B3B3" text="Class 9C">
+                            <font> <Font size="16" /> </font> </Label>
+                    </VBox>
+                </HBox>
+
+
+                <!-- Week / time -->
+                <VBox>
+                    <padding>
+                        <Insets bottom="10" left="5" right="5" top="10" />
+                    </padding>
+
+                    <Label style="-fx-text-fill: #B3B3B3" text="Week 5">
+                        <font> <Font size="12" /> </font> </Label>
+                    <Label style="-fx-text-fill: #B3B3B3" text="Time 12:34pm">
+                        <font> <Font size="12" /> </font>
+                    </Label>
+                </VBox>
+            </VBox>
+
+            <!-- Navigation sidebar -->
+
+            <Button fx:id="sidebarGenerateButton" onAction="#onSidebarGenerateClicked" maxHeight="81.0" minHeight="60" prefHeight="81.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Lesson Cards" />
+            <Button fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
+            <Button fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" />
+            <Button fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" />
+        </VBox>
+    </left>
+
+
+    <center>
+        <BorderPane>
+            <!-- Top Navigation Bar -->
+            <top>
+                <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
+                    <Button fx:id="filesButton" layoutX="80" layoutY="15" prefHeight="40" prefWidth="100" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Files" />
+                    <Button fx:id="studentsButton" layoutX="260" layoutY="15" prefHeight="40" prefWidth="115" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Students" />
+
+                    <HBox HBox.hgrow="ALWAYS" /> <!-- spacer -->
+
+                    <Button fx:id="homeButton" layoutX="420" layoutY="20" onAction="#onHomeClicked" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="H">
+                        <!-- insert graphic here-->
+                    </Button>
+                    <Button fx:id="settingsButton" layoutX="460" layoutY="20" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="S">
+                        <!-- insert graphic here-->
+                    </Button>
+                </AnchorPane>
+            </top>
+         <center>
+                <Pane prefHeight="365.0" prefWidth="510.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Button layoutX="182.0" layoutY="96.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="159.0" style="-fx-background-color: #00FF26;" text="⬆" onAction="#handleUpload">
+                     <font>
+                        <Font size="28.0" />
+                     </font></Button>
+                  <Pane layoutX="155.0" layoutY="177.0" prefHeight="46.0" prefWidth="212.0" style="-fx-background-color: #D9D9D9;">
+                     <children>
+                        <Label layoutY="7.0" prefHeight="20.0" prefWidth="244.0" text="You have successfully upload ">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="58.0" layoutY="22.0" prefHeight="20.0" prefWidth="137.0" text="file to library  ">
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
+                  <Label layoutX="215.0" layoutY="56.0" text="File Upload">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+                        <ListView fx:id="fileList"
+                                  layoutX="100" layoutY="250"
+                                  prefHeight="100" prefWidth="300"
+                                  style="-fx-border-color: black;" />
+                    </children>
+                </Pane>
+         </center>
+
+        </BorderPane>
+    </center>
+
+
+
+
+
+
+</BorderPane>

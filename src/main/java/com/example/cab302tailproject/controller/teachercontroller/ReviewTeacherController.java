@@ -2,7 +2,6 @@ package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.TailApplication;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,23 +18,12 @@ public class ReviewTeacherController {
 
     //<editor-fold desc="FXML UI Element References - Dynamic content">
     /**
-     * A reference to a VBox in the JavaFX view.
-     * Represents a dynamic content container in the user interface, allowing the content
-     * within it to be programmatically changed at runtime.
-     *
-     * This element is used in the context of lesson or worksheet generation and navigation,
-     * enabling the controller to update or switch the displayed content as required based
-     * on user interaction or application logic.
+     * A VBox container dynamically populated with content for managing and displaying
+     * lesson plans or associated materials in the LessonPlanController.
      */
     @FXML
     private VBox dynamicContentBox;
 
-    /**
-     * Holds a reference to the previously displayed view within the application.
-     * Used to facilitate navigation between views by tracking the last active view.
-     * Typically updated when transitioning between different scenes in the interface.
-     */
-    private static VBox previousView;
     //</editor-fold>
 
     //<editor-fold desc="FXML UI Element References - Navigation & Layout">
@@ -84,6 +72,7 @@ public class ReviewTeacherController {
 
     //</editor-fold>
 
+    //<editor-fold desc="Initialisation">
     public void initialize() {
         showOverviewView();
     }
@@ -101,13 +90,12 @@ public class ReviewTeacherController {
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
                     "Could not load generated content view.\n" +e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error: " + e.getMessage());
         }
     }
-
+    //</editor-fold>
 
     //<editor-fold desc="Utility Methods">
-
     /**
      * Helper method to display a standard JavaFX Alert dialog.
      * Ensures the alert is shown on the JavaFX Application Thread.
@@ -145,10 +133,9 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "Generate" button in the sidebar.
      * Reloads the lesson generation view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
+    private void onSidebarGenerateClicked() throws IOException {
         Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_generator-teacher.fxml"));
         Parent root = fxmlLoader.load();
@@ -158,14 +145,11 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "Review" button in the sidebar.
      * Loads the teacher review view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarReviewClicked(ActionEvent event) throws IOException {
+    private void onSidebarReviewClicked() throws IOException {
         Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher.fxml"));
-        //Scene scene = new Scene(fxmlLoader.load());
-        //stage.setScene(scene);
 
         Parent root = fxmlLoader.load();
         stage.getScene().setRoot(root);
@@ -174,10 +158,9 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "Analysis" button in the sidebar.
      * Loads the teacher analysis view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
+    private void onSidebarAnalysisClicked() throws IOException {
         Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-teacher.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
@@ -187,10 +170,9 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "A.I. Assistance" button in the sidebar.
      * Loads the teacher AI assistance view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarAiAssistanceClicked(ActionEvent event) throws IOException {
+    private void onSidebarAiAssistanceClicked() throws IOException {
         Stage stage = (Stage) sidebarAiAssistanceButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("ai_assistant-teacher.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
@@ -200,10 +182,9 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "Library" button in the sidebar.
      * Loads the teacher library view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSidebarLibraryClicked(ActionEvent event) throws IOException {
+    private void onSidebarLibraryClicked() throws IOException {
         Stage stage = (Stage) sidebarLibraryButton.getScene().getWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("library-teacher.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
@@ -215,10 +196,9 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "Files" button in the top navigation.
      * Loads a files view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onFilesClicked(ActionEvent event) {
+    private void onFilesClicked() {
         System.out.println("Files button clicked.");
         // TODO ADD FUNCTIONALITY
     }
@@ -226,10 +206,9 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "Students" button in the top navigation.
      * Loads a students view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onStudentsClicked(ActionEvent event) throws IOException {
+    private void onStudentsClicked() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("classroom-teacher-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
         Stage stage = (Stage) studentsButton.getScene().getWindow();
@@ -240,10 +219,9 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "Home" button in the top navigation.
      * Loads the main dashboard/home view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onHomeClicked(ActionEvent event) {
+    private void onHomeClicked() {
         System.out.println("Home button clicked.");
         // TODO ADD FUNCTIONALITY
     }
@@ -251,10 +229,9 @@ public class ReviewTeacherController {
     /**
      * Handles clicks on the "Settings" button in the top navigation.
      * Loads a settings view on the current stage.
-     * @param event The action event.
      */
     @FXML
-    private void onSettingsClicked(ActionEvent event) {
+    private void onSettingsClicked() {
         System.out.println("Settings button clicked.");
         // TODO ADD FUNCTIONALITY
     }

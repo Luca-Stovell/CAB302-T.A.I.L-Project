@@ -9,28 +9,6 @@ import java.util.List;
 public interface IContentDAO {
 
     /**
-     * Retrieves lesson content from the database by its materialID.
-     * @param materialID The material identifier of the requested lesson
-     * @return the LessonContent object if found, null otherwise
-     */
-    Lesson getLessonContent(int materialID);
-
-    /**
-     * Retrieves the material type details based on the provided material ID.
-     * @param materialID The unique identifier of the material to be retrieved.
-     * @return The Material object containing the material type and ID, or null if no material is found for the given ID or an error occurs.
-     */
-    Material getMaterialType(int materialID);
-
-    /**
-     * Retrieves the content of a worksheet from the database based on the provided material ID.
-     * @param materialID The unique identifier of the material (worksheet) to be retrieved.
-     * @return A {@link Worksheet} object containing all attributes if found;
-     * otherwise, returns null if no worksheet is found or an error occurs.
-     */
-    Worksheet getWorksheetContent(int materialID);
-
-    /**
      * Updates the content and topic of a material in the database based on the provided material ID.
      * This method distinguishes between lessons and worksheets and performs the update operation accordingly.
      *
@@ -50,7 +28,7 @@ public interface IContentDAO {
      * @param materialID The unique identifier of the material to be deleted.
      * @return true if the material and its associated content were successfully deleted; false otherwise.
      */
-    public boolean deleteContent(int materialID, String tableName);
+    boolean deleteContent(int materialID, String tableName);
 
     /**
      * Updates the ClassroomID for a specific material in the database identified by its materialID.
@@ -148,13 +126,4 @@ public interface IContentDAO {
      * @return A Material object containing the retrieved data, or null if no data is found or an error occurs.
      */
     Material getMaterialContent(int materialID, String tableName);
-
-    /**
-     * Retrieves the last modified date for a specific material from the specified database table.
-     *
-     * @param materialID the unique identifier of the material whose last modified date is to be retrieved
-     * @param tableName the name of the database table to query
-     * @return an Instant representing the last modified date of the material, or null if not found or in case of an error
-     */
-    Timestamp getLastModifiedDate(int materialID, String tableName);
 }

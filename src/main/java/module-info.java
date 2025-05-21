@@ -28,5 +28,6 @@ module com.example.cab302tailproject {
     exports com.example.cab302tailproject.LearningCards;
 
     opens com.example.cab302tailproject.model to org.junit.platform.commons;
+    opens com.example.cab302tailproject.LearningCards to org.junit.platform.commons;
 
 }

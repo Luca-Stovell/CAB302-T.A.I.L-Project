@@ -200,8 +200,9 @@ public class LessonGenController {
             String generatedContent = generateTask.getValue();
             generateButton.setDisable(false);
             generatorTextField.setDisable(false);
-            int generatedID = saveLessonToDatabase(generatedContent, selectedGeneratorType, userInput.trim());
-            currentMaterial = new Material(generatedID, selectedGeneratorType);     // Prepare new view with the given output
+            String generatorType = typeFormatter(selectedGeneratorType);
+            int generatedID = saveLessonToDatabase(generatedContent, generatorType, userInput.trim());
+            currentMaterial = new Material(generatedID, generatorType);     // Prepare new view with the given output
             navigateToGeneratedPlan(generatedID);
         });
         generateTask.setOnFailed(workerStateEvent -> {
@@ -233,67 +234,31 @@ public class LessonGenController {
             showAlert(Alert.AlertType.ERROR, "Save Error", "Cannot save null content.");
             return -1;
         }
+        if (type.equals("INVALID")) {System.out.println("Invalid content type: " + type + "."); return -1;}
+
+        // Limit topic length
         if (topic.length() > 50) topic = topic.substring(0, 50);
+        String teacherEmail = getTeacherEmailFromSession();
+
         try {
             IContentDAO contentDAO = new ContentDAO();
-            if (type.equals("Lesson Plan")) {
-                // Create LessonContent object
-                Lesson lessonContent = new Lesson(
-                        topic,
-                        content,                        // Generated lesson content
-                        999                             // Placeholder TeacherID, update later
-                );
+            int teacherID = contentDAO.getTeacherID(teacherEmail);
+            Material materialContent = new Material(topic, content, teacherID, type);
+            // Save content to database
+            int isSaved = contentDAO.addContent(materialContent, type);
 
-                // Save content to database
-                int isSaved = contentDAO.addLessonContent(lessonContent);
-
-                // Update the material database with a week number and classroomID
-                // TODO: Determine which week should be assigned (for both lessons and worksheets)
-                if (isSaved != -1) {
-                    boolean validTeacherID = updateTeacherIdToContent(isSaved, type);
-                    boolean classroomSaved = assignWeekAndClassroomToContent(isSaved);
-                    if (!classroomSaved) {
-                        System.err.println("Failed to save week and classroom to the database.");
-                    }
-                    else if (!validTeacherID) {
-                        System.err.println("Failed to save teacher to the database.");
-                    }
-                    return isSaved;
+            // Use the new materialID to update the material table with a week number and classroomID
+            if (isSaved != -1) {
+                boolean classroomSaved = assignClassroomAndWeekToContent(isSaved);
+                if (!classroomSaved) {
+                    System.err.println("Failed to save week and classroom to the database.");
                 }
-                else {
-                    System.err.println("Failed to save lesson to the database.");
-                }
-            }
-            else if (type.equals("Worksheet")) {
-                // Create LessonContent object
-                Worksheet worksheet = new Worksheet(
-                        topic,
-                        content,                        // Generated lesson content
-                        999                             // Placeholder TeacherID
-                );
-                // Save to database
-                int isSaved = contentDAO.addWorksheetToDB(worksheet);
-
-                if (isSaved != -1) {
-                    boolean validTeacherID = updateTeacherIdToContent(isSaved, type);
-                    boolean classroomSaved = assignWeekAndClassroomToContent(isSaved);
-                    if (!classroomSaved) {
-                        System.err.println("Failed to save week and classroom to the database.");
-                    }
-                    else if (!validTeacherID) {
-                        System.err.println("Failed to save teacher to the database.");
-                    }
-                    return isSaved;
-                }
-                else {
-                    System.err.println("Failed to save worksheet to the database.");
-                }
+                return isSaved;
             }
             else {
-                System.out.println("Invalid content type: " + type + ".");
+                System.err.println("Failed to save lesson to the database.");
             }
         } catch (Exception e) {
-            //e.printStackTrace();
             System.err.println("An error occurred while saving the content: " + e.getMessage());
         }
         return -1;
@@ -310,33 +275,30 @@ public class LessonGenController {
      * @return true if the operation to assign week and classroom to the material is successful,
      *         false otherwise.
      */
-    public boolean assignWeekAndClassroomToContent(int materialID) {
-        // TODO: Determine which week should be assigned (for both lessons and worksheets)
+    public boolean assignClassroomAndWeekToContent(int materialID) {
+        // TODO: Determine which week should be assigned?
         if (materialID != -1) {
-            UserSession userSession = UserSession.getInstance();
-            String teacherEmail = userSession.getEmail();
+            String teacherEmail = getTeacherEmailFromSession();
             int teacherClassroomId = 0;     // Start with default classroom
-            int assignedWeek = 0;           // Start with week 1 as default
+            int assignedWeek = 0;           // Start with week 0 as default
 
             try {
                 IContentDAO contentDAO = new ContentDAO();
                 if (teacherEmail == null) {     // Still save something to the db
                     contentDAO.updateClassroomID(teacherClassroomId, materialID);
                     contentDAO.updateWeek(assignedWeek, materialID);
-                    System.out.println("Placeholder week and class saved successfully!");
-                    return true;
+                    System.out.println("Placeholder classroom and week saved. No teacher details found.");
                 } else {
                     SqliteClassroomDAO classroomDAO = new SqliteClassroomDAO();
                     List<Classroom> classrooms = classroomDAO.getClassroomsByTeacherEmail(teacherEmail);
                     teacherClassroomId = (classrooms.getLast().getClassroomID());                   // Retrieve last classroom
                     contentDAO.updateClassroomID(teacherClassroomId, materialID);       // Set week and class
                     contentDAO.updateWeek(assignedWeek, materialID);
-                    System.out.println("Week and class saved successfully!");
-                    return true;
+                    System.out.println("Classroom and placeholder week saved successfully!");
                 }
+                return true;
             }
             catch (Exception e) {
-                //e.printStackTrace();
                 System.err.println("An error occurred while saving the week and class: " + e.getMessage());
                 showAlert(Alert.AlertType.INFORMATION, "Generation error","Failed to assign a classroom to the content.\n Check if any classrooms exist in the \"Students\" tab.");
             }
@@ -345,44 +307,40 @@ public class LessonGenController {
     }
 
     /**
-     * Updates the teacher ID associated with a specific content material in the database.
-     * The method retrieves the teacher's email from the user session and assigns it to the
-     * corresponding content identified by the material ID and type. If no email is found
-     * in the session, the operation is skipped.
+     * Retrieves the email address of the currently logged-in teacher from the user session.
      *
-     * @param materialID The unique identifier of the material to which the teacher ID is to be assigned.
-     *                   A value of -1 indicates invalid material and will prevent the update.
-     * @param type       The type of content material (e.g., "Lesson Plan", "Worksheet") to be updated.
-     * @return true if the operation is successful or if no email exists in the session,
-     *         false otherwise (e.g., an exception occurs or the material ID is invalid).
+     * @return The email address of the currently logged-in teacher, or null if no teacher is logged in.
      */
-    public boolean updateTeacherIdToContent(int materialID, String type) {
-        System.out.println("materialID: " + materialID);
-        if (materialID != -1) {
-            UserSession userSession = UserSession.getInstance();
-            String teacherEmail = userSession.getEmail();
-
-            try {
-                IContentDAO contentDAO = new ContentDAO();
-                if (teacherEmail == null) {
-                    System.out.println("No email found in the session. Skipping update to teacher id.");
-                    return true;
-                } else {
-                    boolean isSaved = contentDAO.updateTeacherID(teacherEmail, materialID, type);
-                    if (isSaved) {
-                        System.out.println("Week and class saved successfully!");
-                        return true;
-                    }
-                }
-            }
-            catch (Exception e) {
-                //e.printStackTrace();
-                System.err.println("An error occurred while saving the week and class: " + e.getMessage());
-                showAlert(Alert.AlertType.INFORMATION, "Generation error","Failed to assign a classroom to the content.\n Check if any classrooms exist in the \"Students\" tab.");
-            }
+    private String getTeacherEmailFromSession() {
+        UserSession userSession = UserSession.getInstance();
+        String teacherEmail = userSession.getEmail();
+        if (teacherEmail == null) {
+            System.err.println("No logged in teacher found.");
+            return null;
+        } else {
+            return teacherEmail;
         }
-        return false;
     }
+
+    /**
+     * Formats the given type string by mapping specific types to their database-compatible values.
+     * Only use in specific cases.
+     *
+     * @param type The type of material to be formatted. Expected values include "Lesson Plan",
+     *             "Worksheet", and "Flashcard". Other strings will be returned unchanged.
+     * @return A formatted string representation of the input type.
+     *         For "Lesson Plan", returns "lesson". For "Worksheet", returns "worksheet".
+     *         For "Flashcard", returns "flashcards". If no match, it returns the input type.
+     */
+    private String typeFormatter(String type) {
+        return switch (type) {
+            case "Lesson Plan" -> "lesson";
+            case "Worksheet" -> "worksheet";
+            case "Flashcards" -> "learningCard";
+            default -> "INVALID";
+        };
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Page navigation">

@@ -138,11 +138,11 @@ public class ContentDAO implements IContentDAO {
                         + "learningCardID INTEGER PRIMARY KEY AUTOINCREMENT, "
                         + "learningCardTopic TEXT, " // same as parent lesson?
                         + "learningCardContent TEXT, "
-                        //+ "lastModifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " // probably unnecessary
-                        //+ "TeacherID INTEGER, " // consider replacing this with parent lesson (assuming card sets are generated from lessons
+                        + "lastModifiedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " // For teacher's editing of content
+                        + "TeacherID INTEGER, " // consider replacing this with parent lesson (assuming card sets are generated from lessons
                         + "materialID INTEGER NOT NULL, "
-                        + "FOREIGN KEY (materialID) REFERENCES material(materialID)"
-                        //+ "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID), "
+                        + "FOREIGN KEY (materialID) REFERENCES material(materialID), "
+                        + "FOREIGN KEY (TeacherID) REFERENCES Teacher(TeacherID)"
                         + ")";
         try (Statement statement = connection.createStatement()) {
             statement.execute(query);
@@ -180,97 +180,32 @@ public class ContentDAO implements IContentDAO {
         return -1; // Error case, failed to insert
     }
 
-
-    /**
-     * Adds a new lesson entry to the database, including its attributes.
-     * If the material ID is not already set in the provided lesson object, this method
-     * generates a new material ID by adding an entry to the material table.
-     *
-     * @param content The Lesson object containing the details of the lesson to be added,
-     *                including topic, content, teacher ID, classroom ID, and optionally material ID.
-     * @return The material ID of the newly added lesson if the operation is successful.
-     *         Returns -1 if an error occurs.
-     * @throws IllegalStateException if the database connection is inactive or if adding
-     *                                a material entry fails.
-     */
-    public int addLessonContent(Lesson content) {
-        String sql = "INSERT INTO lesson (lessonTopic, lessonContent, " +
-                "TeacherID, materialID) " +
-                "VALUES (?, ?, ?, ?)";
-        String sqlRetrieveDate = "SELECT lastModifiedDate FROM lesson WHERE rowid = last_insert_rowid()";
-        String sqlUpdateDate = "UPDATE lesson SET lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') " +
-                "WHERE rowid = last_insert_rowid()";
-
-        // Ensure the materialID exists by inserting into the material table if necessary
-        if (content.getMaterialID() <= 0) {
-            int generatedMaterialID = addMaterial("lesson");
-            if (generatedMaterialID == -1) {
-                throw new IllegalStateException("Failed to create a material entry in the material table.");
-            }
-            content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
-        }
-
-        if (connection == null) {
-            throw new IllegalStateException("Database connection is not active.");
-        }
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, content.getTopic());
-            statement.setString(2, content.getContent());
-            statement.setInt(3, content.getTeacherID());
-            statement.setInt(4, content.getMaterialID());
-            statement.executeUpdate();
-
-            // Update the lastModifiedDate with '+10 hours' offset
-            try (PreparedStatement statement_updateTimeZone = connection.prepareStatement(sqlUpdateDate)) {
-                statement_updateTimeZone.executeUpdate();
-            }
-
-
-            // Retrieve generated timestamp
-            try (PreparedStatement statement_retrieveDate = connection.prepareStatement(sqlRetrieveDate);
-                 ResultSet rs = statement_retrieveDate.executeQuery()) {
-                if (rs.next()) {
-                    Timestamp lastModified = rs.getTimestamp("lastModifiedDate");
-                    if (lastModified != null) {
-                        content.setLastModifiedDate(lastModified.toInstant());
-                    }
-                }
-            }
-            return content.getMaterialID();
-        } catch (SQLException e) {
-            System.err.println("Error: " + e.getMessage());
-            return -1;
-        }
-    }
-
     /**
      * Adds a new worksheet entry to the database, including its attributes.
-     * If the materialID is not already set, this method generates a new materialID
+     * Assumes the materialID is not already set, and generates a new materialID
      * by adding an entry to the material table.
      *
-     * @param content The Worksheet object containing the details of the worksheet to
-     *                be added, including topic, content, teacher ID, classroom ID, and optionally materialID.
-     * @return The materialID of the newly added worksheet if the operation is successful. Returns -1 if an error occurs.
+     * @param content      The content object (Material) containing the details to be added,
+     *                     including topic, content, teacher ID, classroom ID.
+     * @param tableName    The name of the database table to insert the data ("lesson", "worksheet", or "learningCard").
+     * @return The material ID of the newly added content if the operation is successful. Returns -1 if an error occurs.
      * @throws IllegalStateException if the database connection is inactive or if adding a material entry fails.
      */
-    public int addWorksheetToDB(Worksheet content) {
-        String sql = "INSERT INTO worksheet (worksheetTopic, worksheetContent, " +
-                "TeacherID, materialID) " +
-                "VALUES (?, ?, ?, ?)";
-        String sqlRetrieveDate = "SELECT lastModifiedDate FROM worksheet WHERE rowid = last_insert_rowid()";
-        String sqlUpdateDate = "UPDATE worksheet SET lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') " +
-                "WHERE rowid = last_insert_rowid()";
+    public int addContent(Material content, String tableName) {
+        String sql = String.format("INSERT INTO %s (%sTopic, %sContent, TeacherID, materialID) " +
+                "VALUES (?, ?, ?, ?)", tableName, tableName, tableName);
+        String sqlRetrieveDate = String.format("SELECT lastModifiedDate FROM %s WHERE rowid = last_insert_rowid()", tableName);
+        String sqlUpdateDate = String.format("UPDATE %s SET lastModifiedDate = DATETIME(CURRENT_TIMESTAMP, '+10 hours') " +
+                "WHERE rowid = last_insert_rowid()", tableName);
 
         // Ensure the materialID exists by inserting into the material table if necessary
         if (content.getMaterialID() <= 0) {
-            int generatedMaterialID = addMaterial("worksheet");
+            int generatedMaterialID = addMaterial(tableName);
             if (generatedMaterialID == -1) {
                 throw new IllegalStateException("Failed to create a material entry in the material table.");
             }
             content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
         }
-
 
         if (connection == null) {
             throw new IllegalStateException("Database connection is not active.");
@@ -304,6 +239,41 @@ public class ContentDAO implements IContentDAO {
             return -1;
         }
     }
+
+    // REDUNDANT: now handled in addContent
+    public int addLearningCardToDB(LearningCardCreator content) {
+        String sql = "INSERT INTO learningCard (learningCardTopic, learningCardContent, " +
+                " materialID) " +
+                "VALUES (?, ?, ?)";
+
+        // Ensure the materialID exists by inserting into the material table if necessary
+        if (content.getMaterialID() <= 0) {
+            int generatedMaterialID = addMaterial("learningCard");
+            if (generatedMaterialID == -1) {
+                throw new IllegalStateException("Failed to create a material entry in the material table.");
+            }
+            content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
+        }
+
+
+        if (connection == null) {
+            throw new IllegalStateException("Database connection is not active.");
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, content.getTopic());
+            statement.setString(2, content.getContent());
+            statement.setInt(3, content.getMaterialID());
+            statement.executeUpdate();
+
+
+            return content.getMaterialID();
+        } catch (SQLException e) {
+            System.err.println("Error: " + e.getMessage());
+            return -1;
+        }
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Setters">
@@ -459,59 +429,6 @@ public class ContentDAO implements IContentDAO {
         return false;
     }
 
-
-    /**
-     * Updates the teacher ID for a specific material given the teacher's email, material ID, and type of material.
-     * The method validates the input type to ensure it matches known material types (e.g., "lesson" or "worksheet").
-     * It queries the database to find the teacher ID associated with the provided email and updates the corresponding
-     * material record with the found teacher ID.
-     *
-     * @param teacherEmail the email address of the teacher whose ID needs to be retrieved and updated.
-     * @param materialID the ID of the material (e.g., lesson or worksheet) to be updated.
-     * @param type the type of material ("lesson" or "worksheet") to specify the appropriate database table for the update.
-     * @return true if the update was successful and a record was modified, false otherwise.
-     * @throws IllegalArgumentException if the provided type is invalid or not recognized.
-     */
-    public boolean updateTeacherID(String teacherEmail, int materialID, String type){
-        // Accept different ways of saying the same thing
-        if (type.equals("Lesson Plan")) {
-            type = "lesson";
-        }
-        if (type.equals("Worksheet")) {
-            type = "worksheet";
-        }
-        // Validate input type to prevent SQL injection or errors
-        if (!type.equalsIgnoreCase("worksheet") && !type.equalsIgnoreCase("lesson")) {
-            System.out.println("Type is " + type + ".");
-            throw new IllegalArgumentException("Invalid table type specified. Must be 'worksheet' or 'lesson'.");
-        }
-
-        String findTeacherQuery = "SELECT TeacherID FROM Teacher WHERE TeacherEmail = ?";
-        String sqlUpdate = "UPDATE " + type + " SET TeacherID = ? WHERE materialID = ?";
-
-
-        try (PreparedStatement statement = connection.prepareStatement(findTeacherQuery)) {
-            statement.setString(1, teacherEmail);
-            ResultSet rs = statement.executeQuery();
-
-            if (rs.next()) {
-                int teacherID = rs.getInt("TeacherID");
-
-                try (PreparedStatement updateStatement = connection.prepareStatement(sqlUpdate)) {
-                    updateStatement.setInt(1, teacherID);
-                    updateStatement.setInt(2, materialID);
-
-                    int rowsUpdated = updateStatement.executeUpdate();
-                    return rowsUpdated > 0;
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
-        return false;
-    }
-    //</editor-fold>
-
     //<editor-fold desc="Getters">
 
     //<editor-fold desc="Content Getters">
@@ -644,6 +561,28 @@ public class ContentDAO implements IContentDAO {
     }
 
     /**
+     * Retrieves the teacher's unique identifier (TeacherID) based on their email address.
+     *
+     * @param teacherEmail the email address of the teacher whose ID is to be retrieved
+     * @return the TeacherID associated with the provided email address, or -1 if no match is found or an error occurs
+     */
+    public int getTeacherID(String teacherEmail) {
+        String findTeacherQuery = "SELECT TeacherID FROM Teacher WHERE TeacherEmail = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(findTeacherQuery)) {
+            statement.setString(1, teacherEmail);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("TeacherID");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+        return -1;
+    }
+
+    /**
      * Retrieves a list of classroom IDs associated with the given teacher's email.
      *
      * @param teacherEmail the email address of the teacher whose classrooms are to be retrieved
@@ -745,39 +684,6 @@ public class ContentDAO implements IContentDAO {
         return data;
     }
     //</editor-fold>
-
-    public int addLearningCardToDB(LearningCardCreator content) {
-        String sql = "INSERT INTO learningCard (learningCardTopic, learningCardContent, " +
-                " materialID) " +
-                "VALUES (?, ?, ?)";
-
-        // Ensure the materialID exists by inserting into the material table if necessary
-        if (content.getMaterialID() <= 0) {
-            int generatedMaterialID = addMaterial("learningCard");
-            if (generatedMaterialID == -1) {
-                throw new IllegalStateException("Failed to create a material entry in the material table.");
-            }
-            content.setMaterialID(generatedMaterialID); // Update the materialID in the content object
-        }
-
-
-        if (connection == null) {
-            throw new IllegalStateException("Database connection is not active.");
-        }
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, content.getTopic());
-            statement.setString(2, content.getContent());
-            statement.setInt(3, content.getMaterialID());
-            statement.executeUpdate();
-
-
-            return content.getMaterialID();
-        } catch (SQLException e) {
-            System.err.println("Error: " + e.getMessage());
-            return -1;
-        }
-    }
 
     //<editor-fold desc="Deletion">
     /**

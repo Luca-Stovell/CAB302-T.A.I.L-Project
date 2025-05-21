@@ -7,7 +7,7 @@ import java.util.Arrays; // Added for stream operations if needed, and for robus
 public class LearningCardDeck {
     // Constants:
     // constants subject to change, really depends on what feels right when using the card reader
-    private static final double MEDIUM = 0.6;
+    private static final double MEDIUM = 0.5;
     private static final double HARD = 0.3;
     private static final String EMPTY_MESSAGE = "Congratulations, you have finished the deck!";
 

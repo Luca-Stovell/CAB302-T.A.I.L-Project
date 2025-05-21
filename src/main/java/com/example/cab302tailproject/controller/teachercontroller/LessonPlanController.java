@@ -113,43 +113,23 @@ public class LessonPlanController {
     public void initData(Material material, VBox dynamicContentBox, VBox previousView) {
         this.currentMaterial = material;
         this.contentDAO = new ContentDAO();
+        materialID = currentMaterial.getMaterialID();
+        materialType = currentMaterial.getMaterialType();
+        currentMaterial = contentDAO.getMaterialContent(materialID, materialType);
+
         this.dynamicContentBox = dynamicContentBox;
         this.previousView = previousView;
-        materialID = currentMaterial.getMaterialID();
         setUpWeekCheckBox();
         setUpClassCheckBox();
         setupLabelToggleBehavior();
 
-        if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
-            Lesson lesson = contentDAO.getLessonContent(materialID);
-            currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
-            this.materialType = currentMaterial.getMaterialType();
-
-            if (lesson != null) {
-                generatedTextArea.setText(lesson.getContent());
-                topicTextField.setText(lesson.getTopic());
-            } else {
-                showAlert(Alert.AlertType.WARNING, "No lesson found",
-                        "No lesson found for the given ID: " + materialID + ".");
-            }
-        }
-        else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
-            Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-            currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
-            this.materialType = currentMaterial.getMaterialType();
-
-
-            if (worksheet != null) {
-                generatedTextArea.setText(worksheet.getContent());
-                topicTextField.setText(worksheet.getTopic());
-            } else {
-                showAlert(Alert.AlertType.WARNING, "No worksheet found",
-                        "No worksheet found for the given ID: " + materialID + ".");
-            }
+        if (currentMaterial != null) {
+            generatedTextArea.setText(currentMaterial.getContent());
+            topicTextField.setText(currentMaterial.getTopic());
         }
         else {
-            showAlert(Alert.AlertType.WARNING, "Invalid material type",
-                    "The material type is invalid: " + currentMaterial.getMaterialType());
+            showAlert(Alert.AlertType.WARNING, "No generated content found",
+                    "No content found for the given ID: " + materialID + ".");
         }
     }
     //</editor-fold>
@@ -225,9 +205,7 @@ public class LessonPlanController {
 
     /**
      * Handles the save operation when the "Save" button is clicked.
-     * Determines the type of material (lesson or worksheet) and attempts
-     * to retrieve the corresponding content from the database. If the content is found,
-     * it triggers any necessary modifications, retrieves the updated content, and saves
+     * If the content is found, it triggers any necessary modifications, retrieves the updated content, and saves
      * it to a file. The file save operation includes suggesting a file name based on the
      * material type and topic. If no content or an invalid material type is provided,
      * an appropriate alert is displayed to notify the user.
@@ -235,31 +213,10 @@ public class LessonPlanController {
     @FXML
     private void onSaveClicked(){
         if (currentMaterial != null) {
-            if ("lesson".equals(materialType)) {
-                Lesson lesson = contentDAO.getLessonContent(materialID);
-                if (lesson != null) {
-                    System.out.println("Lesson plan saving...");
-                    onModifyClicked(false);
-                    Lesson updated_lesson = contentDAO.getLessonContent(materialID);
-                    saveContentToFileFromContentView(updated_lesson.getContent(), "Lesson Plan", updated_lesson.getTopic());
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "No content", "No lesson found with this materialID");
-                }
-            }
-            else if ("worksheet".equals(materialType)) {
-                Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-                if (worksheet != null) {
-                    System.out.println("Worksheet saving...");
-                    onModifyClicked(false);
-                    Worksheet updated_worksheet = contentDAO.getWorksheetContent(materialID);
-                    saveContentToFileFromContentView(updated_worksheet.getContent(), "Worksheet", updated_worksheet.getTopic());
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "No content", "No worksheet found with this materialID");
-                }
-            }
-            else {
-                showAlert(Alert.AlertType.WARNING, "Invalid material type", "The material type is invalid.");
-            }
+            System.out.println("Lesson plan saving...");
+            onModifyClicked(false);
+            Material updated_material = contentDAO.getMaterialContent(materialID, materialType);
+            saveContentToFileFromContentView(updated_material.getContent(), materialType, updated_material.getTopic());
         }
         else {
             showAlert(Alert.AlertType.WARNING, "No material found", "Provided MaterialID is null");
@@ -288,7 +245,7 @@ public class LessonPlanController {
         String newTopicName = topicTextField.getText();
 
         try {
-            boolean isSaved = contentDAO.setContent(materialID, updatedContent, newTopicName);
+            boolean isSaved = contentDAO.setContent(materialID, updatedContent, newTopicName, materialType);
             if (isSaved && showAlert) {
                 showAlert(Alert.AlertType.CONFIRMATION, "Content Updated", "Content updated successfully.");
             }

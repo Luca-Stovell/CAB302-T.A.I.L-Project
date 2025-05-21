@@ -171,7 +171,7 @@ public class ReviewTeacherLessonModify {
         String newTopicName = topicTextField.getText();
 
         try {
-            contentDAO.setContent(materialID, updatedContent, newTopicName);
+            contentDAO.setContent(materialID, updatedContent, newTopicName, currentMaterial.getMaterialType());
 
             //showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
 

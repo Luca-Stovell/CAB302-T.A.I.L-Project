@@ -30,24 +30,16 @@ public interface IContentDAO {
     Worksheet getWorksheetContent(int materialID);
 
     /**
-     * Updates the content of the specified material in the database, based on the given material ID.
-     * This method accepts either worksheets or lessons and executes the appropriate update query.
-     * @param materialID The unique identifier of the existing material to be updated.
-     * @param newContent The new content to be set for the specified material.
-     * @return true if the content was successfully updated, false otherwise.
-     */
-    boolean setContent(int materialID, String newContent);
-
-    /**
      * Updates the content and topic of a material in the database based on the provided material ID.
      * This method distinguishes between lessons and worksheets and performs the update operation accordingly.
      *
      * @param materialID The unique identifier of the material to be updated.
      * @param newContent The new content to set for the specified material.
      * @param newTopic The new topic to set for the specified material.
+     * @param tableName The name of the table the material is part of ("lesson", "worksheet", or "learningCard")
      * @return true if the update operation is successful; false otherwise.
      */
-    boolean setContent(int materialID, String newContent, String newTopic);
+    public boolean setContent(int materialID, String newContent, String newTopic, String tableName);
 
     /**
      * Deletes the content associated with a specified material ID from the database.
@@ -147,4 +139,12 @@ public interface IContentDAO {
      */
     public int addContent(Material content, String tableName);
 
+    /**
+     * Retrieves material content from the specified table based on the provided material ID.
+     *
+     * @param materialID The unique identifier of the material to retrieve.
+     * @param tableName The name of the database table to query for the material.
+     * @return A Material object containing the retrieved data, or null if no data is found or an error occurs.
+     */
+    public Material getMaterialContent(int materialID, String tableName);
 }

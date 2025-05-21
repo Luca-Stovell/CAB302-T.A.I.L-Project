@@ -3,6 +3,7 @@ package com.example.cab302tailproject.DAO;
 import com.example.cab302tailproject.model.*;
 import javafx.collections.ObservableList;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public interface IContentDAO {
@@ -147,4 +148,13 @@ public interface IContentDAO {
      * @return A Material object containing the retrieved data, or null if no data is found or an error occurs.
      */
     Material getMaterialContent(int materialID, String tableName);
+
+    /**
+     * Retrieves the last modified date for a specific material from the specified database table.
+     *
+     * @param materialID the unique identifier of the material whose last modified date is to be retrieved
+     * @param tableName the name of the database table to query
+     * @return an Instant representing the last modified date of the material, or null if not found or in case of an error
+     */
+    Timestamp getLastModifiedDate(int materialID, String tableName);
 }

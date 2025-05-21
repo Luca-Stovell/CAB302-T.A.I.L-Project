@@ -5,7 +5,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -386,7 +385,10 @@ public class ContentDAO implements IContentDAO {
                         tableName,
                         materialID,
                         getClassroomID(materialID),
-                        getWeek(materialID)
+                        getWeek(materialID),
+                        rs.getTimestamp("lastModifiedDate") != null
+                                ? rs.getTimestamp("lastModifiedDate").toInstant()
+                                : null    // for null case of timestamp
                 );
             }
         } catch (SQLException e) {
@@ -571,6 +573,29 @@ public class ContentDAO implements IContentDAO {
     }
 
     /**
+     * Retrieves the last modified date for a specific material from the specified database table.
+     *
+     * @param materialID the unique identifier of the material whose last modified date is to be retrieved
+     * @param tableName the name of the database table to query
+     * @return an Instant representing the last modified date of the material, or null if not found or in case of an error
+     */
+    public Timestamp getLastModifiedDate(int materialID, String tableName) {
+        String sql = String.format("SELECT lastModifiedDate FROM %s WHERE materialID = ?", tableName);
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, materialID);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                return rs.getTimestamp("lastModifiedDate");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+        return null;
+    }
+
+    /**
      * Retrieves the ID of the material associated with the specified week number and material type.
      *
      * @param weekNumber the week number for which the material is requested
@@ -622,20 +647,8 @@ public class ContentDAO implements IContentDAO {
                         String type = resultSet.getString("materialType");
                         int classroom = resultSet.getInt("ClassroomID");
                         int materialID = resultSet.getInt("materialID");
-                        String topic = null;
-                        Instant lastModified = null;
-
-                        if (type.equals("lesson")) {
-                            topic = getLessonContent(materialID).getTopic();
-                            lastModified = getLessonContent(materialID).getLastModifiedDate();
-                            //lastModified = resultSet.getTimestamp("lastModifiedDate");
-                        }
-                        if (type.equals("worksheet")) {
-                            topic = getWorksheetContent(materialID).getTopic();
-                            lastModified = getWorksheetContent(materialID).getLastModifiedDate();
-                            //lastModified = resultSet.getTimestamp("lastModifiedDate");
-                        }
-                        //TODO: retrieve flashcard topic from db
+                        String topic = getMaterialContent(materialID, type).getTopic();
+                        Timestamp lastModified = getLastModifiedDate(materialID, type);
 
                         data.add(new ContentTableData(lastModified, week, topic, type, classroom, materialID));
                     }
@@ -659,8 +672,6 @@ public class ContentDAO implements IContentDAO {
      * @return true if the material and its associated content were successfully deleted; false otherwise.
      */
     public boolean deleteContent(int materialID, String tableName) {
-        String lessonUpdateQuery = "DELETE FROM lesson WHERE materialID = ?";
-        String worksheetUpdateQuery = "DELETE FROM worksheet WHERE materialID = ?";
         String materialDeleteQuery = "DELETE FROM material WHERE materialID = ?";
         String sql = String.format("DELETE FROM %s WHERE materialID = ?", tableName);
 

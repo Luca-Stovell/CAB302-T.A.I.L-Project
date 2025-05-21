@@ -52,7 +52,7 @@ public class Material {
      * @param classroomID The ID of the classroom associated with the material.
      * @param week The week number corresponding to the material's relevance or assigned time frame.
      */
-    public Material(String topic, String content, int teacherID, String materialType, int materialID, int classroomID, int week) {
+    public Material(String topic, String content, int teacherID, String materialType, int materialID, int classroomID, int week, Instant lastModifiedDate) {
         this.topic = topic;
         this.content = content;
         this.teacherID = teacherID;
@@ -60,6 +60,7 @@ public class Material {
         this.materialID = materialID;
         this.ClassroomID = classroomID;
         this.week = week;
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     // Getters and setters

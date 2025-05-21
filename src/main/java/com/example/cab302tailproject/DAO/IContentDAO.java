@@ -6,12 +6,6 @@ import javafx.collections.ObservableList;
 import java.util.List;
 
 public interface IContentDAO {
-    /**
-     * Adds a lesson to the database
-     * @param lessonContent The generated LessonContent object to add
-     * @return materialID of the successful entry, -1 if unsuccessful
-     */
-    int addLessonContent(Lesson lessonContent);
 
     /**
      * Retrieves lesson content from the database by its materialID.
@@ -19,13 +13,6 @@ public interface IContentDAO {
      * @return the LessonContent object if found, null otherwise
      */
     Lesson getLessonContent(int materialID);
-
-    /**
-     * Adds a worksheet to the database
-     * @param worksheetContent the content of the worksheet to be added
-     * @return materialID of the successful entry, -1 if unsuccessful
-     */
-    int addWorksheetToDB(Worksheet worksheetContent);
 
     /**
      * Retrieves the material type details based on the provided material ID.
@@ -103,20 +90,6 @@ public interface IContentDAO {
     public int getWeek(int materialID);
 
     /**
-     * Updates the teacher ID for a specific material given the teacher's email, material ID, and type of material.
-     * The method validates the input type to ensure it matches known material types (e.g., "lesson" or "worksheet").
-     * It queries the database to find the teacher ID associated with the provided email and updates the corresponding
-     * material record with the found teacher ID.
-     *
-     * @param teacherEmail the email address of the teacher whose ID needs to be retrieved and updated.
-     * @param materialID the ID of the material (e.g., lesson or worksheet) to be updated.
-     * @param type the type of material ("lesson" or "worksheet") to specify the appropriate database table for the update.
-     * @return true if the update was successful and a record was modified, false otherwise.
-     * @throws IllegalArgumentException if the provided type is invalid or not recognized.
-     */
-    public boolean updateTeacherID(String teacherEmail, int materialID, String type);
-
-    /**
      * Retrieves the classroom ID associated with the given material ID.
      *
      * @param materialID the ID of the material for which the classroom ID is to be retrieved
@@ -151,5 +124,27 @@ public interface IContentDAO {
      * @return An ObservableList containing ContentTableData objects representing the material details for the teacher's classrooms.
      */
     public ObservableList<ContentTableData> fetchContentTableData(String teacherEmail);
+
+
+    /**
+     * Retrieves the teacher's unique identifier (TeacherID) based on their email address.
+     *
+     * @param teacherEmail the email address of the teacher whose ID is to be retrieved
+     * @return the TeacherID associated with the provided email address, or -1 if no match is found or an error occurs
+     */
+    public int getTeacherID(String teacherEmail);
+
+    /**
+     * Adds a new worksheet entry to the database, including its attributes.
+     * Assumes the materialID is not already set, and generates a new materialID
+     * by adding an entry to the material table.
+     *
+     * @param content      The content object (Material) containing the details to be added,
+     *                     including topic, content, teacher ID, classroom ID.
+     * @param tableName    The name of the database table to insert the data ("lesson", "worksheet", or "learningCard").
+     * @return The material ID of the newly added content if the operation is successful. Returns -1 if an error occurs.
+     * @throws IllegalStateException if the database connection is inactive or if adding a material entry fails.
+     */
+    public int addContent(Material content, String tableName);
 
 }

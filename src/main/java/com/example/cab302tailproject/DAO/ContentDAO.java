@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ContentDAO implements IContentDAO {
     //<editor-fold desc="Initialisation">
-
+    // private Connection connection; // Member variable for connection, can be removed if all methods fetch their own
 
     /**
      * Constructor for the ContentDAO class.
@@ -29,9 +29,6 @@ public class ContentDAO implements IContentDAO {
     //</editor-fold>
 
     //<editor-fold desc="Table creation">
-    /**
-     * Creates the "material" table in the database if it does not already exist.
-     */
     private void createMaterialTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS material ("
@@ -41,7 +38,7 @@ public class ContentDAO implements IContentDAO {
                         + "ClassroomID INTEGER, "
                         + "FOREIGN KEY (ClassroomID) REFERENCES Classroom(ClassroomID)"
                         + ")";
-        try (Connection conn = SqliteConnection.getInstance(); // Get connection for this operation
+        try (Connection conn = SqliteConnection.getInstance();
              Statement statement = conn.createStatement()) {
             if (conn == null || conn.isClosed()) {
                 System.err.println("Error creating material table: Database connection is closed or null.");
@@ -54,10 +51,6 @@ public class ContentDAO implements IContentDAO {
         }
     }
 
-
-    /**
-     * Creates the "lesson" table in the database if it does not already exist.
-     */
     private void createLessonTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS lesson ("
@@ -83,9 +76,6 @@ public class ContentDAO implements IContentDAO {
         }
     }
 
-    /**
-     * Creates the "worksheet" table in the database if it does not already exist.
-     */
     private void createWorksheetTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS worksheet ("
@@ -111,9 +101,6 @@ public class ContentDAO implements IContentDAO {
         }
     }
 
-    /**
-     * Creates the lesson card table.
-     */
     private void createLearningCardTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS learningCard ("
@@ -139,9 +126,6 @@ public class ContentDAO implements IContentDAO {
         }
     }
 
-    /**
-     * Creates the "StudentCardResponse" table.
-     */
     private void createStudentCardResponseTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS StudentCardResponse ("
@@ -406,8 +390,8 @@ public class ContentDAO implements IContentDAO {
                             rs.getInt("teacherID"),
                             tableName,
                             materialID,
-                            getClassroomID(materialID), // This will also use its own connection
-                            getWeek(materialID),       // This will also use its own connection
+                            getClassroomID(materialID),
+                            getWeek(materialID),
                             rs.getTimestamp("lastModifiedDate") != null
                                     ? rs.getTimestamp("lastModifiedDate").toInstant()
                                     : null
@@ -501,7 +485,7 @@ public class ContentDAO implements IContentDAO {
             conn = SqliteConnection.getInstance();
             if (conn == null || conn.isClosed()) {
                 System.err.println("Error getting classroom list: Database connection is closed or null.");
-                return classroomList; // Return empty list
+                return classroomList;
             }
             try (PreparedStatement statement = conn.prepareStatement(findClassroomsQuery)) {
                 statement.setString(1, teacherEmail);
@@ -572,23 +556,21 @@ public class ContentDAO implements IContentDAO {
     public ObservableList<ContentTableData> fetchContentTableData(String teacherEmail) {
         String materialQuery = "SELECT * FROM material WHERE ClassroomID = ?";
         ObservableList<ContentTableData> data = FXCollections.observableArrayList();
-        Connection conn = null; // Fetch connection once for the outer loop if possible, or per iteration
+        Connection conn = null;
         try {
             conn = SqliteConnection.getInstance();
             if (conn == null || conn.isClosed()) {
                 System.err.println("Error fetching content table data: Database connection is closed or null for teacher " + teacherEmail);
-                return data; // Return empty data
+                return data;
             }
 
-            List<Integer> classrooms = getClassroomList(teacherEmail); // This will use its own connection logic
+            List<Integer> classrooms = getClassroomList(teacherEmail);
 
             for (int classroomID : classrooms) {
-                // Re-check connection or ensure it's valid for each iteration if getClassroomList could close it.
-                // For simplicity, assuming conn remains valid or getClassroomList uses a separate short-lived connection.
-                if (conn == null || conn.isClosed()) { // Check again if classrooms list is large or takes time
+                if (conn == null || conn.isClosed()) {
                     System.err.println("Error fetching content table data: Connection became invalid during loop for classroom " + classroomID);
-                    conn = SqliteConnection.getInstance(); // Try to re-establish
-                    if (conn == null || conn.isClosed()) continue; // Skip if still invalid
+                    conn = SqliteConnection.getInstance();
+                    if (conn == null || conn.isClosed()) continue;
                 }
                 try (PreparedStatement materialStatement = conn.prepareStatement(materialQuery)) {
                     materialStatement.setInt(1, classroomID);
@@ -598,9 +580,9 @@ public class ContentDAO implements IContentDAO {
                         int week = resultSet.getInt("week");
                         String type = resultSet.getString("materialType");
                         int materialID = resultSet.getInt("materialID");
-                        Material materialDetails = getMaterialContent(materialID, type); // Uses its own connection logic
+                        Material materialDetails = getMaterialContent(materialID, type);
                         String topic = (materialDetails != null) ? materialDetails.getTopic() : "N/A";
-                        Timestamp lastModified = getLastModifiedDate(materialID, type); // Uses its own connection logic
+                        Timestamp lastModified = getLastModifiedDate(materialID, type);
 
                         data.add(new ContentTableData(lastModified, week, topic, type, classroomID, materialID));
                     }
@@ -703,5 +685,85 @@ public class ContentDAO implements IContentDAO {
             e.printStackTrace();
         }
         return FXCollections.observableArrayList();
+    }
+
+    // --- New DAO Methods for TeacherAnalyticsController ---
+
+    /**
+     * Retrieves a list of distinct week numbers for which "learningCard" type materials exist
+     * for a given classroom.
+     * @param classroomId The ID of the classroom.
+     * @return A list of distinct week numbers.
+     */
+    public List<Integer> getDistinctWeeksForClassroomLearningCards(int classroomId) {
+        List<Integer> weeks = new ArrayList<>();
+        String sql = "SELECT DISTINCT week FROM material WHERE ClassroomID = ? AND materialType = 'learningCard' AND week IS NOT NULL ORDER BY week ASC";
+        Connection conn = null;
+        try {
+            conn = SqliteConnection.getInstance();
+            if (conn == null || conn.isClosed()) {
+                System.err.println("Error getting distinct weeks: Database connection is closed or null.");
+                return weeks;
+            }
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, classroomId);
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    weeks.add(rs.getInt("week"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching distinct weeks for learning cards: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return weeks;
+    }
+
+    /**
+     * Retrieves student's learning card responses for a specific classroom and week.
+     * This method joins StudentCardResponse with Material to filter by week.
+     * @param studentId The ID of the student.
+     * @param classroomId The ID of the classroom.
+     * @param week The specific week.
+     * @return A list of StudentCardResponse objects.
+     */
+    public List<StudentCardResponse> getStudentCardResponsesForWeek(int studentId, int classroomId, int week) {
+        List<StudentCardResponse> responses = new ArrayList<>();
+        // We need to join StudentCardResponse with Material table to filter by week
+        // and ensure the MaterialID in StudentCardResponse corresponds to a 'learningCard' type.
+        String sql = "SELECT scr.ResponseID, scr.StudentID, scr.MaterialID, scr.CardQuestion, scr.IsCorrect, scr.ClassroomID " +
+                "FROM StudentCardResponse scr " +
+                "JOIN material m ON scr.MaterialID = m.materialID " +
+                "WHERE scr.StudentID = ? AND scr.ClassroomID = ? AND m.week = ? AND m.materialType = 'learningCard'";
+        Connection conn = null;
+        try {
+            conn = SqliteConnection.getInstance();
+            if (conn == null || conn.isClosed()) {
+                System.err.println("Error getting student card responses for week: Database connection is closed or null.");
+                return responses;
+            }
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                pstmt.setInt(1, studentId);
+                pstmt.setInt(2, classroomId);
+                pstmt.setInt(3, week);
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    StudentCardResponse response = new StudentCardResponse(
+                            rs.getInt("ResponseID"),
+                            rs.getInt("StudentID"),
+                            rs.getInt("MaterialID"),
+                            rs.getString("CardQuestion"),
+                            rs.getBoolean("IsCorrect"),
+                            rs.getInt("ClassroomID")
+                            // If your StudentCardResponse model doesn't have ResponseTimestamp, this is fine.
+                    );
+                    responses.add(response);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching student card responses for week " + week + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        return responses;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.cab302tailproject.DAO;
 
 import com.example.cab302tailproject.model.Student;
+import com.example.cab302tailproject.model.UserDetail; // Assuming UserDAO might use this or it's relevant
 
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  * Data Access Object interface for Student-related operations.
  * Defines methods for managing students and their associations in the system.
  */
-public interface StudentDAO extends UserDAO {
+public interface StudentDAO extends UserDAO { // UserDAO interface would define getUserNameDetails and checkPassword if they are common
 
     /**
      * Adds a new student to the database.
@@ -35,7 +36,7 @@ public interface StudentDAO extends UserDAO {
      * @param email The email address to check.
      * @return true if the email is found, false otherwise.
      */
-    boolean checkEmail(String email);
+    // boolean checkEmail(String email); // This is in UserDAO, so remove if UserDAO already declares it
 
     /**
      * Verifies a student's password by comparing the stored hash with the entered password.
@@ -44,7 +45,7 @@ public interface StudentDAO extends UserDAO {
      * @param password The plain text password to check.
      * @return true if the password matches the stored hash, false otherwise.
      */
-    boolean checkPassword(String email, String password);
+    // boolean checkPassword(String email, String password); // This is in UserDAO
 
     /**
      * Retrieves all students associated with a specific classroom.
@@ -81,4 +82,22 @@ public interface StudentDAO extends UserDAO {
      * @return true if the password was successfully reset, false otherwise.
      */
     boolean resetStudentPassword(String email, String newPassword);
+
+    /**
+     * Retrieves the ClassroomID for a given student.
+     * Assumes a student is primarily associated with one classroom for this context,
+     * or returns the first one found if multiple associations exist.
+     *
+     * @param studentID The ID of the student.
+     * @return The ClassroomID, or -1 (or throw an exception) if not found or an error occurs.
+     */
+    int getClassroomIDForStudent(int studentID); // Added this method signature
+
+    /**
+     * Retrieves the StudentID for a given student email.
+     *
+     * @param email The email of the student.
+     * @return The StudentID, or -1 if not found or an error occurs.
+     */
+    int getStudentIDByEmail(String email); // Added this method signature based on LearningCardController usage
 }

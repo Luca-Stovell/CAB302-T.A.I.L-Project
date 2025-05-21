@@ -43,13 +43,13 @@ public interface IContentDAO {
 
     /**
      * Deletes the content associated with a specified material ID from the database.
-     * This method identifies the material type (lesson or worksheet) and performs the
+     * This method identifies the material type (lesson, worksheet, or learningCard) and performs the
      * necessary deletions in the corresponding table before removing the material record.
      *
      * @param materialID The unique identifier of the material to be deleted.
      * @return true if the material and its associated content were successfully deleted; false otherwise.
      */
-    boolean deleteContent(int materialID);
+    public boolean deleteContent(int materialID, String tableName);
 
     /**
      * Updates the ClassroomID for a specific material in the database identified by its materialID.

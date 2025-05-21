@@ -143,7 +143,7 @@ public class LessonPlanController {
     private void onBackClicked() {
         if (previousView != null) {
             System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
-            contentDAO.deleteContent(materialID);
+            contentDAO.deleteContent(materialID, materialType);
 
             dynamicContentBox.getChildren().clear();
             dynamicContentBox.getChildren().addAll(previousView.getChildren());

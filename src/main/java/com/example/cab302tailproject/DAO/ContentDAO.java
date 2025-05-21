@@ -652,53 +652,34 @@ public class ContentDAO implements IContentDAO {
     //<editor-fold desc="Deletion">
     /**
      * Deletes the content associated with a specified material ID from the database.
-     * This method identifies the material type (lesson or worksheet) and performs the
+     * This method identifies the material type (lesson, worksheet, or learningCard) and performs the
      * necessary deletions in the corresponding table before removing the material record.
      *
      * @param materialID The unique identifier of the material to be deleted.
      * @return true if the material and its associated content were successfully deleted; false otherwise.
      */
-    public boolean deleteContent(int materialID){
+    public boolean deleteContent(int materialID, String tableName) {
         String lessonUpdateQuery = "DELETE FROM lesson WHERE materialID = ?";
         String worksheetUpdateQuery = "DELETE FROM worksheet WHERE materialID = ?";
         String materialDeleteQuery = "DELETE FROM material WHERE materialID = ?";
+        String sql = String.format("DELETE FROM %s WHERE materialID = ?", tableName);
 
-        try {
-            Material material = getMaterialType(materialID);
-            String materialType = material.getMaterialType();
-            String updateQuery;
-            if (material == null) {
-                System.err.println("No material found with ID: " + materialID);
-                return false;
-            }
+        try (PreparedStatement deleteItemStatement = connection.prepareStatement(sql)) {
+            deleteItemStatement.setInt(1, materialID);
+            int rowsAffected = deleteItemStatement.executeUpdate();
 
-            if ("lesson".equalsIgnoreCase(materialType)) {
-                updateQuery = lessonUpdateQuery;
-            } else if ("worksheet".equalsIgnoreCase(materialType)) {
-                updateQuery = worksheetUpdateQuery;
-            } else {
-                System.err.println("Invalid material type: " + materialType);
-                return false;
-            }
+            if (rowsAffected > 0) {
+                try (PreparedStatement deleteMaterialStatement = connection.prepareStatement(materialDeleteQuery)) {
+                    deleteMaterialStatement.setInt(1, materialID);
+                    int rowsAffected2 = deleteMaterialStatement.executeUpdate();
 
-            // Execute the update query
-            try (PreparedStatement deleteItemStatement = connection.prepareStatement(updateQuery)) {
-                deleteItemStatement.setInt(1, materialID);
-                int rowsAffected = deleteItemStatement.executeUpdate();
-
-                if (rowsAffected > 0) {
-                    try (PreparedStatement deleteMaterialStatement = connection.prepareStatement(materialDeleteQuery)) {
-                        deleteMaterialStatement.setInt(1, materialID);
-                        int rowsAffected2 = deleteMaterialStatement.executeUpdate();
-
-                        if (rowsAffected2 > 0){
-                            return true;
-                        }
+                    if (rowsAffected2 > 0) {
+                        return true;
                     }
-                } else {
-                    System.err.println("Failed to update content for material with ID: " + materialID);
-                    return false;
                 }
+            } else {
+                System.err.println("Failed to update content for material with ID: " + materialID);
+                return false;
             }
         } catch (SQLException e) {
             System.err.println("Error: " + e.getMessage());

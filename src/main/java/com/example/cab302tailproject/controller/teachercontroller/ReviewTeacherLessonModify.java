@@ -125,43 +125,6 @@ public class ReviewTeacherLessonModify {
             showAlert(Alert.AlertType.WARNING, "No generated content found",
                     "No content found for the given ID: " + materialID + ".");
         }
-//        this.currentMaterial = material;
-//        this.contentDAO = new ContentDAO();
-//        this.dynamicContentBox = dynamicContentBox;
-//        this.previousView = previousView;
-//        materialID = currentMaterial.getMaterialID();
-//        setUpWeekCheckBox();
-//        setUpClassCheckBox();
-//        setupLabelToggleBehavior();
-//
-//        if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
-//            Lesson lesson = contentDAO.getLessonContent(materialID);
-//            currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
-//
-//            if (lesson != null) {
-//                generatedTextArea.setText(lesson.getContent());
-//                topicTextField.setText(lesson.getTopic());
-//            } else {
-//                showAlert(Alert.AlertType.WARNING, "No lesson found",
-//                        "No lesson found for the given ID: " + materialID + ".");
-//            }
-//        }
-//        else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
-//            Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-//            currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
-//
-//            if (worksheet != null) {
-//                generatedTextArea.setText(worksheet.getContent());
-//                topicTextField.setText(worksheet.getTopic());
-//            } else {
-//                showAlert(Alert.AlertType.WARNING, "No worksheet found",
-//                        "No worksheet found for the given ID: " + materialID + ".");
-//            }
-//        }
-//        else {
-//            showAlert(Alert.AlertType.WARNING, "Invalid material type",
-//                    "The material type is invalid: " + currentMaterial.getMaterialType());
-//        }
     }
     //</editor-fold>
 
@@ -200,9 +163,8 @@ public class ReviewTeacherLessonModify {
         String newTopicName = topicTextField.getText();
 
         try {
-            contentDAO.setContent(materialID, updatedContent, newTopicName, currentMaterial.getMaterialType());
-
-            //showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
+            contentDAO.setContent(materialID, updatedContent, newTopicName, materialType);
+            showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
@@ -213,7 +175,7 @@ public class ReviewTeacherLessonModify {
     public void onDeleteClicked() {
         if (previousView != null) {
             System.out.println("Deleting content with materialID: " + materialID);
-            contentDAO.deleteContent(materialID);
+            contentDAO.deleteContent(materialID, materialType);
 
             dynamicContentBox.getChildren().clear();
             dynamicContentBox.getChildren().addAll(previousView.getChildren());

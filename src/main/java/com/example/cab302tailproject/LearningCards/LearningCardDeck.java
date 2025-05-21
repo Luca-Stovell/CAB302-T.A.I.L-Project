@@ -30,10 +30,10 @@ public class LearningCardDeck {
      * in the new format:
      * Question1
      * Answer1
-     * <blank line>
+     * [blank line]
      * Question2
      * Answer2
-     * <blank line>
+     * [blank line]
      * ...
      * @param cardContent string containing all the card data as stored in the database
      */

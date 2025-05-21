@@ -2,58 +2,60 @@ package com.example.cab302tailproject.LearningCards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays; // Added for stream operations if needed, and for robust splitting
 
 public class LearningCardDeck {
-    // Constants:
-    // constants subject to change, really depends on what feels right when using the card reader
     private static final double MEDIUM = 0.5;
     private static final double HARD = 0.3;
-    private static final String EMPTY_MESSAGE = "Congratulations, you have finished the deck!";
+    public static final String EMPTY_MESSAGE = "Congratulations, you have finished the deck!";
 
     private List<LearningCard> DeckContent = new ArrayList<>();
 
-    // Used for testing, and nothing else right now. Probably could be used in the card creator
-    // This constructor assumes the old format or a pre-parsed format.
+    /**
+     * Constructor that takes a list of String arrays to create cards.
+     * Each String array should contain [question, answer].
+     * @param cardContent List of String arrays representing cards.
+     */
     public LearningCardDeck(List<String[]> cardContent) {
+        if (cardContent == null) {
+            System.err.println("Warning: cardContent List<String[]> is null. Initializing empty deck.");
+            return;
+        }
         for (String[] strings : cardContent) {
-            if (strings != null && strings.length >= 2) { // Basic validation
-                DeckContent.add(new LearningCard(strings[0], strings[1]));
+            if (strings != null && strings.length >= 2) {
+                // Ensure question and answer are not null or empty before creating card
+                String question = strings[0];
+                String answer = strings[1];
+                if (question != null && !question.trim().isEmpty() && answer != null && !answer.trim().isEmpty()) {
+                    DeckContent.add(new LearningCard(question, answer));
+                } else {
+                    System.err.println("Warning: Skipping card due to empty question or answer in List<String[]> constructor. Data: [" + (question != null ? question : "NULL_Q") + ", " + (answer != null ? answer : "NULL_A") + "]");
+                }
             } else {
-                System.err.println("Warning: Skipping malformed card data in List<String[]> constructor.");
+                System.err.println("Warning: Skipping malformed card data (null or insufficient length) in List<String[]> constructor.");
             }
         }
     }
 
     /**
-     * Learning card deck constructor, that reads a string fetched from the database
-     * in the new format:
-     * Question1
-     * Answer1
-     * [blank line]
-     * Question2
-     * Answer2
-     * [blank line]
-     * ...
-     * @param cardContent string containing all the card data as stored in the database
+     * Constructor that takes a single string where cards are separated by
+     * double newlines, and question/answer within a card are separated by a single newline.
+     * @param cardContent String containing all card data.
      */
     public LearningCardDeck(String cardContent){
         try {
             if (cardContent == null || cardContent.trim().isEmpty()) {
-                System.err.println("Warning: Card content string is null or empty.");
-                return;
+                System.err.println("Warning: Card content string is null or empty. Initializing empty deck.");
+                return; // Initialize an empty deck
             }
-
-            // Split by one or more blank lines (handles Windows \r\n and Unix \n)
-            // Regex: (\r?\n){2,} matches two or more newline sequences.
+            // Regex to split by two or more newlines (Windows or Unix style)
             String[] cardsBlocks = cardContent.trim().split("(\\r?\\n){2,}");
 
             for (String block : cardsBlocks) {
-                if (block.trim().isEmpty()) { // Skip any genuinely empty blocks if they occur
-                    continue;
+                if (block.trim().isEmpty()) {
+                    continue; // Skip empty blocks
                 }
-                // Split each block into lines. Expecting Question on line 1, Answer on line 2.
-                String[] lines = block.split("\\r?\\n", 2); // Limit to 2 parts: Question, Answer
+                // Split into 2 parts: question and answer
+                String[] lines = block.split("\\r?\\n", 2);
 
                 if (lines.length == 2) {
                     String question = lines[0].trim();
@@ -64,18 +66,23 @@ public class LearningCardDeck {
                         System.err.println("Warning: Skipped card due to empty question or answer after parsing block: [" + block + "]");
                     }
                 } else {
+                    // Log if a block doesn't split into question and answer
                     System.err.println("Warning: Malformed card block, expected 2 lines (Question, Answer) but found " + lines.length + " in block: [" + block + "]");
                 }
             }
         } catch (Exception e) {
             System.err.println("Exception in LearningCardDeck(String cardContent) constructor: " + e.getMessage());
-            e.printStackTrace(); // For detailed debugging
+            e.printStackTrace();
+            // Ensure DeckContent is at least initialized if an error occurs
+            if (DeckContent == null) {
+                DeckContent = new ArrayList<>();
+            }
         }
     }
 
     /**
-     * A function used to view the contents of a learning card deck
-     * @return The top facing string of the first card in the queue, or a message if deck is empty
+     * Gets the content of the current card (question or answer based on flip state).
+     * @return The current card's content or EMPTY_MESSAGE if deck is empty.
      */
     public String getCurrentCard() {
         if (!DeckContent.isEmpty()) {
@@ -85,7 +92,27 @@ public class LearningCardDeck {
     }
 
     /**
-     * toggles the output of the current card between question and answer (initial state: question)
+     * Gets the question text of the current card.
+     * @return The question text, or null if deck is empty.
+     */
+    public String getCurrentQuestionText() {
+        if (!DeckContent.isEmpty()) {
+            return DeckContent.getFirst().getQuestion();
+        }
+        return null; // Or a specific "no question" message
+    }
+
+
+    /**
+     * Checks if the deck is empty.
+     * @return true if deck has no cards, false otherwise.
+     */
+    public boolean isEmpty() {
+        return DeckContent.isEmpty();
+    }
+
+    /**
+     * Flips the current card. Does nothing if the deck is empty.
      */
     public void flip() {
         if (!DeckContent.isEmpty()) {
@@ -93,88 +120,90 @@ public class LearningCardDeck {
         }
     }
 
-    // should probably be private, identical to easyNext
-    // it's used in the unit tests
-    public void next(){
-        next(1.0); // Ensure this is a double
-    }
-
     /**
-     * sends the current card to a place in the deck and reduces it's lifespan depending on an input double.
-     * If the card has no more life left, removes it from the deck
-     * @param difficulty double that determines where the current card is sent
+     * Helper method for Easy, Medium, Hard buttons.
+     * Processes the current card based on difficulty, removes it,
+     * and re-inserts it if it's still active.
+     * @param difficulty The difficulty rating for the card.
      */
-    private void next(double difficulty) {
-        if (!DeckContent.isEmpty()) {
-            DeckContent.getFirst().resetFlip();
-            DeckContent.getFirst().reduceCard(difficulty);
-            if (DeckContent.getFirst().isActive()) {
-
-                int newIndex = (int) (DeckContent.size() * difficulty);
-                if (DeckContent.size() > 1) { // Only reposition if there are other cards
-                    newIndex = Math.max(0, Math.min(newIndex, DeckContent.size() -1)); // Clamp to valid index for insertion among existing
-                    LearningCard current = DeckContent.removeFirst(); // Remove first before adding
-                    DeckContent.add(newIndex, current); // Add it back at the calculated position
-                } else {
-                }
-
-
-            }
-            // If the card is no longer active OR if it was the only card and its active status was checked
-            if (!DeckContent.getFirst().isActive() || DeckContent.size() == 1 && !DeckContent.getFirst().isActive()) {
-                DeckContent.removeFirst();
-            } else if (DeckContent.size() == 1 && DeckContent.getFirst().isActive()){
-            } else if (DeckContent.size() > 1 && DeckContent.getFirst().isActive()) {
-            }
-        }
-    }
-    // Revised next method based on thought process above for clarity
     private void revisedNext(double difficulty) {
         if (DeckContent.isEmpty()) {
             return;
         }
         LearningCard processedCard = DeckContent.getFirst();
         processedCard.resetFlip();
-        processedCard.reduceCard(difficulty);
+        processedCard.reduceCard(difficulty); // Update card's internal state
 
-        DeckContent.removeFirst(); // Always remove the card from the front first
+        DeckContent.removeFirst(); // Remove card from the front
 
-        if (processedCard.isActive()) {
-            // Calculate newIndex based on the size of the deck *after* removing the card
+        if (processedCard.isActive()) { // Check if card should be re-inserted
             int newIndex = (int) (DeckContent.size() * difficulty);
-            // Clamp newIndex to be within valid bounds for add(index, element) which is [0, size()]
+            // Ensure index is within bounds [0, DeckContent.size()]
             newIndex = Math.max(0, Math.min(newIndex, DeckContent.size()));
-            DeckContent.add(newIndex, processedCard); // Add the card back at the calculated position
+            DeckContent.add(newIndex, processedCard); // Re-insert the card
         }
-        // If card is not active, it's already removed and not added back.
+        // If card is not active, it's effectively removed from the session for these buttons
     }
 
-
     /**
-     * moves the current card to the end of the deck
+     * Processes the card as "Easy". Uses spaced repetition logic.
+     * @return The content of the next card or empty message.
      */
     public String easyNext(){
-
-        revisedNext(1.0);
+        revisedNext(1.0); // High difficulty means easy, likely to master
         return getCurrentCard();
     }
 
     /**
-     * moves the current card to the middle of the deck
+     * Processes the card as "Medium". Uses spaced repetition logic.
+     * @return The content of the next card or empty message.
      */
     public String mediumNext(){
         revisedNext(MEDIUM);
         return getCurrentCard();
     }
 
-
     /**
-     * moves the current card close to the start of the deck
+     * Processes the card as "Hard". Uses spaced repetition logic.
+     * @return The content of the next card or empty message.
      */
     public String hardNext(){
-        revisedNext(HARD);
+        revisedNext(HARD); // Low difficulty means hard, likely to see again sooner
         return getCurrentCard();
     }
 
+    /**
+     * Processes the current card as "Correct" and advances to the next card.
+     * The card is definitively removed from the current session for this path.
+     * @return The content of the next card or empty message.
+     */
+    public String processCorrectAndAdvance() {
+        if (DeckContent.isEmpty()) {
+            return getCurrentCard(); // Will return EMPTY_MESSAGE
+        }
+        LearningCard processedCard = DeckContent.getFirst();
+        processedCard.resetFlip();
+        // Optionally, you could call processedCard.reduceCard(1.0) here if you
+        // want its internal state (like correctStreak) to be updated for long-term stats,
+        // even though it won't be re-inserted in *this* specific interaction path.
+        // For now, per requirement, just remove it.
+        DeckContent.removeFirst();
+        return getCurrentCard();
+    }
 
+    /**
+     * Processes the current card as "Incorrect" and advances to the next card.
+     * The card is definitively removed from the current session for this path.
+     * @return The content of the next card or empty message.
+     */
+    public String processIncorrectAndAdvance() {
+        if (DeckContent.isEmpty()) {
+            return getCurrentCard(); // Will return EMPTY_MESSAGE
+        }
+        LearningCard processedCard = DeckContent.getFirst();
+        processedCard.resetFlip();
+        // Optionally, processedCard.reduceCard(0.0) for stats.
+        DeckContent.removeFirst();
+        return getCurrentCard();
+    }
 }

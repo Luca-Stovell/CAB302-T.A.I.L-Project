@@ -499,7 +499,7 @@
     </routine>
     <schema id="191" parent="1" name="main">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-05-21.09:42:07</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-05-21.10:50:51</LastIntrospectionLocalTimestamp>
     </schema>
     <argument id="192" parent="16">
       <ArgumentDirection>R</ArgumentDirection>
@@ -1592,393 +1592,445 @@
     </argument>
     <table id="555" parent="191" name="Classroom"/>
     <table id="556" parent="191" name="Student"/>
-    <table id="557" parent="191" name="StudentClassroom"/>
-    <table id="558" parent="191" name="StudentTeacher"/>
-    <table id="559" parent="191" name="Teacher"/>
-    <table id="560" parent="191" name="learningCard"/>
-    <table id="561" parent="191" name="lesson"/>
-    <table id="562" parent="191" name="library_item"/>
-    <table id="563" parent="191" name="material"/>
-    <table id="564" parent="191" name="sqlite_master">
+    <table id="557" parent="191" name="StudentCardResponse"/>
+    <table id="558" parent="191" name="StudentClassroom"/>
+    <table id="559" parent="191" name="StudentTeacher"/>
+    <table id="560" parent="191" name="Teacher"/>
+    <table id="561" parent="191" name="learningCard"/>
+    <table id="562" parent="191" name="lesson"/>
+    <table id="563" parent="191" name="library_item"/>
+    <table id="564" parent="191" name="material"/>
+    <table id="565" parent="191" name="sqlite_master">
       <System>1</System>
     </table>
-    <table id="565" parent="191" name="sqlite_sequence">
+    <table id="566" parent="191" name="sqlite_sequence">
       <System>1</System>
     </table>
-    <table id="566" parent="191" name="worksheet"/>
-    <column id="567" parent="555" name="ClassroomID">
+    <table id="567" parent="191" name="worksheet"/>
+    <column id="568" parent="555" name="ClassroomID">
       <AutoIncrement>1</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="568" parent="555" name="TeacherEmail">
+    <column id="569" parent="555" name="TeacherEmail">
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <foreign-key id="569" parent="555">
+    <foreign-key id="570" parent="555">
       <ColNames>TeacherEmail</ColNames>
       <RefColNames>TeacherEmail</RefColNames>
       <RefTableName>Teacher</RefTableName>
     </foreign-key>
-    <key id="570" parent="555">
+    <key id="571" parent="555">
       <ColNames>ClassroomID</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="571" parent="556" name="StudentID">
+    <column id="572" parent="556" name="StudentID">
       <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="572" parent="556" name="email">
+    <column id="573" parent="556" name="email">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="573" parent="556" name="firstName">
+    <column id="574" parent="556" name="firstName">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="574" parent="556" name="lastName">
+    <column id="575" parent="556" name="lastName">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="575" parent="556" name="password">
+    <column id="576" parent="556" name="password">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="576" parent="556" name="TeacherEmail">
+    <column id="577" parent="556" name="TeacherEmail">
       <Position>6</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <foreign-key id="577" parent="556">
+    <foreign-key id="578" parent="556">
       <ColNames>TeacherEmail</ColNames>
       <RefColNames>TeacherEmail</RefColNames>
       <RefTableName>Teacher</RefTableName>
     </foreign-key>
-    <index id="578" parent="556" name="sqlite_autoindex_Student_1">
+    <index id="579" parent="556" name="sqlite_autoindex_Student_1">
       <ColNames>email</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="579" parent="556">
+    <key id="580" parent="556">
       <ColNames>StudentID</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="580" parent="556">
+    <key id="581" parent="556">
       <ColNames>email</ColNames>
       <UnderlyingIndexName>sqlite_autoindex_Student_1</UnderlyingIndexName>
     </key>
-    <column id="581" parent="557" name="StudentID">
-      <NotNull>1</NotNull>
+    <column id="582" parent="557" name="ResponseID">
+      <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="582" parent="557" name="ClassroomID">
+    <column id="583" parent="557" name="StudentID">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <foreign-key id="583" parent="557">
+    <column id="584" parent="557" name="MaterialID">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="585" parent="557" name="CardQuestion">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StoredType>TEXT|0s</StoredType>
+    </column>
+    <column id="586" parent="557" name="IsCorrect">
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StoredType>BOOLEAN|0s</StoredType>
+    </column>
+    <column id="587" parent="557" name="ClassroomID">
+      <Position>6</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <foreign-key id="588" parent="557">
+      <ColNames>StudentID</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>StudentID</RefColNames>
+      <RefTableName>Student</RefTableName>
+    </foreign-key>
+    <foreign-key id="589" parent="557">
+      <ColNames>MaterialID</ColNames>
+      <OnDelete>cascade</OnDelete>
+      <RefColNames>MaterialID</RefColNames>
+      <RefTableName>material</RefTableName>
+    </foreign-key>
+    <foreign-key id="590" parent="557">
+      <ColNames>ClassroomID</ColNames>
+      <OnDelete>set-null</OnDelete>
+      <RefColNames>ClassroomID</RefColNames>
+      <RefTableName>Classroom</RefTableName>
+    </foreign-key>
+    <key id="591" parent="557">
+      <ColNames>ResponseID</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="592" parent="558" name="StudentID">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <column id="593" parent="558" name="ClassroomID">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StoredType>INTEGER|0s</StoredType>
+    </column>
+    <foreign-key id="594" parent="558">
       <ColNames>StudentID</ColNames>
       <RefColNames>StudentID</RefColNames>
       <RefTableName>Student</RefTableName>
     </foreign-key>
-    <foreign-key id="584" parent="557">
+    <foreign-key id="595" parent="558">
       <ColNames>ClassroomID</ColNames>
       <RefColNames>ClassroomID</RefColNames>
       <RefTableName>Classroom</RefTableName>
     </foreign-key>
-    <index id="585" parent="557" name="sqlite_autoindex_StudentClassroom_1">
+    <index id="596" parent="558" name="sqlite_autoindex_StudentClassroom_1">
       <ColNames>StudentID
 ClassroomID</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="586" parent="557">
+    <key id="597" parent="558">
       <ColNames>StudentID
 ClassroomID</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_StudentClassroom_1</UnderlyingIndexName>
     </key>
-    <column id="587" parent="558" name="StudentID">
+    <column id="598" parent="559" name="StudentID">
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="588" parent="558" name="TeacherID">
+    <column id="599" parent="559" name="TeacherID">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <foreign-key id="589" parent="558">
+    <foreign-key id="600" parent="559">
       <ColNames>StudentID</ColNames>
       <RefColNames>StudentID</RefColNames>
       <RefTableName>Student</RefTableName>
     </foreign-key>
-    <foreign-key id="590" parent="558">
+    <foreign-key id="601" parent="559">
       <ColNames>TeacherID</ColNames>
       <RefColNames>TeacherID</RefColNames>
       <RefTableName>Teacher</RefTableName>
     </foreign-key>
-    <index id="591" parent="558" name="sqlite_autoindex_StudentTeacher_1">
+    <index id="602" parent="559" name="sqlite_autoindex_StudentTeacher_1">
       <ColNames>StudentID
 TeacherID</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="592" parent="558">
+    <key id="603" parent="559">
       <ColNames>StudentID
 TeacherID</ColNames>
       <Primary>1</Primary>
       <UnderlyingIndexName>sqlite_autoindex_StudentTeacher_1</UnderlyingIndexName>
     </key>
-    <column id="593" parent="559" name="TeacherID">
+    <column id="604" parent="560" name="TeacherID">
       <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="594" parent="559" name="TeacherEmail">
+    <column id="605" parent="560" name="TeacherEmail">
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="595" parent="559" name="firstName">
+    <column id="606" parent="560" name="firstName">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="596" parent="559" name="lastName">
+    <column id="607" parent="560" name="lastName">
       <Position>4</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="597" parent="559" name="password">
+    <column id="608" parent="560" name="password">
       <Position>5</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <index id="598" parent="559" name="sqlite_autoindex_Teacher_1">
+    <index id="609" parent="560" name="sqlite_autoindex_Teacher_1">
       <ColNames>TeacherEmail</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <Unique>1</Unique>
     </index>
-    <key id="599" parent="559">
+    <key id="610" parent="560">
       <ColNames>TeacherID</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="600" parent="559">
+    <key id="611" parent="560">
       <ColNames>TeacherEmail</ColNames>
       <UnderlyingIndexName>sqlite_autoindex_Teacher_1</UnderlyingIndexName>
     </key>
-    <column id="601" parent="560" name="learningCardID">
+    <column id="612" parent="561" name="learningCardID">
       <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="602" parent="560" name="learningCardTopic">
+    <column id="613" parent="561" name="learningCardTopic">
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="603" parent="560" name="learningCardContent">
+    <column id="614" parent="561" name="learningCardContent">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="604" parent="560" name="lastModifiedDate">
+    <column id="615" parent="561" name="lastModifiedDate">
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <Position>4</Position>
       <StoredType>TIMESTAMP|0s</StoredType>
     </column>
-    <column id="605" parent="560" name="TeacherID">
+    <column id="616" parent="561" name="TeacherID">
       <Position>5</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="606" parent="560" name="materialID">
+    <column id="617" parent="561" name="materialID">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <foreign-key id="607" parent="560">
+    <foreign-key id="618" parent="561">
       <ColNames>TeacherID</ColNames>
       <RefColNames>TeacherID</RefColNames>
       <RefTableName>Teacher</RefTableName>
     </foreign-key>
-    <foreign-key id="608" parent="560">
+    <foreign-key id="619" parent="561">
       <ColNames>materialID</ColNames>
       <RefColNames>materialID</RefColNames>
       <RefTableName>material</RefTableName>
     </foreign-key>
-    <key id="609" parent="560">
+    <key id="620" parent="561">
       <ColNames>learningCardID</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="610" parent="561" name="lessonID">
+    <column id="621" parent="562" name="lessonID">
       <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="611" parent="561" name="lessonTopic">
+    <column id="622" parent="562" name="lessonTopic">
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="612" parent="561" name="lessonContent">
+    <column id="623" parent="562" name="lessonContent">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="613" parent="561" name="lastModifiedDate">
+    <column id="624" parent="562" name="lastModifiedDate">
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <Position>4</Position>
       <StoredType>TIMESTAMP|0s</StoredType>
     </column>
-    <column id="614" parent="561" name="TeacherID">
+    <column id="625" parent="562" name="TeacherID">
       <Position>5</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="615" parent="561" name="materialID">
+    <column id="626" parent="562" name="materialID">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <foreign-key id="616" parent="561">
+    <foreign-key id="627" parent="562">
       <ColNames>TeacherID</ColNames>
       <RefColNames>TeacherID</RefColNames>
       <RefTableName>Teacher</RefTableName>
     </foreign-key>
-    <foreign-key id="617" parent="561">
+    <foreign-key id="628" parent="562">
       <ColNames>materialID</ColNames>
       <RefColNames>materialID</RefColNames>
       <RefTableName>material</RefTableName>
     </foreign-key>
-    <key id="618" parent="561">
+    <key id="629" parent="562">
       <ColNames>lessonID</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="619" parent="562" name="id">
+    <column id="630" parent="563" name="id">
       <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="620" parent="562" name="teacher_id">
+    <column id="631" parent="563" name="teacher_id">
       <Position>2</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="621" parent="562" name="stored_name">
+    <column id="632" parent="563" name="stored_name">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="622" parent="562" name="original_name">
+    <column id="633" parent="563" name="original_name">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="623" parent="562" name="size">
+    <column id="634" parent="563" name="size">
       <Position>5</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="624" parent="562" name="uploaded_at">
+    <column id="635" parent="563" name="uploaded_at">
       <Position>6</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <foreign-key id="625" parent="562">
+    <foreign-key id="636" parent="563">
       <ColNames>teacher_id</ColNames>
       <RefColNames>TeacherID</RefColNames>
       <RefTableName>Teacher</RefTableName>
     </foreign-key>
-    <key id="626" parent="562">
+    <key id="637" parent="563">
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="627" parent="563" name="materialID">
+    <column id="638" parent="564" name="materialID">
       <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="628" parent="563" name="materialType">
+    <column id="639" parent="564" name="materialType">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="629" parent="563" name="week">
+    <column id="640" parent="564" name="week">
       <Position>3</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="630" parent="563" name="ClassroomID">
+    <column id="641" parent="564" name="ClassroomID">
       <Position>4</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <foreign-key id="631" parent="563">
+    <foreign-key id="642" parent="564">
       <ColNames>ClassroomID</ColNames>
       <RefColNames>ClassroomID</RefColNames>
       <RefTableName>Classroom</RefTableName>
     </foreign-key>
-    <key id="632" parent="563">
+    <key id="643" parent="564">
       <ColNames>materialID</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="633" parent="564" name="type">
+    <column id="644" parent="565" name="type">
       <Position>1</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="634" parent="564" name="name">
+    <column id="645" parent="565" name="name">
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="635" parent="564" name="tbl_name">
+    <column id="646" parent="565" name="tbl_name">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="636" parent="564" name="rootpage">
+    <column id="647" parent="565" name="rootpage">
       <Position>4</Position>
       <StoredType>INT|0s</StoredType>
     </column>
-    <column id="637" parent="564" name="sql">
+    <column id="648" parent="565" name="sql">
       <Position>5</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="638" parent="565" name="name">
+    <column id="649" parent="566" name="name">
       <Position>1</Position>
     </column>
-    <column id="639" parent="565" name="seq">
+    <column id="650" parent="566" name="seq">
       <Position>2</Position>
     </column>
-    <column id="640" parent="566" name="worksheetID">
+    <column id="651" parent="567" name="worksheetID">
       <AutoIncrement>1</AutoIncrement>
       <Position>1</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="641" parent="566" name="worksheetTopic">
+    <column id="652" parent="567" name="worksheetTopic">
       <Position>2</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="642" parent="566" name="worksheetContent">
+    <column id="653" parent="567" name="worksheetContent">
       <Position>3</Position>
       <StoredType>TEXT|0s</StoredType>
     </column>
-    <column id="643" parent="566" name="lastModifiedDate">
+    <column id="654" parent="567" name="lastModifiedDate">
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <Position>4</Position>
       <StoredType>TIMESTAMP|0s</StoredType>
     </column>
-    <column id="644" parent="566" name="TeacherID">
+    <column id="655" parent="567" name="TeacherID">
       <Position>5</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <column id="645" parent="566" name="materialID">
+    <column id="656" parent="567" name="materialID">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StoredType>INTEGER|0s</StoredType>
     </column>
-    <foreign-key id="646" parent="566">
+    <foreign-key id="657" parent="567">
       <ColNames>TeacherID</ColNames>
       <RefColNames>TeacherID</RefColNames>
       <RefTableName>Teacher</RefTableName>
     </foreign-key>
-    <foreign-key id="647" parent="566">
+    <foreign-key id="658" parent="567">
       <ColNames>materialID</ColNames>
       <RefColNames>materialID</RefColNames>
       <RefTableName>material</RefTableName>
     </foreign-key>
-    <key id="648" parent="566">
+    <key id="659" parent="567">
       <ColNames>worksheetID</ColNames>
       <Primary>1</Primary>
     </key>

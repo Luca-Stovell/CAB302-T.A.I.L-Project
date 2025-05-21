@@ -7,13 +7,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            maxHeight = "-Infinity"
-            prefHeight = "420"
-            prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.studentcontroller.LearningCardController"
-            style= "-fx-background-color: white;">
+<BorderPane maxHeight="-Infinity" prefHeight="420" prefWidth="710" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.studentcontroller.LearningCardController">
     <left>
         <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 2;">
             <VBox alignment="TOP_LEFT" prefHeight="100.0" prefWidth="196.0" style="-fx-padding: 25 0 0 30;">
@@ -46,13 +40,13 @@
                 </VBox>
             </VBox>
 
-            <Button fx:id="sidebarGenerateButton"  maxHeight="292.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Lesson Cards" />
+            <Button fx:id="sidebarGenerateButton" maxHeight="292.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Lesson Cards" />
 
-            <Button fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
+            <Button fx:id="sidebarReviewButton" maxHeight="80.0" minHeight="60" onAction="#onSidebarReviewClicked" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
 
-            <Button fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked" maxHeight="172.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" />
+            <Button fx:id="sidebarAnalysisButton" maxHeight="172.0" minHeight="60" onAction="#onSidebarAnalysisClicked" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" />
 
-            <Button fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked" maxHeight="125.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I Assistance" />
+            <Button fx:id="sidebarAiAssistanceButton" maxHeight="125.0" minHeight="60" onAction="#onSidebarAiAssistanceClicked" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I Assistance" />
         </VBox>
     </left>
 
@@ -71,17 +65,21 @@
             <center>
                 <Pane prefHeight="365.0" prefWidth="510.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Button fx:id="flipButton" onAction="#onFlipClicked" layoutX="219.0" layoutY="238.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="55.0" style="-fx-background-color: #EEFF00;" text="Flip" />
-                        <Button fx:id="easyButton" onAction="#onEasyClicked" layoutX="158.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="46.0" style="-fx-background-color: #00FF22;" text="Easy" />
-                        <Button fx:id="hardButton" onAction="#onHardClicked" layoutX="287.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="51.0" style="-fx-background-color: #EC221F;" text="Hard" />
-                        <Button fx:id="againButton" onAction="#onAgainClicked" layoutX="223.0" layoutY="292.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="51.0" style="-fx-background-color: #2c2c2c;" text="Again" textFill="#fffdfd" />
-                        <Button fx:id="mediumButton" onAction="#onMediumClicked" layoutX="211.0" layoutY="264.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="72.0" text="Medium" />
-                        <Button fx:id="nextButton" onAction="#onNextClicked" layoutX="403.0" layoutY="299.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="91.0" text="Next" />
-                        <ComboBox fx:id="cardList" promptText="Select Deck"  layoutX="503.0" layoutY="10"  prefHeight="31.0" prefWidth="91.0"  />
+                        <Button fx:id="flipButton" layoutX="219.0" layoutY="238.0" mnemonicParsing="false" onAction="#onFlipClicked" prefHeight="21.0" prefWidth="55.0" style="-fx-background-color: #EEFF00;" text="Flip" />
+                        <Button fx:id="easyButton" layoutX="158.0" layoutY="264.0" mnemonicParsing="false" onAction="#onEasyClicked" prefHeight="23.0" prefWidth="46.0" style="-fx-background-color: #00FF22;" text="Easy" />
+                        <Button fx:id="hardButton" layoutX="287.0" layoutY="264.0" mnemonicParsing="false" onAction="#onHardClicked" prefHeight="23.0" prefWidth="51.0" style="-fx-background-color: #EC221F;" text="Hard" />
+                        <Button fx:id="againButton" layoutX="223.0" layoutY="292.0" mnemonicParsing="false" onAction="#onAgainClicked" prefHeight="21.0" prefWidth="51.0" style="-fx-background-color: #2c2c2c;" text="Again" textFill="#fffdfd" />
+                        <Button fx:id="mediumButton" layoutX="211.0" layoutY="264.0" mnemonicParsing="false" onAction="#onMediumClicked" prefHeight="23.0" prefWidth="72.0" text="Medium" />
+                        <Button fx:id="nextButton" layoutX="403.0" layoutY="299.0" mnemonicParsing="false" onAction="#onNextClicked" prefHeight="31.0" prefWidth="91.0" text="Next" />
+                        <ComboBox fx:id="cardList" layoutX="503.0" layoutY="10" prefHeight="31.0" prefWidth="91.0" promptText="Select Deck" />
 
-                        <TextArea fx:id="cardContent" layoutX="91.0" layoutY="25.0" prefHeight="161.0" prefWidth="325.0"
-                                  wrapText="true" text="ax+b=bx+a"
-                                  style="-fx-text-alignment: center;" />
+                        <TextArea fx:id="cardContent" layoutX="91.0" layoutY="25.0" prefHeight="161.0" prefWidth="325.0" style="-fx-text-alignment: center;" text="ax+b=bx+a" wrapText="true" />
+                        <HBox alignment="CENTER" layoutX="158.0" layoutY="320.0" prefWidth="200.0" spacing="20.0">
+                            <children>
+                                <Button fx:id="correctButton" mnemonicParsing="false" onAction="#onCorrectClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" text="Correct" />
+                                <Button fx:id="incorrectButton" mnemonicParsing="false" onAction="#onIncorrectClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #F44336; -fx-text-fill: white;" text="Incorrect" />
+                            </children>
+                        </HBox>
                     </children>
                 </Pane>
             </center>

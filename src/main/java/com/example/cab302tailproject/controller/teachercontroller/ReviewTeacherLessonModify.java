@@ -72,6 +72,12 @@ public class ReviewTeacherLessonModify {
     private VBox dynamicContentBox;
 
     /**
+     * Represents the type of material currently being processed or displayed within the
+     * LessonPlanController.
+     */
+    private String materialType;
+
+    /**
      * Represents the unique identifier for the material currently being processed or displayed within LessonPlanController.
      */
     private int materialID;
@@ -96,43 +102,66 @@ public class ReviewTeacherLessonModify {
      * @param previousView the VBox representing the prior view to which the user can navigate back
      */
     public void initData(Material material, VBox dynamicContentBox, VBox previousView) {
+        System.out.println("initData called. Input MaterialID: " + material.getMaterialID());
+
         this.currentMaterial = material;
         this.contentDAO = new ContentDAO();
+        materialID = currentMaterial.getMaterialID();
+        materialType = currentMaterial.getMaterialType();
+        currentMaterial = contentDAO.getMaterialContent(materialID, materialType);
+        System.out.println("MaterialID = " + materialID + ", MaterialType = " + materialType);
+
         this.dynamicContentBox = dynamicContentBox;
         this.previousView = previousView;
-        materialID = currentMaterial.getMaterialID();
         setUpWeekCheckBox();
         setUpClassCheckBox();
         setupLabelToggleBehavior();
 
-        if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
-            Lesson lesson = contentDAO.getLessonContent(materialID);
-            currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
-
-            if (lesson != null) {
-                generatedTextArea.setText(lesson.getContent());
-                topicTextField.setText(lesson.getTopic());
-            } else {
-                showAlert(Alert.AlertType.WARNING, "No lesson found",
-                        "No lesson found for the given ID: " + materialID + ".");
-            }
-        }
-        else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
-            Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-            currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
-
-            if (worksheet != null) {
-                generatedTextArea.setText(worksheet.getContent());
-                topicTextField.setText(worksheet.getTopic());
-            } else {
-                showAlert(Alert.AlertType.WARNING, "No worksheet found",
-                        "No worksheet found for the given ID: " + materialID + ".");
-            }
+        if (currentMaterial != null) {
+            generatedTextArea.setText(currentMaterial.getContent());
+            topicTextField.setText(currentMaterial.getTopic());
         }
         else {
-            showAlert(Alert.AlertType.WARNING, "Invalid material type",
-                    "The material type is invalid: " + currentMaterial.getMaterialType());
+            showAlert(Alert.AlertType.WARNING, "No generated content found",
+                    "No content found for the given ID: " + materialID + ".");
         }
+//        this.currentMaterial = material;
+//        this.contentDAO = new ContentDAO();
+//        this.dynamicContentBox = dynamicContentBox;
+//        this.previousView = previousView;
+//        materialID = currentMaterial.getMaterialID();
+//        setUpWeekCheckBox();
+//        setUpClassCheckBox();
+//        setupLabelToggleBehavior();
+//
+//        if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
+//            Lesson lesson = contentDAO.getLessonContent(materialID);
+//            currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
+//
+//            if (lesson != null) {
+//                generatedTextArea.setText(lesson.getContent());
+//                topicTextField.setText(lesson.getTopic());
+//            } else {
+//                showAlert(Alert.AlertType.WARNING, "No lesson found",
+//                        "No lesson found for the given ID: " + materialID + ".");
+//            }
+//        }
+//        else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
+//            Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
+//            currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
+//
+//            if (worksheet != null) {
+//                generatedTextArea.setText(worksheet.getContent());
+//                topicTextField.setText(worksheet.getTopic());
+//            } else {
+//                showAlert(Alert.AlertType.WARNING, "No worksheet found",
+//                        "No worksheet found for the given ID: " + materialID + ".");
+//            }
+//        }
+//        else {
+//            showAlert(Alert.AlertType.WARNING, "Invalid material type",
+//                    "The material type is invalid: " + currentMaterial.getMaterialType());
+//        }
     }
     //</editor-fold>
 

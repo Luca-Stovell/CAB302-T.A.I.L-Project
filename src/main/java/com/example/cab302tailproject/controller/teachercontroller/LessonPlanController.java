@@ -211,7 +211,7 @@ public class LessonPlanController {
     @FXML
     private void onSaveClicked(){
         if (currentMaterial != null) {
-            System.out.println("Lesson plan saving...");
+            System.out.println("Content saving...");
             onModifyClicked(false);
             Material updated_material = contentDAO.getMaterialContent(materialID, materialType);
             saveContentToFileFromContentView(updated_material.getContent(), materialType, updated_material.getTopic());

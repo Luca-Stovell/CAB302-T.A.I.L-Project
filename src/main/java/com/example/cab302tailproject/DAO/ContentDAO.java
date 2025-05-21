@@ -383,7 +383,10 @@ public class ContentDAO implements IContentDAO {
                         rs.getString(String.format("%sTopic", tableName)),
                         rs.getString(String.format("%sContent", tableName)),
                         rs.getInt("teacherID"),
-                        tableName
+                        tableName,
+                        materialID,
+                        getClassroomID(materialID),
+                        getWeek(materialID)
                 );
             }
         } catch (SQLException e) {

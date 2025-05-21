@@ -3,9 +3,7 @@ package com.example.cab302tailproject.controller.teachercontroller;
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
-import com.example.cab302tailproject.model.Worksheet;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -98,43 +96,23 @@ public class ReviewTeacherLessonViewController {
     public void initData(Material material, VBox dynamicContentBox, VBox previousView) {
         this.currentMaterial = material;
         this.contentDAO = new ContentDAO();
+        this.materialID = currentMaterial.getMaterialID();
+        materialType = currentMaterial.getMaterialType();
+        this.currentMaterial = contentDAO.getMaterialContent(materialID, materialType);
+
         this.dynamicContentBox = dynamicContentBox;
         this.previousView = previousView;
-        materialID = currentMaterial.getMaterialID();
 
-        if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
-            Lesson lesson = contentDAO.getLessonContent(materialID);
-            currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
-            this.materialType = currentMaterial.getMaterialType();
+        if (currentMaterial != null) {
+            TextFlow formattedContent = formatTextWithBold(currentMaterial.getContent());
+            generatedTextArea.getChildren().add(formattedContent);
 
-            if (lesson != null) {
-                TextFlow formattedContent = formatTextWithBold(lesson.getContent());
-                generatedTextArea.getChildren().add(formattedContent);
-
-                topicTextField.setText(lesson.getTopic());
-            } else {
-                showAlert(Alert.AlertType.WARNING, "No lesson found",
-                        "No lesson found for the given ID: " + materialID + ".");
-            }
+            topicTextField.setText(currentMaterial.getTopic());
         }
-        else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
-            Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-            currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
-            this.materialType = currentMaterial.getMaterialType();
 
-            if (worksheet != null) {
-                TextFlow formattedContent = formatTextWithBold(worksheet.getContent());
-                generatedTextArea.getChildren().add(formattedContent);
-
-                topicTextField.setText(worksheet.getTopic());
-            } else {
-                showAlert(Alert.AlertType.WARNING, "No worksheet found",
-                        "No worksheet found for the given ID: " + materialID + ".");
-            }
-        }
         else {
             showAlert(Alert.AlertType.WARNING, "Invalid material type",
-                    "The material type is invalid: " + currentMaterial.getMaterialType());
+                    "The content is invalid. Material type: " + currentMaterial.getMaterialType() + "with ID: " + materialID + ".");
         }
     }
     //</editor-fold>
@@ -227,29 +205,9 @@ public class ReviewTeacherLessonViewController {
     @FXML
     private void onSaveClicked(){
         if (currentMaterial != null) {
-            if ("lesson".equals(materialType)) {
-                Lesson lesson = contentDAO.getLessonContent(materialID);
-                if (lesson != null) {
-                    System.out.println("Lesson plan saving...");
-                    Lesson updated_lesson = contentDAO.getLessonContent(materialID);
-                    saveContentToFileFromContentView(updated_lesson.getContent(), "Lesson Plan", updated_lesson.getTopic());
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "No content", "No lesson found with this materialID");
-                }
-            }
-            else if ("worksheet".equals(materialType)) {
-                Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-                if (worksheet != null) {
-                    System.out.println("Worksheet saving...");
-                    Worksheet updated_worksheet = contentDAO.getWorksheetContent(materialID);
-                    saveContentToFileFromContentView(updated_worksheet.getContent(), "Worksheet", updated_worksheet.getTopic());
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "No content", "No worksheet found with this materialID");
-                }
-            }
-            else {
-                showAlert(Alert.AlertType.WARNING, "Invalid material type", "The material type is invalid.");
-            }
+            System.out.println("Content saving...");
+            Material updated_material = contentDAO.getMaterialContent(materialID, materialType);
+            saveContentToFileFromContentView(updated_material.getContent(), materialType, updated_material.getTopic());
         }
         else {
             showAlert(Alert.AlertType.WARNING, "No material found", "Provided MaterialID is null");
@@ -318,7 +276,6 @@ public class ReviewTeacherLessonViewController {
      */
     private void navigateToGeneratedPlan(int materialID) {
         try {
-            this.materialID = materialID;
             if (this.currentMaterial == null) {
                 showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
                 return;
@@ -328,6 +285,7 @@ public class ReviewTeacherLessonViewController {
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-lesson_modify.fxml"));
             VBox layout = fxmlLoader.load();
             ReviewTeacherLessonModify controller = fxmlLoader.getController();
+            System.out.println("Navigating to generated plan for materialID: " + currentMaterial.getMaterialID() + ".");
             controller.initData(currentMaterial, dynamicContentBox, previousView);  // pass the data
 
             // Replace content in the dynamic container

@@ -5,7 +5,7 @@ import java.time.Instant;
 public class Material {
     private int materialID;
     private int ClassroomID;
-    private String materialType;    // TODO: make it enumerator
+    private String materialType;
     private int week;
 
     // Fields relevant to other classes:
@@ -38,6 +38,28 @@ public class Material {
         this.content = content;
         this.teacherID = teacherID;
         this.materialType = materialType;
+    }
+
+    /**
+     * Constructs a new Material object with the specified topic, content, teacher ID, material type,
+     * material ID, classroom ID, and week.
+     *
+     * @param topic The topic associated with the material.
+     * @param content The actual content of the material.
+     * @param teacherID The ID of the teacher who provided the material.
+     * @param materialType The type or category of the material.
+     * @param materialID The unique identifier for the material.
+     * @param classroomID The ID of the classroom associated with the material.
+     * @param week The week number corresponding to the material's relevance or assigned time frame.
+     */
+    public Material(String topic, String content, int teacherID, String materialType, int materialID, int classroomID, int week) {
+        this.topic = topic;
+        this.content = content;
+        this.teacherID = teacherID;
+        this.materialType = materialType;
+        this.materialID = materialID;
+        this.ClassroomID = classroomID;
+        this.week = week;
     }
 
     // Getters and setters

@@ -16,6 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class LearningCardController {
 
@@ -120,7 +121,11 @@ public class LearningCardController {
     @FXML public void initialize(){
         contentDAO = new ContentDAO();
         // sends welcome text to the display before a deck is selected
-        deck = new LearningCardDeck("select a lesson card deck to begin::(Use the dropdown menu on the right)");
+        deck = new LearningCardDeck(new ArrayList<>()
+            {{
+                add(new String[]{"Select a lesson card deck to begin", "(Use the dropdown menu on the right)"});
+            }}
+        );
         cardContent.setText(deck.getCurrentCard());
 
         // populate comboBox

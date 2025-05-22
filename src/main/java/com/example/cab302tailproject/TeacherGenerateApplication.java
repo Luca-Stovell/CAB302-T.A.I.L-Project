@@ -3,8 +3,6 @@
 package com.example.cab302tailproject;
 
 import com.example.cab302tailproject.DAO.DatabaseInitializer;
-import com.example.cab302tailproject.model.Session;
-import com.example.cab302tailproject.model.UserDetail;
 import com.example.cab302tailproject.model.UserSession;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -28,7 +26,7 @@ public class TeacherGenerateApplication extends Application {
         stage.show();
 
         // Set user
-        Session.setLoggedInTeacherEmail("mrs_liat@tail.com");
+        UserSession.setLoggedInTeacherEmail("mrs_liat@tail.com");
         UserSession.getInstance().loginUser("Mrs", "Liat", "mrs_liat@tail.com", "Teacher");
     }
 

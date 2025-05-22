@@ -3,8 +3,8 @@ package com.example.cab302tailproject.controller.teachercontroller;
 import com.example.cab302tailproject.DAO.*;
 import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Classroom;
-import com.example.cab302tailproject.model.Session;
 import com.example.cab302tailproject.model.Student;
+import com.example.cab302tailproject.model.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -75,7 +75,7 @@ public class ClassroomViewController {
      * Refreshes the classroom combo box with the classrooms linked to the logged-in teacher.
      */
     private void refreshClassroomComboBox() {
-        String teacherEmail = Session.getLoggedInTeacherEmail();
+        String teacherEmail = UserSession.getLoggedInTeacherEmail();
         List<Classroom> classrooms = classroomDao.getClassroomsByTeacherEmail(teacherEmail);
         classroomComboBox.getItems().setAll(classrooms);
 
@@ -151,7 +151,7 @@ public class ClassroomViewController {
      */
     @FXML
     public void onCreateClassRoom(ActionEvent event) {
-        String teacherEmail = Session.getLoggedInTeacherEmail();
+        String teacherEmail = UserSession.getLoggedInTeacherEmail();
         Classroom classroom = new Classroom(teacherEmail);
         boolean created = classroomDao.createClassroom(classroom);
 

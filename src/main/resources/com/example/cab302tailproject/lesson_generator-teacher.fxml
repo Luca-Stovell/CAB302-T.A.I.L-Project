@@ -22,10 +22,8 @@
                         <Circle centerX="20" centerY="20" radius="20" />
                     </clip>
                     </ImageView>
-                    <VBox alignment="CENTER_LEFT" prefWidth="80">
-                        <Label style="-fx-font-weight: bold; -fx-text-fill: #757575" text="Mrs. Liat">
-                            <font> <Font size="16" /> </font> </Label>
-                        <Label style="-fx-text-fill: #B3B3B3" text="Class 9C">
+                    <VBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="105.0">
+                        <Label fx:id="loggedInTeacherLabel" prefHeight="57.0" prefWidth="107.0" style="-fx-font-weight: bold; -fx-text-fill: #757575">
                             <font> <Font size="16" /> </font> </Label>
                     </VBox>
                 </HBox>

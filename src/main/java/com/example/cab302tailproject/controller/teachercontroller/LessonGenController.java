@@ -3,6 +3,7 @@ package com.example.cab302tailproject.controller.teachercontroller;
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.SqliteClassroomDAO;
+import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.model.*;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 
@@ -18,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 
 import java.util.List;
 
@@ -37,6 +39,8 @@ import java.io.IOException;
 public class LessonGenController {
     //<editor-fold desc="Field declarations">
     //<editor-fold desc="FXML UI Element References - Main Content">
+
+    @FXML private Label loggedInTeacherLabel;
     /**
      * TextField for user input to generate lessons or worksheets.
      */
@@ -137,6 +141,7 @@ public class LessonGenController {
      */
     @FXML
     public void initialize() {
+        loggedInTeacherLabel.setText(UserSession.getInstance().getFullName());
         System.out.println("LessonGenController initializing (direct scene switching)...");
         if (generateToggleGroup == null || worksheetRadioButton == null || lessonPlanRadioButton == null || flashCardsRadioButton == null) {
             System.err.println("WARN: One or more generation UI elements (ToggleGroup, RadioButtons) are null. Check FXML fx:id connections.");

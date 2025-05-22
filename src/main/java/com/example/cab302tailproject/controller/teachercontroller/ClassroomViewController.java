@@ -78,6 +78,7 @@ public class ClassroomViewController {
         String teacherEmail = Session.getLoggedInTeacherEmail();
         List<Classroom> classrooms = classroomDao.getClassroomsByTeacherEmail(teacherEmail);
         classroomComboBox.getItems().setAll(classrooms);
+
     }
 
     /**

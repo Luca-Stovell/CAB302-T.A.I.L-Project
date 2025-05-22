@@ -1,17 +1,16 @@
 package com.example.cab302tailproject.model;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 
 public class ContentTableData {
-    private final Instant lastModified;
+    private final Timestamp lastModified;
     private final int week;
     private final String topic;
     private final String type;
     private final int classroom;
     private final int materialID;
 
-    public ContentTableData(Instant lastModified, int week, String topic, String type, int classroom, int materialID) {
+    public ContentTableData(Timestamp lastModified, int week, String topic, String type, int classroom, int materialID) {
         this.lastModified = lastModified;
         this.week = week;
         this.topic = topic;
@@ -20,7 +19,7 @@ public class ContentTableData {
         this.materialID = materialID;
     }
 
-    public Instant getLastModified() {
+    public Timestamp getLastModified() {
         return lastModified;
     }
 

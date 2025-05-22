@@ -3,10 +3,8 @@ package com.example.cab302tailproject.controller.teachercontroller;
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.TailApplication;
-import com.example.cab302tailproject.model.Lesson;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.UserSession;
-import com.example.cab302tailproject.model.Worksheet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -72,6 +70,12 @@ public class ReviewTeacherLessonModify {
     private VBox dynamicContentBox;
 
     /**
+     * Represents the type of material currently being processed or displayed within the
+     * LessonPlanController.
+     */
+    private String materialType;
+
+    /**
      * Represents the unique identifier for the material currently being processed or displayed within LessonPlanController.
      */
     private int materialID;
@@ -96,42 +100,28 @@ public class ReviewTeacherLessonModify {
      * @param previousView the VBox representing the prior view to which the user can navigate back
      */
     public void initData(Material material, VBox dynamicContentBox, VBox previousView) {
+        System.out.println("initData called. Input MaterialID: " + material.getMaterialID());
+
         this.currentMaterial = material;
         this.contentDAO = new ContentDAO();
+        materialID = currentMaterial.getMaterialID();
+        materialType = currentMaterial.getMaterialType();
+        currentMaterial = contentDAO.getMaterialContent(materialID, materialType);
+        System.out.println("MaterialID = " + materialID + ", MaterialType = " + materialType);
+
         this.dynamicContentBox = dynamicContentBox;
         this.previousView = previousView;
-        materialID = currentMaterial.getMaterialID();
         setUpWeekCheckBox();
         setUpClassCheckBox();
         setupLabelToggleBehavior();
 
-        if (currentMaterial.getMaterialType().equals("lesson") || (currentMaterial.getMaterialType().equals("Lesson Plan"))) {
-            Lesson lesson = contentDAO.getLessonContent(materialID);
-            currentMaterial.setMaterialType("lesson");                  // Make it consistent with db
-
-            if (lesson != null) {
-                generatedTextArea.setText(lesson.getContent());
-                topicTextField.setText(lesson.getTopic());
-            } else {
-                showAlert(Alert.AlertType.WARNING, "No lesson found",
-                        "No lesson found for the given ID: " + materialID + ".");
-            }
-        }
-        else if (currentMaterial.getMaterialType().equals("worksheet") || (currentMaterial.getMaterialType().equals("Worksheet"))) {
-            Worksheet worksheet = contentDAO.getWorksheetContent(materialID);
-            currentMaterial.setMaterialType("worksheet");               // Make it consistent with db
-
-            if (worksheet != null) {
-                generatedTextArea.setText(worksheet.getContent());
-                topicTextField.setText(worksheet.getTopic());
-            } else {
-                showAlert(Alert.AlertType.WARNING, "No worksheet found",
-                        "No worksheet found for the given ID: " + materialID + ".");
-            }
+        if (currentMaterial != null) {
+            generatedTextArea.setText(currentMaterial.getContent());
+            topicTextField.setText(currentMaterial.getTopic());
         }
         else {
-            showAlert(Alert.AlertType.WARNING, "Invalid material type",
-                    "The material type is invalid: " + currentMaterial.getMaterialType());
+            showAlert(Alert.AlertType.WARNING, "No generated content found",
+                    "No content found for the given ID: " + materialID + ".");
         }
     }
     //</editor-fold>
@@ -171,9 +161,8 @@ public class ReviewTeacherLessonModify {
         String newTopicName = topicTextField.getText();
 
         try {
-            contentDAO.setContent(materialID, updatedContent, newTopicName);
-
-            //showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
+            contentDAO.setContent(materialID, updatedContent, newTopicName, materialType);
+            showAlert(Alert.AlertType.INFORMATION, "Content Updated", "Content updated successfully.");
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Content Update Failed", "Could not update content. Error: " + e.getMessage());
@@ -184,7 +173,7 @@ public class ReviewTeacherLessonModify {
     public void onDeleteClicked() {
         if (previousView != null) {
             System.out.println("Deleting content with materialID: " + materialID);
-            contentDAO.deleteContent(materialID);
+            contentDAO.deleteContent(materialID, materialType);
 
             dynamicContentBox.getChildren().clear();
             dynamicContentBox.getChildren().addAll(previousView.getChildren());

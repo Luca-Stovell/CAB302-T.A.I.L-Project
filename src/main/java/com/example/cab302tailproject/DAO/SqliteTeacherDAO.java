@@ -1,5 +1,6 @@
 package com.example.cab302tailproject.DAO;
 
+import com.example.cab302tailproject.model.Teacher;
 import com.example.cab302tailproject.model.UserDetail;
 
 import java.sql.*;

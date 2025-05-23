@@ -62,7 +62,6 @@ public class SqlStudentDAO implements StudentDAO {
             System.err.println("Cannot add student: Email '" + email + "' already exists in Student table.");
             return false;
         }
-        // Assuming Student table does not have ClassroomID directly, it's managed by StudentClassroom
         String query = "INSERT INTO Student (email, firstName, lastName, password) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
@@ -85,31 +84,23 @@ public class SqlStudentDAO implements StudentDAO {
     @Override
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
-        // Updated to fetch password for consistency with Student model instantiation,
-        // but be mindful of security implications of loading all passwords.
-        // Ensure your Student model has a constructor Student(firstName, lastName, email, password)
-        // and a setStudentID(int id) method.
         String query = "SELECT StudentID, firstName, lastName, email, password FROM Student ORDER BY lastName, firstName";
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                // Assuming Student model constructor: Student(firstName, lastName, email, password)
-                // and a setter: setStudentID(int)
                 Student student = new com.example.cab302tailproject.model.Student(
                         rs.getString("firstName"),
                         rs.getString("lastName"),
                         rs.getString("email"),
                         rs.getString("password") // Password is now fetched
                 );
-                student.setStudentID(rs.getInt("StudentID")); // Assuming Student class has setStudentID
+                student.setStudentID(rs.getInt("StudentID"));
                 students.add(student);
             }
         } catch (SQLException e) {
             System.err.println("Error retrieving all students: " + e.getMessage());
             e.printStackTrace();
         }
-        // Optional: Logging retrieved students. Consider removing or using a logger for production.
-        // Avoid logging passwords.
         for (Student s : students) {
             System.out.println(s.getFirstName() + " " + s.getLastName() + " | " + s.getEmail());
         }
@@ -211,9 +202,6 @@ public class SqlStudentDAO implements StudentDAO {
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, studentID);
             stmt.setInt(2, classroomID);
-            // executeUpdate() for INSERT OR IGNORE might return 0 if the row already exists and was ignored,
-            // or 1 if a new row was inserted. We consider both as success for "adding".
-            // If you need to distinguish, you might need a SELECT first or handle the return value differently.
             stmt.executeUpdate();
             return true; // Assuming success if no exception, as IGNORE handles duplicates.
         } catch (SQLException e) {
@@ -233,23 +221,16 @@ public class SqlStudentDAO implements StudentDAO {
     @Override
     public List<Student> getStudentsByClassroomID(int classroomID) {
         List<Student> students = new ArrayList<>();
-        // This query selects all columns from the Student table (s.*)
-        // by joining Student with StudentClassroom.
         String query = """
             SELECT s.StudentID, s.firstName, s.lastName, s.email, s.password FROM Student s
             JOIN StudentClassroom sc ON s.StudentID = sc.StudentID
             WHERE sc.ClassroomID = ?
             """;
-        // Note: The original user query was "SELECT s.* ...". Explicitly listing columns
-        // (StudentID, firstName, lastName, email, password) is generally safer.
-        // If "s.*" is preferred, ensure Student table structure matches expected fields.
 
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setInt(1, classroomID);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                // Assuming Student model constructor: Student(firstName, lastName, email, password)
-                // and a setter: setStudentID(int)
                 Student student = new com.example.cab302tailproject.model.Student(
                         rs.getString("firstName"),
                         rs.getString("lastName"),

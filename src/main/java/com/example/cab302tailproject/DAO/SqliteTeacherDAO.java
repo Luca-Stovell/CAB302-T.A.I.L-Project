@@ -70,7 +70,6 @@ public class SqliteTeacherDAO implements TeacherDAO {
             return false;
         }
 
-        // Uses 'TeacherEmail' as the column name for email in the Teacher table.
         String query = "INSERT INTO Teacher (TeacherEmail, firstName, lastName, password) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, email);
@@ -81,7 +80,6 @@ public class SqliteTeacherDAO implements TeacherDAO {
             return rowsAffected == 1;
         } catch (SQLException e) {
             if (e.getMessage() != null && e.getMessage().contains("UNIQUE constraint failed")) {
-                // More specific error for unique constraint violation
                 System.err.println("Database constraint violation: Email '" + email + "' already exists for Teacher.");
             } else {
                 System.err.println("Error adding teacher " + email + ": " + e.getMessage());

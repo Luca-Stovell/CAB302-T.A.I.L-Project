@@ -2,22 +2,18 @@ package com.example.cab302tailproject.LearningCards;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Arrays; // Added for stream operations if needed, and for robust splitting
+import java.util.Arrays;
 
 public class LearningCardDeck {
-    // Constants:
-    // constants subject to change, really depends on what feels right when using the card reader
     private static final double MEDIUM = 0.5;
     private static final double HARD = 0.3;
-    private static final String EMPTY_MESSAGE = "Congratulations, you have finished the deck!";
+    public static final String EMPTY_MESSAGE = "Congratulations, you have finished the deck!";
 
     private List<LearningCard> DeckContent = new ArrayList<>();
 
-    // Used for testing, and nothing else right now. Probably could be used in the card creator
-    // This constructor assumes the old format or a pre-parsed format.
     public LearningCardDeck(List<String[]> cardContent) {
         for (String[] strings : cardContent) {
-            if (strings != null && strings.length >= 2) { // Basic validation
+            if (strings != null && strings.length >= 2) {
                 DeckContent.add(new LearningCard(strings[0], strings[1]));
             } else {
                 System.err.println("Warning: Skipping malformed card data in List<String[]> constructor.");
@@ -25,35 +21,19 @@ public class LearningCardDeck {
         }
     }
 
-    /**
-     * Learning card deck constructor, that reads a string fetched from the database
-     * in the new format:
-     * Question1
-     * Answer1
-     * [blank line]
-     * Question2
-     * Answer2
-     * [blank line]
-     * ...
-     * @param cardContent string containing all the card data as stored in the database
-     */
     public LearningCardDeck(String cardContent){
         try {
             if (cardContent == null || cardContent.trim().isEmpty()) {
                 System.err.println("Warning: Card content string is null or empty.");
                 return;
             }
-
-            // Split by one or more blank lines (handles Windows \r\n and Unix \n)
-            // Regex: (\r?\n){2,} matches two or more newline sequences.
             String[] cardsBlocks = cardContent.trim().split("(\\r?\\n){2,}");
 
             for (String block : cardsBlocks) {
-                if (block.trim().isEmpty()) { // Skip any genuinely empty blocks if they occur
+                if (block.trim().isEmpty()) {
                     continue;
                 }
-                // Split each block into lines. Expecting Question on line 1, Answer on line 2.
-                String[] lines = block.split("\\r?\\n", 2); // Limit to 2 parts: Question, Answer
+                String[] lines = block.split("\\r?\\n", 2);
 
                 if (lines.length == 2) {
                     String question = lines[0].trim();
@@ -69,14 +49,10 @@ public class LearningCardDeck {
             }
         } catch (Exception e) {
             System.err.println("Exception in LearningCardDeck(String cardContent) constructor: " + e.getMessage());
-            e.printStackTrace(); // For detailed debugging
+            e.printStackTrace();
         }
     }
 
-    /**
-     * A function used to view the contents of a learning card deck
-     * @return The top facing string of the first card in the queue, or a message if deck is empty
-     */
     public String getCurrentCard() {
         if (!DeckContent.isEmpty()) {
             return DeckContent.getFirst().getCard();
@@ -84,51 +60,77 @@ public class LearningCardDeck {
         return EMPTY_MESSAGE;
     }
 
-    /**
-     * toggles the output of the current card between question and answer (initial state: question)
-     */
+    public String getCurrentQuestionText() {
+        if (!DeckContent.isEmpty()) {
+            return DeckContent.getFirst().getQuestion();
+        }
+        return null;
+    }
+
+    public boolean isCurrentCardFlipped() {
+        if (!DeckContent.isEmpty()) {
+            return DeckContent.getFirst().isFlipped();
+        }
+        return false;
+    }
+
+    public boolean isEmpty() {
+        return DeckContent.isEmpty();
+    }
+
+
     public void flip() {
         if (!DeckContent.isEmpty()) {
             DeckContent.getFirst().setFlipped();
         }
     }
 
-    // should probably be private, identical to easyNext
-    // it's used in the unit tests
-    public void next(){
-        next(1.0); // Ensure this is a double
+    /**
+     * Advances to the next card state, typically by moving the current card to the end of the deck.
+     * This method is public and intended for use by tests or other parts of the application
+     * that need a simple "next" operation without specifying difficulty.
+     */
+    public void next(){ // This is the public next() method your tests are looking for
+        revisedNext(1.0); // Delegates to revisedNext, treating it as "easy"
     }
 
     /**
-     * sends the current card to a place in the deck and reduces it's lifespan depending on an input double.
-     * If the card has no more life left, removes it from the deck
-     * @param difficulty double that determines where the current card is sent
+     * This was the original private next(double difficulty) method.
+     * It's preserved here as per instructions not to remove methods but is not directly
+     * called by easyNext, mediumNext, hardNext if they use revisedNext.
+     * Its logic was more complex and potentially had issues with card removal/repositioning.
+     * @param difficulty The difficulty factor for repositioning the card.
      */
-    private void next(double difficulty) {
+    @Deprecated // Marking as deprecated as revisedNext is preferred
+    private void originalNextLogic(double difficulty) {
         if (!DeckContent.isEmpty()) {
             DeckContent.getFirst().resetFlip();
             DeckContent.getFirst().reduceCard(difficulty);
             if (DeckContent.getFirst().isActive()) {
-
                 int newIndex = (int) (DeckContent.size() * difficulty);
-                if (DeckContent.size() > 1) { // Only reposition if there are other cards
-                    newIndex = Math.max(0, Math.min(newIndex, DeckContent.size() -1)); // Clamp to valid index for insertion among existing
-                    LearningCard current = DeckContent.removeFirst(); // Remove first before adding
-                    DeckContent.add(newIndex, current); // Add it back at the calculated position
-                } else {
+                if (DeckContent.size() > 1) {
+                    newIndex = Math.max(0, Math.min(newIndex, DeckContent.size() -1));
+                    LearningCard current = DeckContent.removeFirst();
+                    DeckContent.add(newIndex, current);
                 }
-
-
             }
-            // If the card is no longer active OR if it was the only card and its active status was checked
+            // This part of the logic was potentially problematic and might lead to unexpected behavior
+            // if the card at getFirst() changed due to the repositioning above.
             if (!DeckContent.getFirst().isActive() || DeckContent.size() == 1 && !DeckContent.getFirst().isActive()) {
                 DeckContent.removeFirst();
             } else if (DeckContent.size() == 1 && DeckContent.getFirst().isActive()){
-            } else if (DeckContent.size() > 1 && DeckContent.getFirst().isActive()) {
+                // Do nothing, keep the only active card
             }
         }
     }
-    // Revised next method based on thought process above for clarity
+
+    /**
+     * Revised logic for processing the current card and moving to the next.
+     * The current card is processed (entropy reduced), removed from the front,
+     * and if still active, re-inserted into the deck based on difficulty.
+     * @param difficulty A factor (0.0 to 1.0) determining where the card is re-inserted.
+     * 1.0 typically means end of the deck (easy).
+     */
     private void revisedNext(double difficulty) {
         if (DeckContent.isEmpty()) {
             return;
@@ -149,32 +151,18 @@ public class LearningCardDeck {
         // If card is not active, it's already removed and not added back.
     }
 
-
-    /**
-     * moves the current card to the end of the deck
-     */
     public String easyNext(){
-
         revisedNext(1.0);
         return getCurrentCard();
     }
 
-    /**
-     * moves the current card to the middle of the deck
-     */
     public String mediumNext(){
         revisedNext(MEDIUM);
         return getCurrentCard();
     }
 
-
-    /**
-     * moves the current card close to the start of the deck
-     */
     public String hardNext(){
         revisedNext(HARD);
         return getCurrentCard();
     }
-
-
 }

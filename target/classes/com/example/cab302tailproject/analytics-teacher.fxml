@@ -40,43 +40,70 @@
             </top>
 
             <center>
-                <VBox alignment="TOP_CENTER" prefHeight="350.0" prefWidth="560.0" spacing="20.0" style="-fx-border-color: #000000; -fx-border-width: 0 2 2 0;">
-                    <padding>
-                        <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
-                    </padding>
-                    <children>
-                        <Label fx:id="classAverageLabel" text="Class Average: N/A">
-                            <font>
-                                <Font name="System Bold" size="16.0" />
-                            </font>
-                        </Label>
-                        <VBox fx:id="studentDetailPane" alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: lightgrey; -fx-border-width: 1; -fx-padding: 15;" prefWidth="400.0" visible="false">
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" style="-fx-border-color: #000000; -fx-border-width: 0 2 2 0;">
+                    <content>
+                        <VBox alignment="TOP_CENTER" prefWidth="540.0" spacing="15.0" > <padding>
+                            <Insets top="15.0" right="20.0" bottom="20.0" left="20.0" />
+                        </padding>
                             <children>
-                                <Label text="Selected Student Details:" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
-                                <HBox spacing="10.0">
+                                <Label fx:id="classAverageLabel" text="Class Average: N/A">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="instructionLabel" text="Select a student from the list to view details."/>
+
+                                <VBox fx:id="studentDetailPane" alignment="CENTER_LEFT" spacing="10.0" style="-fx-border-color: lightgrey; -fx-border-width: 1; -fx-padding: 15;" prefWidth="500.0" maxWidth="500.0" visible="false">
                                     <children>
-                                        <Label text="First Name:" minWidth="80.0"/>
-                                        <Label fx:id="firstNameLabel" text="-" />
+                                        <Label text="Selected Student Details:" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
+                                        <HBox spacing="10.0">
+                                            <children>
+                                                <Label text="First Name:" minWidth="80.0"/>
+                                                <Label fx:id="firstNameLabel" text="-" />
+                                            </children>
+                                        </HBox>
+                                        <HBox spacing="10.0">
+                                            <children>
+                                                <Label text="Last Name:" minWidth="80.0"/>
+                                                <Label fx:id="lastNameLabel" text="-" />
+                                            </children>
+                                        </HBox>
+                                        <HBox spacing="10.0">
+                                            <children>
+                                                <Label text="Email:" minWidth="80.0"/>
+                                                <Label fx:id="emailLabel" text="-" />
+                                            </children>
+                                        </HBox>
+                                        <Button fx:id="resetPasswordButton" mnemonicParsing="false" onAction="#onResetPasswordClicked" text="Reset Student Password" disable="true"/>
+
+                                        <Separator prefWidth="200.0">
+                                            <VBox.margin>
+                                                <Insets top="10.0" bottom="5.0" />
+                                            </VBox.margin>
+                                        </Separator>
+                                        <Label text="Learning Card Performance:" style="-fx-font-weight: bold; -fx-font-size: 14;"/>
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                            <Label text="Select Week:"/>
+                                            <ComboBox fx:id="weekSelectionComboBox" prefWidth="150.0" promptText="Choose Week"/>
+                                        </HBox>
+                                        <TableView fx:id="cardPerformanceTableView" prefHeight="150.0" prefWidth="480.0">
+                                            <columns>
+                                                <TableColumn fx:id="cardQuestionColumn" prefWidth="350.0" text="Card Question" />
+                                                <TableColumn fx:id="resultColumn" prefWidth="120.0" text="Result" />
+                                            </columns>
+                                            <placeholder>
+                                                <Label text="No performance data available for the selected week or student."/>
+                                            </placeholder>
+                                        </TableView>
                                     </children>
-                                </HBox>
-                                <HBox spacing="10.0">
-                                    <children>
-                                        <Label text="Last Name:" minWidth="80.0"/>
-                                        <Label fx:id="lastNameLabel" text="-" />
-                                    </children>
-                                </HBox>
-                                <HBox spacing="10.0">
-                                    <children>
-                                        <Label text="Email:" minWidth="80.0"/>
-                                        <Label fx:id="emailLabel" text="-" />
-                                    </children>
-                                </HBox>
-                                <Button fx:id="resetPasswordButton" mnemonicParsing="false" onAction="#onResetPasswordClicked" text="Reset Student Password" disable="true"/>
+                                    <VBox.margin>
+                                        <Insets top="10.0" />
+                                    </VBox.margin>
+                                </VBox>
                             </children>
                         </VBox>
-                        <Label fx:id="instructionLabel" text="Select a student from the list to view details."/>
-                    </children>
-                </VBox>
+                    </content>
+                </ScrollPane>
             </center>
         </BorderPane>
     </center>

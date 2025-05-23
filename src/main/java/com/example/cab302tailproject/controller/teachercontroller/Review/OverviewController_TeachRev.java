@@ -199,15 +199,15 @@ public class OverviewController_TeachRev {
                 int classroomID = classCheckBox.getValue();
 
                 int materialIdOfLesson = contentDAO.getMaterialByWeekAndClassroom(weekNumber, materialType, classroomID);
+                currentMaterial = contentDAO.getMaterialContent(materialIdOfLesson, materialType);
 
-                currentMaterial = new Material(materialIdOfLesson, materialType);
                 if (currentMaterial.getContent() != null) {
                     navigateToContentPage();
                 }
                 else {
                     showAlert(Alert.AlertType.ERROR, "No content found", "A " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " does not exist. \n Check 'All content' to review available content.");
                 }
-            }   // TODO: don't navigate to page if it doesn't work
+            }
             catch (Exception e) {
                 System.err.println("Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " (materialID: " + currentMaterial.getMaterialID() + ").");
                 showAlert(Alert.AlertType.ERROR, "Retrieval error", "Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + ". \n Check 'All content' to review available content.");
@@ -215,7 +215,7 @@ public class OverviewController_TeachRev {
         }
         else {
             System.out.println("No classroom selected");
-            showAlert(Alert.AlertType.WARNING, "No classroom selected", "No classroom selected. Please select a classroom to view the content.");
+            showAlert(Alert.AlertType.WARNING, "No classroom selected", "No classroom selected. Please select a classroom to view the content, or navigate to 'Students' to create a classroom.");
         }
     }
 

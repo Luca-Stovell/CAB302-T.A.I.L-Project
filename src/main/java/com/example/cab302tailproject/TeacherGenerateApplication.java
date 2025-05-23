@@ -1,4 +1,4 @@
-// Application to directly launch LessonGen
+// Application to directly launch into Teacher app with a logged in user
 
 package com.example.cab302tailproject;
 
@@ -12,7 +12,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class TeacherGenerateApplication extends Application {
-    public static final String TITLE = "Worksheet and Lesson Plan Generator";
+    public static final String TITLE = "Teacher Application";
     public static final int WIDTH = 900;
     public static final int HEIGHT = 600;
 

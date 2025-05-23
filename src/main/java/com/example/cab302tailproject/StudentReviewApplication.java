@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class StudentReviewApplication extends Application {
-    public static final String TITLE = "Worksheet and Lesson Plan Generator";
+    public static final String TITLE = "Student Application";
     public static final int WIDTH = 900;
     public static final int HEIGHT = 600;
 

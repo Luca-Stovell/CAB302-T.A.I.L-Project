@@ -2,6 +2,7 @@ package com.example.cab302tailproject.controller.teachercontroller.Review;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
+import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.UserSession;
@@ -62,6 +63,8 @@ public class OverviewController_TeachRev {
      */
     private IContentDAO contentDAO;
 
+    private SqliteTeacherDAO sqliteTeacherDAO;
+
     /**
      * A VBox container dynamically populated with content for managing and displaying
      * lesson plans or associated materials in the LessonPlanController.
@@ -85,6 +88,7 @@ public class OverviewController_TeachRev {
         List<Button> weekButtons = List.of(week1Button, week2Button, week3Button, week4Button, week5Button,
                 week6Button, week7Button, week8Button, week9Button, week10Button, week11Button, week12Button, week13Button);
         this.contentDAO = new ContentDAO();
+        sqliteTeacherDAO = new SqliteTeacherDAO();
         for (Button button : weekButtons) {
             if (button == null) {
                 System.err.println("Button is null: Check FXML file binding for this button!");
@@ -197,7 +201,12 @@ public class OverviewController_TeachRev {
                 int materialIdOfLesson = contentDAO.getMaterialByWeekAndClassroom(weekNumber, materialType, classroomID);
 
                 currentMaterial = new Material(materialIdOfLesson, materialType);
-                navigateToContentPage();
+                if (currentMaterial.getContent() != null) {
+                    navigateToContentPage();
+                }
+                else {
+                    showAlert(Alert.AlertType.ERROR, "No content found", "A " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " does not exist. \n Check 'All content' to review available content.");
+                }
             }   // TODO: don't navigate to page if it doesn't work
             catch (Exception e) {
                 System.err.println("Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " (materialID: " + currentMaterial.getMaterialID() + ").");
@@ -233,56 +242,23 @@ public class OverviewController_TeachRev {
      * classrooms for the current material. Retrieves classrooms associated with a teacher
      * and populates the `classCheckBox` with these available classroom options.
      * The initial value is set based on the classroom associated with the material.
-     * Also, adds a property change listener to handle selection events.
      */
     public void setUpClassCheckBox() {
         try{
             // Retrieve teacher's associated classrooms
             UserSession userSession = UserSession.getInstance();
             String teacherEmail = userSession.getEmail();
-            ObservableList<Integer> availableClasses = FXCollections.observableArrayList(contentDAO.getClassroomList(teacherEmail));
+            ObservableList<Integer> availableClasses = FXCollections.observableArrayList(sqliteTeacherDAO.getClassroomList(teacherEmail));
 
             int initialClassroomID = availableClasses.getLast();
             classCheckBox.setValue(initialClassroomID);
 
             classCheckBox.setItems(availableClasses);
-
-            // Add a listener to handle the selection of a week
-            classCheckBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-                if (newValue != null) {
-                    handleClassSelection(newValue);
-                }
-            });
         } catch (Exception e) {
             System.err.println("Error getting classroom id: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update classroom. Error: " + e.getMessage());
         }
 
-    }
-
-    /**
-     * Handles the selection of a specific classroom for a material and updates the database
-     * with the provided classroomID. Displays confirmation or error messages based on the
-     * success or failure of the update operation.
-     *
-     * @param classroomID the identifier of the classroom to be associated with the material
-     *                    and updated in the database
-     */
-    private void handleClassSelection(int classroomID) {
-        try {
-            boolean updated = contentDAO.updateClassroomID(classroomID, materialID);
-
-            if (updated) {
-                System.out.println("ClassroomID updated: " + classroomID + " for " + materialID);
-            }
-            else {
-                System.out.println("ClassroomID update failed: " + classroomID);
-                showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update ClassroomID.");
-            }
-        } catch (Exception e) {
-            System.err.println("Error updating ClassroomID: " + e.getMessage());
-            showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update ClassroomID. Error: " + e.getMessage());
-        }
     }
     //</editor-fold>
 

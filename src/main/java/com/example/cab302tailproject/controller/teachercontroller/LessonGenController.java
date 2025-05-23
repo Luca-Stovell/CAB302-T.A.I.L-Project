@@ -3,6 +3,7 @@ package com.example.cab302tailproject.controller.teachercontroller;
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.SqliteClassroomDAO;
+import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.model.*;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 import io.github.ollama4j.exceptions.OllamaBaseException;
@@ -93,6 +94,8 @@ public class LessonGenController {
      * Represents the identifier of the currently selected or generated material.
      */
     private Material currentMaterial;
+
+    private SqliteTeacherDAO sqliteTeacherDAO;
     //</editor-fold>
 
     //<editor-fold desc="FXML UI Element References - Dynamic content">
@@ -118,6 +121,7 @@ public class LessonGenController {
     @FXML
     public void initialize() {
         loggedInTeacherLabel.setText(UserSession.getInstance().getFullName());
+        sqliteTeacherDAO = new SqliteTeacherDAO();
         System.out.println("LessonGenController initializing (direct scene switching)...");
         if (generateToggleGroup == null || worksheetRadioButton == null || lessonPlanRadioButton == null || flashCardsRadioButton == null) {
             System.err.println("WARN: One or more generation UI elements (ToggleGroup, RadioButtons) are null. Check FXML fx:id connections.");
@@ -265,7 +269,7 @@ public class LessonGenController {
 
         try {
             IContentDAO contentDAO = new ContentDAO();
-            int teacherID = contentDAO.getTeacherID(teacherEmail);
+            int teacherID = sqliteTeacherDAO.getTeacherID(teacherEmail);
             if (teacherID == -1 && teacherEmail != null) {
                 showAlert(Alert.AlertType.ERROR, "Database Error", "Teacher email " + teacherEmail + " not found in database.");
                 return -1;

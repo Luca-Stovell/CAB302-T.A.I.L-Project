@@ -68,14 +68,6 @@ public interface IContentDAO {
     int getClassroomID(int materialID);
 
     /**
-     * Retrieves a list of classroom IDs associated with the given teacher's email.
-     *
-     * @param teacherEmail the email address of the teacher whose classrooms are to be retrieved
-     * @return a list of integers representing the classroom IDs associated with the teacher
-     */
-    List<Integer> getClassroomList(String teacherEmail);
-
-    /**
      * Retrieves the ID of the material associated with the specified week number and material type.
      *
      * @param weekNumber the week number for which the material is requested
@@ -95,14 +87,6 @@ public interface IContentDAO {
      */
     ObservableList<ContentTableData> fetchContentTableData(String teacherEmail);
 
-
-    /**
-     * Retrieves the teacher's unique identifier (TeacherID) based on their email address.
-     *
-     * @param teacherEmail the email address of the teacher whose ID is to be retrieved
-     * @return the TeacherID associated with the provided email address, or -1 if no match is found or an error occurs
-     */
-    int getTeacherID(String teacherEmail);
 
     /**
      * Adds a new worksheet entry to the database, including its attributes.

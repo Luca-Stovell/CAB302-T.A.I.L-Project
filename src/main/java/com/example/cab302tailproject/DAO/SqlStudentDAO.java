@@ -436,4 +436,29 @@ public class SqlStudentDAO implements StudentDAO {
             return false;
         }
     }
+
+    /**
+     * Retrieves a list of classroom IDs associated with a specific student.
+     *
+     * @param StudentID The ID of the student whose classroom list is to be retrieved.
+     * @return A list of integers representing the IDs of the classrooms associated with the given student.
+     */
+    public List<Integer> getClassroomList(int StudentID) {
+        String findClassroomsQuery = "SELECT ClassroomID FROM StudentClassroom WHERE StudentID = ?";
+        List<Integer> classroomList = new ArrayList<>();
+        try (PreparedStatement statement = this.connection.prepareStatement(findClassroomsQuery)) {
+            statement.setInt(1, StudentID);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                int classroomID = rs.getInt("ClassroomID");
+                classroomList.add(classroomID);
+            }
+        }
+        catch (SQLException e) {
+            System.err.println("Error getting classroom list: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return classroomList;
+    }
 }

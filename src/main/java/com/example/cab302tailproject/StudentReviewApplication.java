@@ -1,5 +1,3 @@
-// Application to directly launch LessonGen
-
 package com.example.cab302tailproject;
 
 import com.example.cab302tailproject.DAO.DatabaseInitializer;
@@ -11,7 +9,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class TeacherGenerateApplication extends Application {
+public class StudentReviewApplication extends Application {
     public static final String TITLE = "Worksheet and Lesson Plan Generator";
     public static final int WIDTH = 900;
     public static final int HEIGHT = 600;
@@ -19,11 +17,11 @@ public class TeacherGenerateApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         // Set user
-        UserSession.setLoggedInTeacherEmail("mrs_liat@tail.com");
-        UserSession.getInstance().loginUser("Mrs", "Liat", "mrs_liat@tail.com", "Teacher");
+        UserSession.setLoggedInStudentEmail("student@tail.com");
+        UserSession.getInstance().loginUser("Student", "One", "student@tail.com", "Student");
 
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource(
-                "lesson_generator-teacher.fxml"));
+                "review-student.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle(TITLE);
         stage.setScene(scene);

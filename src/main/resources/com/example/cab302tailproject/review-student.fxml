@@ -15,14 +15,10 @@
             fx:controller="com.example.cab302tailproject.controller.studentcontroller.Review.MainFrameController_StudRev"
             style= "-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2">
 
-    <fx:define>
-        <ToggleGroup fx:id="generateToggleGroup" />
-    </fx:define>
-
     <left>
         <VBox prefHeight="420" prefWidth="200"
               style = "-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
-            <VBox prefHeight="120" alignment="TOP_LEFT" style="-fx-padding: 25 0 0 30;">
+            <VBox prefHeight="120" style="-fx-padding: 25 0 0 30;">
                 <HBox alignment="CENTER_LEFT" spacing="20" prefWidth="200">
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
                         <Image url="@../../../images/tail_logo.png" /> <clip>
@@ -73,7 +69,8 @@
             <top>
                 <StackPane style = "-fx-border-color: #000000; -fx-border-width: 0 0 2 0;">
                     <HBox maxWidth="510" prefHeight="70" prefWidth="510" alignment="CENTER">
-                        <Button layoutX="260" layoutY="15" prefHeight="40" prefWidth="115" style="-fx-background-color: white; -fx-text-fill: #2C2C2C; -fx-font-size: 16; -fx-background-radius: 10;" text="Worksheets" />
+                        <Label prefHeight="40" prefWidth="115" style="-fx-background-color: white; -fx-text-fill: #2C2C2C; -fx-font-size: 22; -fx-background-radius: 10;" text="Worksheets" />
+
                     </HBox>
                 </StackPane>
             </top>

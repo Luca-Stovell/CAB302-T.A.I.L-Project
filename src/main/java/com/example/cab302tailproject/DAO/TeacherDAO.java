@@ -1,5 +1,7 @@
 package com.example.cab302tailproject.DAO;
 
+import java.util.List;
+
 public interface TeacherDAO extends UserDAO {
     /**
      * Adds a new teacher to the database.
@@ -16,7 +18,7 @@ public interface TeacherDAO extends UserDAO {
      * @param email The email that is being checked
      * @return true if email was found, false if not
      */
-    public boolean checkEmail(String email);
+    boolean checkEmail(String email);
     /**
      * Changes the password for an existing teacher account.
      * @param email The email of the teacher.
@@ -31,7 +33,7 @@ public interface TeacherDAO extends UserDAO {
      * @param password the input password
      * @return true if passwords match, false if not
      */
-    public boolean checkPassword(String email ,String password);
+    boolean checkPassword(String email ,String password);
 
     /**
      * This creates a new classroom instance in the database.
@@ -39,6 +41,22 @@ public interface TeacherDAO extends UserDAO {
      * @param ClassID is the primary key in the database.
      * @param Teacher is the teacher associated with the class.
      */
-    public void createClassroom(String ClassID, String Teacher);
+    void createClassroom(String ClassID, String Teacher);
+
+    /**
+     * Retrieves the teacher's unique identifier (TeacherID) based on their email address.
+     *
+     * @param teacherEmail the email address of the teacher whose ID is to be retrieved
+     * @return the TeacherID associated with the provided email address, or -1 if no match is found or an error occurs
+     */
+    int getTeacherID(String teacherEmail);
+
+    /**
+     * Retrieves a list of classroom IDs associated with the given teacher's email.
+     *
+     * @param teacherEmail the email address of the teacher whose classrooms are to be retrieved
+     * @return a list of integers representing the classroom IDs associated with the teacher
+     */
+    List<Integer> getClassroomList(String teacherEmail);
 
 }

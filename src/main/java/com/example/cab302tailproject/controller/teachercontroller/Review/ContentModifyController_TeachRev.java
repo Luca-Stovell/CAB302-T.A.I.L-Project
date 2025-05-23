@@ -2,6 +2,7 @@ package com.example.cab302tailproject.controller.teachercontroller.Review;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
+import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.UserSession;
 import javafx.collections.FXCollections;
@@ -62,6 +63,8 @@ public class ContentModifyController_TeachRev {
      */
     private IContentDAO contentDAO;
 
+    private SqliteTeacherDAO sqliteTeacherDAO;
+
     /**
      * A VBox container dynamically populated with content for managing and displaying
      * lesson plans or associated materials in the LessonPlanController.
@@ -100,8 +103,7 @@ public class ContentModifyController_TeachRev {
      * @param previousView the VBox representing the prior view to which the user can navigate back
      */
     public void initData(Material material, VBox dynamicContentBox, VBox previousView) {
-        System.out.println("initData called. Input MaterialID: " + material.getMaterialID());
-
+        sqliteTeacherDAO = new SqliteTeacherDAO();
         this.currentMaterial = material;
         this.contentDAO = new ContentDAO();
         materialID = currentMaterial.getMaterialID();
@@ -251,7 +253,7 @@ public class ContentModifyController_TeachRev {
             classCheckBox.setValue(initialClassroomID);
             UserSession userSession = UserSession.getInstance();
             String teacherEmail = userSession.getEmail();
-            ObservableList<Integer> availableClasses = FXCollections.observableArrayList(contentDAO.getClassroomList(teacherEmail));
+            ObservableList<Integer> availableClasses = FXCollections.observableArrayList(sqliteTeacherDAO.getClassroomList(teacherEmail));
             classCheckBox.setItems(availableClasses);
 
             // Add a listener to handle the selection of a week

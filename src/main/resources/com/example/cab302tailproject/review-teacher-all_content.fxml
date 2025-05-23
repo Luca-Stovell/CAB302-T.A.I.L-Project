@@ -7,7 +7,7 @@
 <VBox fx:id="dynamicContentBox" maxHeight="Infinity" maxWidth="Infinity" prefHeight="274.0" prefWidth="510.0"
       style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" VBox.vgrow="ALWAYS"
       xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.cab302tailproject.controller.teachercontroller.ReviewTeacherAllContentController">
+      fx:controller="com.example.cab302tailproject.controller.teachercontroller.Review.AllContentController_TeachRev">
 
     <TableView fx:id="tableView" prefHeight="200.0" prefWidth="510.0" maxHeight="Infinity" maxWidth="Infinity" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
           <columns>

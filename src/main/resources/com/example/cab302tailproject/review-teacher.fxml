@@ -12,12 +12,8 @@
             maxHeight = "-Infinity"
             prefHeight = "420"
             prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.teachercontroller.ReviewTeacherController"
+            fx:controller="com.example.cab302tailproject.controller.teachercontroller.Review.MainFrameController_TeachRev"
             style= "-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2">
-
-    <fx:define>
-        <ToggleGroup fx:id="generateToggleGroup" />
-    </fx:define>
 
     <left>
         <VBox prefHeight="420" prefWidth="200"
@@ -29,10 +25,8 @@
                         <Circle radius="20" centerX="20" centerY="20"/>
                     </clip>
                     </ImageView>
-                    <VBox alignment="CENTER_LEFT" prefWidth="80">
-                        <Label text = "Mrs. Liat" style="-fx-font-weight: bold; -fx-text-fill: #757575" >
-                            <font> <Font size="16" /> </font> </Label>
-                        <Label text = "Class 9C" style="-fx-text-fill: #B3B3B3">
+                    <VBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="105.0">
+                        <Label fx:id="loggedInTeacherLabel" prefHeight="57.0" prefWidth="107.0" style="-fx-font-weight: bold; -fx-text-fill: #757575">
                             <font> <Font size="16" /> </font> </Label>
                     </VBox>
                 </HBox>
@@ -76,22 +70,10 @@
     <center>
         <BorderPane>
             <top>
-                <!-- TODO: Add icons for home/settings buttons -->
                 <StackPane style = "-fx-border-color: #000000; -fx-border-width: 0 0 2 0;">
-                    <AnchorPane prefHeight="70" prefWidth="510" maxWidth="510">
-                        <Button text="Files" fx:id="filesButton" onAction="#onFilesClicked"
-                                layoutX="80" layoutY="15" prefHeight="40" prefWidth="100"
-                                style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;"/>
-                        <Button text="Students" fx:id="studentsButton" onAction="#onStudentsClicked"
-                                layoutX="260" layoutY="15" prefHeight="40" prefWidth="115"
-                                style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;"/>
-                        <Button text="H" fx:id="homeButton" onAction="#onHomeClicked"
-                                layoutX="420" layoutY="20" prefHeight="30" prefWidth="30"
-                                style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;"/>
-                        <Button text="S" fx:id="settingsButton" onAction="#onSettingsClicked"
-                                layoutX="460" layoutY="20" prefHeight="30" prefWidth="30"
-                                style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;"/>
-                    </AnchorPane>
+                    <HBox maxWidth="510" prefHeight="70" prefWidth="510" alignment="CENTER">
+                        <Button fx:id="studentsButton" layoutX="260" layoutY="15" onAction="#onStudentsClicked" prefHeight="40" prefWidth="115" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Students" />
+                    </HBox>
                 </StackPane>
             </top>
 

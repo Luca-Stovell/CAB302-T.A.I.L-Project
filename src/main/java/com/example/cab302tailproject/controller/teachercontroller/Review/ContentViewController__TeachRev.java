@@ -1,11 +1,9 @@
-package com.example.cab302tailproject.controller.teachercontroller;
+package com.example.cab302tailproject.controller.teachercontroller.Review;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
-import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Material;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -18,7 +16,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class ReviewTeacherLessonViewController {
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.navigateToContent;
+
+public class ContentViewController__TeachRev {
 
     //<editor-fold desc="Field declarations>
     public Button backButton;
@@ -171,7 +172,7 @@ public class ReviewTeacherLessonViewController {
             System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
 
             Object controller = previousView.getProperties().get("controller");
-            if (controller instanceof ReviewTeacherAllContentController originController) {
+            if (controller instanceof AllContentController_TeachRev originController) {
                 originController.reloadTableData();
             }
 
@@ -190,7 +191,7 @@ public class ReviewTeacherLessonViewController {
      * for the current material.
      */
     public void onModifyClicked() {
-        navigateToGeneratedPlan(materialID);
+        navigateToGeneratedPlan();
     }
 
     /**
@@ -257,7 +258,6 @@ public class ReviewTeacherLessonViewController {
                 showAlert(Alert.AlertType.INFORMATION, "Save Successful", "Content saved to " + file.getName());
             } catch (IOException e) {
                 System.err.println("Error saving file '" + file.getAbsolutePath() + "': " + e.getMessage());
-                //e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Save Failed", "Could not save file. Error: " + e.getMessage());
             }
         }
@@ -266,54 +266,19 @@ public class ReviewTeacherLessonViewController {
 
     //<editor-fold desc="Navigation">
     /**
-     * Navigates to the generated plan view based on the given material ID.
+     * Navigates to the generated plan view based on the currentMaterial.
      * On successful navigation, the dynamic content view is replaced with
-     * the content for the selected material. Unlike other versions of this method,
+     * the content for the selected material. Unlike some versions of this method,
      * it does not track this current page as a "previousView".
-     *
-     * @param materialID the unique identifier of the material to load and display
-     *                   in the generated plan view
      */
-    private void navigateToGeneratedPlan(int materialID) {
-        try {
-            if (this.currentMaterial == null) {
-                showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
-                return;
-            }
-
-            // Moving to new view
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-lesson_modify.fxml"));
-            VBox layout = fxmlLoader.load();
-            ReviewTeacherLessonModify controller = fxmlLoader.getController();
-            System.out.println("Navigating to generated plan for materialID: " + currentMaterial.getMaterialID() + ".");
-            controller.initData(currentMaterial, dynamicContentBox, previousView);  // pass the data
-
-            // Replace content in the dynamic container
-            dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().add(layout);
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Could not load generated content view.\n" + e.getMessage());
-            //e.printStackTrace();
-        }
+    private void navigateToGeneratedPlan() {
+        navigateToContent("review-teacher-lesson_modify.fxml",
+                dynamicContentBox, null, currentMaterial,
+                (ContentModifyController_TeachRev controller) ->
+                        controller.initData(currentMaterial, dynamicContentBox, previousView
+                        )
+        );
     }
     //</editor-fold>
 
-    //<editor-fold desc="Util methods">
-    /**
-     * Displays an alert dialog to the user with the specified alert type, title, and content.
-     *
-     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
-     * @param title the title of the alert dialog
-     * @param content the text content to be displayed within the alert dialog
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    //</editor-fold>
 }

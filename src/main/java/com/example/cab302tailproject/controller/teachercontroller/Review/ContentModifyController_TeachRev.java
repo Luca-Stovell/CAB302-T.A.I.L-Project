@@ -1,19 +1,19 @@
-package com.example.cab302tailproject.controller.teachercontroller;
+package com.example.cab302tailproject.controller.teachercontroller.Review;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
-import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.UserSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import java.io.IOException;
 
-public class ReviewTeacherLessonModify {
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.navigateToContent;
+
+public class ContentModifyController_TeachRev {
 
     //<editor-fold desc="Field declarations">
     /**
@@ -135,7 +135,7 @@ public class ReviewTeacherLessonModify {
     @FXML
     private void onBackClicked() {
         if (previousView != null) {
-            navigateToGeneratedPlan(materialID);
+            navigateToGeneratedPlan();
         }
         else {
             showAlert(Alert.AlertType.WARNING, "No Previous View",
@@ -231,7 +231,6 @@ public class ReviewTeacherLessonModify {
             }
         } catch (Exception e) {
             System.err.println("Error updating week: " + e.getMessage());
-            //e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update week. Error: " + e.getMessage());
         }
     }
@@ -263,7 +262,6 @@ public class ReviewTeacherLessonModify {
             });
         } catch (Exception e) {
             System.err.println("Error getting classroom id: " + e.getMessage());
-            //e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update classroom. Error: " + e.getMessage());
         }
 
@@ -290,7 +288,6 @@ public class ReviewTeacherLessonModify {
             }
         } catch (Exception e) {
             System.err.println("Error updating ClassroomID: " + e.getMessage());
-            //e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update ClassroomID. Error: " + e.getMessage());
         }
     }
@@ -329,46 +326,22 @@ public class ReviewTeacherLessonModify {
         });
 
     }
-
-    /**
-     * Displays an alert dialog to the user with the specified alert type, title, and content.
-     *
-     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
-     * @param title the title of the alert dialog
-     * @param content the text content to be displayed within the alert dialog
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
     //</editor-fold>
 
-    //<editor-fold desc="Page navigation">
-    private void navigateToGeneratedPlan(int materialID) {
-        try {
-            this.materialID = materialID;
-            if (this.currentMaterial == null) {
-                showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
-                return;
-            }
-
-            // Moving to new view
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-lesson_view.fxml"));
-            VBox layout = fxmlLoader.load();
-            ReviewTeacherLessonViewController controller = fxmlLoader.getController();
-            controller.initData(currentMaterial, dynamicContentBox, previousView);  // pass the data
-
-            // Replace content in the dynamic container
-            dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().add(layout);
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Could not load generated content view.\n" + e.getMessage());
-            //e.printStackTrace();
-        }
+    //<editor-fold desc="Navigate to content view">
+    /**
+     * Navigates to the generated plan view based on the currentMaterial.
+     * On successful navigation, the dynamic content view is replaced with
+     * the content for the selected material. Unlike some versions of this method,
+     * it does not track this current page as a "previousView".
+     */
+    private void navigateToGeneratedPlan() {
+        navigateToContent("review-teacher-lesson_view.fxml",
+                dynamicContentBox, null, currentMaterial,
+                (ContentViewController__TeachRev controller) ->
+                        controller.initData(currentMaterial, dynamicContentBox, previousView
+                        )
+        );
     }
     //</editor-fold>
 }

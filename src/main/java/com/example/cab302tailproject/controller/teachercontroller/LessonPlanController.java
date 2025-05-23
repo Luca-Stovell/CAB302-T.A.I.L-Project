@@ -16,6 +16,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+
 /**
  * Controller class responsible for managing the lesson plan and worksheet functionalities
  * after generating. It provides logic to handle UI interactions, manage material data,
@@ -395,20 +397,6 @@ public class LessonPlanController {
             }
         });
 
-    }
-
-    /**
-     * Displays an alert dialog to the user with the specified alert type, title, and content.
-     *
-     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
-     * @param title the title of the alert dialog
-     * @param content the text content to be displayed within the alert dialog
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
     //</editor-fold>
 

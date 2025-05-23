@@ -29,5 +29,9 @@ module com.example.cab302tailproject {
 
     opens com.example.cab302tailproject.model to org.junit.platform.commons;
     opens com.example.cab302tailproject.LearningCards to org.junit.platform.commons;
+    exports com.example.cab302tailproject.controller.studentcontroller.Review;
+    opens com.example.cab302tailproject.controller.studentcontroller.Review to javafx.fxml;
+    exports com.example.cab302tailproject.controller.teachercontroller.Review;
+    opens com.example.cab302tailproject.controller.teachercontroller.Review to javafx.fxml;
 
 }

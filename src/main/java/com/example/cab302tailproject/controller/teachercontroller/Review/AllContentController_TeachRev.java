@@ -1,4 +1,4 @@
-package com.example.cab302tailproject.controller.teachercontroller;
+package com.example.cab302tailproject.controller.teachercontroller.Review;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
@@ -15,7 +15,10 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
-public class ReviewTeacherAllContentController {
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.navigateToContent;
+
+public class AllContentController_TeachRev {
 
     //<editor-fold desc="Field declarations">
     /**
@@ -147,7 +150,7 @@ public class ReviewTeacherAllContentController {
         int materialID = selectedItem.getMaterialID();
 
         currentMaterial = new Material(materialID, type);
-        navigateToContentPage(materialID);
+        navigateToContentPage();
     }
 
     /**
@@ -179,55 +182,25 @@ public class ReviewTeacherAllContentController {
 
     //<editor-fold desc="Navigation">
     /**
-     * Navigates to a new content page based on the provided material ID.
+     * Navigates to a new content page based on the currentMaterial.
      * Preserves the current view to facilitate return navigation and replaces
      * the content within the dynamic container with the new view.
-     *
-     * @param materialID The ID of the material to be loaded for the new content page.
+     * Adds a property to previousView to allow reloading the table's content.
      */
-    private void navigateToContentPage(int materialID) {
-        try {
-            if (this.currentMaterial == null) {
-                showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
-                return;
-            }
+    private void navigateToContentPage() {
+        // Setup previous view by allowing the table to reload when returning here
+        previousView = new VBox();
+        previousView.getChildren().setAll(dynamicContentBox.getChildren());
+        previousView.getProperties().put("controller", this);
 
-            // Save current view logic to return back to
-            previousView = new VBox();
-            previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
-            previousView.getProperties().put("controller", this);
-
-            // Moving to new view
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-lesson_view.fxml"));
-            VBox layout = fxmlLoader.load();
-            ReviewTeacherLessonViewController controller = fxmlLoader.getController();
-            controller.initData(currentMaterial, dynamicContentBox, previousView);  // pass the data
-
-            // Replace content in the dynamic container
-            dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().add(layout);
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Could not load generated content view.\n" + e.getMessage());
-            //e.printStackTrace();
-        }
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="Utility methods">
-    /**
-     * Displays an alert dialog to the user with the specified alert type, title, and content.
-     *
-     * @param alertType the type of alert to be displayed (e.g., CONFIRMATION, ERROR, INFORMATION, WARNING)
-     * @param title the title of the alert dialog
-     * @param content the text content to be displayed within the alert dialog
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setContentText(content);
-        alert.showAndWait();
+        navigateToContent("review-teacher-lesson_view.fxml",
+                dynamicContentBox,
+                null,
+                currentMaterial,
+                (ContentViewController__TeachRev controller) ->
+                        controller.initData(currentMaterial, dynamicContentBox, previousView
+                        )
+        );
     }
     //</editor-fold>
 

@@ -2,25 +2,21 @@ package com.example.cab302tailproject.controller.studentcontroller;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.SqlStudentDAO; // For student classroom lookup
-import com.example.cab302tailproject.LearningCards.LearningCard;
 import com.example.cab302tailproject.LearningCards.LearningCardDeck;
-import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.LearningCardCreator;
 import com.example.cab302tailproject.model.UserSession; // Assuming UserSession exists
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert; // For showing alerts
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
 
 public class LearningCardController {
 
@@ -119,23 +115,23 @@ public class LearningCardController {
     }
 
     @FXML
-    private void onSidebarAiAssistanceClicked(ActionEvent event) throws IOException {
-        loadScene("ai_assistant-student.fxml");
+    private void onSidebarAiAssistanceClicked() throws IOException {
+        loadScene("ai_assistant-student.fxml", sidebarAiAssistanceButton, true);
     }
 
     @FXML
-    private void onSidebarReviewClicked(ActionEvent event) throws IOException {
-        loadScene("review-student.fxml");
+    private void onSidebarReviewClicked() throws IOException {
+        loadScene("review-student.fxml", sidebarReviewButton, true);
     }
 
     @FXML
-    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
-        loadScene("analytics-student.fxml");
+    private void onSidebarAnalysisClicked() throws IOException {
+        loadScene("analytics-student.fxml", sidebarAnalysisButton, true);
     }
 
     @FXML
-    private void onHomeClicked(ActionEvent event) throws IOException {
-        loadScene("student-dashboard.fxml");
+    private void onHomeClicked() throws IOException {
+        loadScene("student-dashboard.fxml", homeButton, true);
     }
 
 
@@ -259,19 +255,4 @@ public class LearningCardController {
         }
     }
 
-
-    private void loadScene(String fxmlFile) throws IOException {
-        Stage stage = (Stage) homeButton.getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(TailApplication.class.getResource(fxmlFile));
-        Scene scene = new Scene(loader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
-
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
 }

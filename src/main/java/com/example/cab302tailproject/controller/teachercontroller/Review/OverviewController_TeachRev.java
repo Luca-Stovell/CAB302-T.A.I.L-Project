@@ -1,11 +1,10 @@
-package com.example.cab302tailproject.controller.teachercontroller;
+package com.example.cab302tailproject.controller.teachercontroller.Review;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Material;
 import com.example.cab302tailproject.model.UserSession;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -18,7 +17,10 @@ import javafx.scene.layout.VBox;
 import java.io.IOException;
 import java.util.List;
 
-public class ReviewTeacherOverviewController {
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.navigateToContent;
+
+public class OverviewController_TeachRev {
 
     //<editor-fold desc="Field declarations">
     @FXML Button viewLesson;
@@ -143,7 +145,7 @@ public class ReviewTeacherOverviewController {
             // Moving to new view
             FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-all_content.fxml"));
             VBox layout = fxmlLoader.load();
-            ReviewTeacherAllContentController controller = fxmlLoader.getController();
+            AllContentController_TeachRev controller = fxmlLoader.getController();
             controller.initData(previousView);  // pass the current page's layout over
 
             // Replace content in the dynamic container
@@ -153,7 +155,6 @@ public class ReviewTeacherOverviewController {
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
                     "Could not load generated content view.\n" + e.getMessage());
-            //e.printStackTrace();
         }
     }
 
@@ -196,8 +197,8 @@ public class ReviewTeacherOverviewController {
                 int materialIdOfLesson = contentDAO.getMaterialByWeekAndClassroom(weekNumber, materialType, classroomID);
 
                 currentMaterial = new Material(materialIdOfLesson, materialType);
-                navigateToContentPage(currentMaterial.getMaterialID());
-            }
+                navigateToContentPage();
+            }   // TODO: don't navigate to page if it doesn't work
             catch (Exception e) {
                 System.err.println("Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " (materialID: " + currentMaterial.getMaterialID() + ").");
                 showAlert(Alert.AlertType.ERROR, "Retrieval error", "Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + ". \n Check 'All content' to review available content.");
@@ -210,39 +211,19 @@ public class ReviewTeacherOverviewController {
     }
 
     /**
-     * Navigates to a new content page based on the provided material ID.
+     * Navigates to a new content page based on the currentMaterial.
      * Preserves the current view to facilitate return navigation and replaces
      * the content within the dynamic container with the new view.
-     *
-     * @param materialID The ID of the material to be loaded for the new content page.
      */
-    private void navigateToContentPage(int materialID) {
-        try {
-            this.materialID = materialID;
-            if (this.currentMaterial == null) {
-                showAlert(Alert.AlertType.WARNING, "Material Not Found", "No material found with the given ID: " + materialID + ".");
-                return;
-            }
-
-            // Save current view logic to return back to
-            previousView = new VBox();
-            previousView.getChildren().setAll(dynamicContentBox.getChildren()); // clone the current view
-
-            // Moving to new view
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-lesson_view.fxml"));
-            VBox layout = fxmlLoader.load();
-            ReviewTeacherLessonViewController controller = fxmlLoader.getController();
-            controller.initData(currentMaterial, dynamicContentBox, previousView);  // pass the data
-
-            // Replace content in the dynamic container
-            dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().add(layout);
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Could not load generated content view.\n" + e.getMessage());
-            //e.printStackTrace();
-        }
+    private void navigateToContentPage(){
+        previousView = new VBox();
+        navigateToContent("review-teacher-lesson_view.fxml",
+                dynamicContentBox,
+                previousView,
+                currentMaterial,
+                (ContentViewController__TeachRev controller) ->
+                        controller.initData(currentMaterial, dynamicContentBox, previousView
+                ));
     }
     //</editor-fold>
 
@@ -274,7 +255,6 @@ public class ReviewTeacherOverviewController {
             });
         } catch (Exception e) {
             System.err.println("Error getting classroom id: " + e.getMessage());
-            //e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update classroom. Error: " + e.getMessage());
         }
 
@@ -301,44 +281,9 @@ public class ReviewTeacherOverviewController {
             }
         } catch (Exception e) {
             System.err.println("Error updating ClassroomID: " + e.getMessage());
-            //e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Update Failed", "Could not update ClassroomID. Error: " + e.getMessage());
         }
     }
     //</editor-fold>
 
-    //<editor-fold desc="Utility methods">
-    /**
-     * Helper method to display a standard JavaFX Alert dialog.
-     * Ensures the alert is shown on the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert.
-     * @param title     The title of the alert window.
-     * @param message   The main message content of the alert.
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> displayAlertInternal(alertType, title, message));
-        } else {
-            displayAlertInternal(alertType, title, message);
-        }
-    }
-
-    /**
-     * Internal helper method to create and show an alert.
-     * This method should only be called from the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert.
-     * @param title     The title of the alert.
-     * @param message   The content message of the alert.
-     */
-    private void displayAlertInternal(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    //</editor-fold>
 }

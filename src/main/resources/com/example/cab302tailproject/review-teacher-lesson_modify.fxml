@@ -11,7 +11,7 @@
       prefHeight="274.0" prefWidth="510.0" style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;"
       VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/17.0.12"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.cab302tailproject.controller.teachercontroller.ReviewTeacherLessonModify">
+      fx:controller="com.example.cab302tailproject.controller.teachercontroller.Review.ContentModifyController_TeachRev">
 <VBox alignment="CENTER">
     <HBox alignment="CENTER">
         <TextField fx:id="topicTextField" alignment="CENTER_LEFT" editable="false" promptText="Topic name..." HBox.hgrow="ALWAYS"

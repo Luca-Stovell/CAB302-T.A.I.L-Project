@@ -3,28 +3,22 @@ package com.example.cab302tailproject.controller.teachercontroller;
 import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.DAO.ContentDAO;
 import com.example.cab302tailproject.DAO.SqliteClassroomDAO;
-import com.example.cab302tailproject.DAO.SqliteTeacherDAO;
 import com.example.cab302tailproject.model.*;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
-
-import com.example.cab302tailproject.TailApplication;
 import io.github.ollama4j.exceptions.OllamaBaseException;
-import javafx.application.Platform;
+
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
-
 import java.util.List;
-
 import java.io.File;
 import java.io.IOException;
+
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+import static com.example.cab302tailproject.utils.SceneHandling.navigateToContent;
 
 
 /**
@@ -39,8 +33,6 @@ import java.io.IOException;
 public class LessonGenController {
     //<editor-fold desc="Field declarations">
     //<editor-fold desc="FXML UI Element References - Main Content">
-
-    @FXML private Label loggedInTeacherLabel;
     /**
      * TextField for user input to generate lessons or worksheets.
      */
@@ -69,21 +61,9 @@ public class LessonGenController {
 
     //<editor-fold desc="FXML UI Element References - Navigation & Layout">
     /**
-     * Button for navigating to a "Files" section.
-     */
-    @FXML private Button filesButton;
-    /**
      * Button for navigating to a "Students" section.
      */
     @FXML private Button studentsButton;
-    /**
-     * Button for navigating to a "Home" or main dashboard.
-     */
-    @FXML private Button homeButton;
-    /**
-     * Button for navigating to "Settings".
-     */
-    @FXML private Button settingsButton;
 
     // Sidebar buttons - @FXML fields are optional if only onAction is used.
     /**
@@ -106,12 +86,9 @@ public class LessonGenController {
      * Button in the sidebar for AI assistance.
      */
     @FXML private Button sidebarAiAssistanceButton;
-
-
     //</editor-fold>
 
     //<editor-fold desc="Other Fields">
-
     /**
      * Represents the identifier of the currently selected or generated material.
      */
@@ -120,17 +97,16 @@ public class LessonGenController {
 
     //<editor-fold desc="FXML UI Element References - Dynamic content">
     /**
-     * A reference to a VBox in the JavaFX view.
-     * Represents a dynamic content container in the user interface, allowing the content
-     * within it to be programmatically changed at runtime.
-     * This element is used in the context of lesson or worksheet generation and navigation,
-     * enabling the controller to update or switch the displayed content as required based
-     * on user interaction or application logic.
+     * A VBox container dynamically populated with content for managing and displaying
+     * lesson plans or associated materials in the LessonPlanController.
      */
     @FXML
     private VBox dynamicContentBox;  // to change the content view
 
-
+    /**
+     * This Label represents the UI element that displays the currently logged-in teacher's name.
+     */
+    @FXML private Label loggedInTeacherLabel;
     //</editor-fold>
     //</editor-fold>
 
@@ -243,7 +219,7 @@ public class LessonGenController {
 
             if (generatedID != -1) {
                 currentMaterial = new Material(generatedID, generatorTypeForDB);
-                navigateToGeneratedPlan(generatedID);
+                navigateToGeneratedPlan();
             } else {
                 showAlert(Alert.AlertType.ERROR, "Save Error", "Failed to save the generated content to the database.");
             }
@@ -315,7 +291,6 @@ public class LessonGenController {
             }
         } catch (Exception e) {
             System.err.println("An error occurred while saving the content: " + e.getMessage());
-            e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Save Error", "An unexpected error occurred while saving: " + e.getMessage());
         }
         return -1;
@@ -362,7 +337,6 @@ public class LessonGenController {
             }
             catch (Exception e) {
                 System.err.println("An error occurred while saving the week and class for MaterialID " + materialID + ": " + e.getMessage());
-                e.printStackTrace();
                 showAlert(Alert.AlertType.ERROR, "Assignment Error","Failed to assign a classroom to the content for MaterialID: " + materialID + ".\nError: " + e.getMessage());
             }
         } else {
@@ -413,37 +387,22 @@ public class LessonGenController {
 
     //<editor-fold desc="Page navigation">
     /**
-     * Navigates to the generated lesson plan view for the material specified by the given ID.
+     * Navigates to the generated lesson plan view for the material specified by the currentMaterial.
      * If no material is found with the provided ID, displays a warning alert.
      * Saves the current view to allow navigating back later and handles the transition
      * to the new lesson plan view with the relevant data.
-     *
-     * @param materialID The identifier of the material for which the lesson plan is to be generated.
      */
-    private void navigateToGeneratedPlan(int materialID) {
-        try {
-            if (this.currentMaterial == null) {
-                showAlert(Alert.AlertType.WARNING, "Navigation Error", "Current material data is missing for ID: " + materialID + ".");
-                return;
-            }
-
-            VBox previousView = new VBox();
-            previousView.getChildren().setAll(dynamicContentBox.getChildren());
-
-            FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_plan-teacher.fxml"));
-            VBox layout = fxmlLoader.load();
-            LessonPlanController controller = fxmlLoader.getController();
-            controller.initData(currentMaterial, dynamicContentBox, previousView);
-
-            dynamicContentBox.getChildren().clear();
-            dynamicContentBox.getChildren().add(layout);
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Could not load generated content view.\n" +e.getMessage());
-            e.printStackTrace();
-        }
+    private void navigateToGeneratedPlan() {
+        VBox previousView = new VBox();
+        navigateToContent("lesson_plan-teacher.fxml",
+                dynamicContentBox,
+                previousView,
+                currentMaterial,
+                (LessonPlanController controller) ->
+                        controller.initData(currentMaterial, dynamicContentBox, previousView
+                        ));
     }
+
     //</editor-fold>
 
     //<editor-fold desc="Sidebar Navigation Event Handlers - Direct Scene Switching">
@@ -453,10 +412,7 @@ public class LessonGenController {
      */
     @FXML
     private void onSidebarGenerateClicked() throws IOException {
-        Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_generator-teacher.fxml"));
-        Parent root = fxmlLoader.load();
-        stage.getScene().setRoot(root);
+        loadScene("lesson_generator-teacher.fxml", sidebarGenerateButton, false);
     }
 
     /**
@@ -465,10 +421,7 @@ public class LessonGenController {
      */
     @FXML
     private void onSidebarReviewClicked() throws IOException {
-        Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher.fxml"));
-        Parent root = fxmlLoader.load();
-        stage.getScene().setRoot(root);
+        loadScene("review-teacher.fxml", sidebarReviewButton, false);
     }
 
     /**
@@ -477,10 +430,7 @@ public class LessonGenController {
      */
     @FXML
     private void onSidebarAnalysisClicked() throws IOException {
-        Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+        loadScene("analytics-teacher.fxml", sidebarAnalysisButton, true);
     }
 
     /**
@@ -489,10 +439,7 @@ public class LessonGenController {
      */
     @FXML
     private void onSidebarAiAssistanceClicked() throws IOException {
-        Stage stage = (Stage) sidebarAiAssistanceButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("ai_assistant-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+        loadScene("ai_assistant-teacher.fxml", sidebarAiAssistanceButton, true);
     }
 
     /**
@@ -501,22 +448,7 @@ public class LessonGenController {
      */
     @FXML
     private void onSidebarLibraryClicked() throws IOException {
-        Stage stage = (Stage) sidebarLibraryButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("library-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="Top Navigation Event Handlers - Direct Scene Switching">
-    /**
-     * Handles clicks on the "Files" button in the top navigation.
-     * Loads a files view on the current stage.
-     */
-    @FXML
-    private void onFilesClicked() {
-        System.out.println("Files button clicked.");
-        // TODO ADD FUNCTIONALITY
+        loadScene("library-teacher.fxml", sidebarLibraryButton, false);
     }
 
     /**
@@ -525,66 +457,7 @@ public class LessonGenController {
      */
     @FXML
     private void onStudentsClicked() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("classroom-teacher-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        Stage stage = (Stage) studentsButton.getScene().getWindow();
-        stage.setScene(scene);
-    }
-
-
-    /**
-     * Handles clicks on the "Home" button in the top navigation.
-     * Loads the main dashboard/home view on the current stage.
-     */
-    @FXML
-    private void onHomeClicked() {
-        System.out.println("Home button clicked.");
-        // TODO ADD HOME BUTTON FUNCTIONALITY
-    }
-
-    /**
-     * Handles clicks on the "Settings" button in the top navigation.
-     * Loads a settings view on the current stage.
-     */
-    @FXML
-    private void onSettingsClicked() {
-        System.out.println("Settings button clicked.");
-        // TODO ADD SETTINGS FUNCTIONALITY
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="Utility Methods">
-
-    /**
-     * Helper method to display a standard JavaFX Alert dialog.
-     * Ensures the alert is shown on the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert.
-     * @param title     The title of the alert window.
-     * @param message   The main message content of the alert.
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> displayAlertInternal(alertType, title, message));
-        } else {
-            displayAlertInternal(alertType, title, message);
-        }
-    }
-
-    /**
-     * Internal helper method to create and show an alert.
-     * This method should only be called from the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert.
-     * @param title     The title of the alert.
-     * @param message   The content message of the alert.
-     */
-    private void displayAlertInternal(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        loadScene("classroom-teacher-view.fxml", studentsButton, true);
     }
     //</editor-fold>
 }

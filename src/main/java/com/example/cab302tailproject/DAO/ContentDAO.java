@@ -20,6 +20,7 @@ public class ContentDAO implements IContentDAO {
      * if they do not already exist.
      */
     public ContentDAO() {
+        // Table creation methods will fetch their own connection or use a temporary one.
         createMaterialTable();
         createLessonTable();
         createWorksheetTable();
@@ -29,6 +30,9 @@ public class ContentDAO implements IContentDAO {
     //</editor-fold>
 
     //<editor-fold desc="Table creation">
+    /**
+     * Creates the "material" table in the database if it does not already exist.
+     */
     private void createMaterialTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS material ("
@@ -38,7 +42,7 @@ public class ContentDAO implements IContentDAO {
                         + "ClassroomID INTEGER, "
                         + "FOREIGN KEY (ClassroomID) REFERENCES Classroom(ClassroomID)"
                         + ")";
-        try (Connection conn = SqliteConnection.getInstance();
+        try (Connection conn = SqliteConnection.getInstance(); // Get connection for this operation
              Statement statement = conn.createStatement()) {
             if (conn == null || conn.isClosed()) {
                 System.err.println("Error creating material table: Database connection is closed or null.");
@@ -47,10 +51,14 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating material table: " + e.getMessage());
-
+            e.printStackTrace();
         }
     }
 
+
+    /**
+     * Creates the "lesson" table in the database if it does not already exist.
+     */
     private void createLessonTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS lesson ("
@@ -72,10 +80,13 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating lesson table: " + e.getMessage());
-
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Creates the "worksheet" table in the database if it does not already exist.
+     */
     private void createWorksheetTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS worksheet ("
@@ -97,10 +108,13 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating worksheet table: " + e.getMessage());
-
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Creates the lesson card table.
+     */
     private void createLearningCardTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS learningCard ("
@@ -122,10 +136,13 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating learningCard table: " + e.getMessage());
-
+            e.printStackTrace();
         }
     }
 
+    /**
+     * Creates the "StudentCardResponse" table.
+     */
     private void createStudentCardResponseTable() {
         String query =
                 "CREATE TABLE IF NOT EXISTS StudentCardResponse ("
@@ -148,7 +165,7 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating StudentCardResponse table: " + e.getMessage());
-
+            e.printStackTrace();
         }
     }
     //</editor-fold>
@@ -177,7 +194,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error adding material: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return -1;
     }
@@ -230,7 +247,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error adding content to " + tableName + ": " + e.getMessage());
-
+            e.printStackTrace();
             return -1;
         }
     }
@@ -264,7 +281,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error adding learning card to DB: " + e.getMessage());
-
+            e.printStackTrace();
             return -1;
         }
     }
@@ -293,7 +310,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error adding student card response: " + e.getMessage());
-
+            e.printStackTrace();
             return false;
         }
     }
@@ -319,7 +336,7 @@ public class ContentDAO implements IContentDAO {
         }
         catch (SQLException e) {
             System.err.println("Error setting content for " + tableName + ": " + e.getMessage());
-
+            e.printStackTrace();
             return false;
         }
     }
@@ -341,7 +358,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error updating classroom ID: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return false;
     }
@@ -363,7 +380,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error updating week: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return false;
     }
@@ -400,7 +417,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting material content from " + tableName + ": " + e.getMessage());
-
+            e.printStackTrace();
         }
         return null;
     }
@@ -424,7 +441,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting week: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return -1;
     }
@@ -448,9 +465,59 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting classroom ID: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return -1;
+    }
+
+    public int getTeacherID(String teacherEmail) {
+        String findTeacherQuery = "SELECT TeacherID FROM Teacher WHERE TeacherEmail = ?";
+        Connection conn = null;
+        try {
+            conn = SqliteConnection.getInstance();
+            if (conn == null || conn.isClosed()) {
+                System.err.println("Error getting teacher ID: Database connection is closed or null.");
+                return -1;
+            }
+            try (PreparedStatement statement = conn.prepareStatement(findTeacherQuery)) {
+                statement.setString(1, teacherEmail);
+                ResultSet rs = statement.executeQuery();
+
+                if (rs.next()) {
+                    return rs.getInt("TeacherID");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting teacher ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public List<Integer> getClassroomList(String teacherEmail) {
+        String findClassroomsQuery = "SELECT ClassroomID FROM Classroom WHERE TeacherEmail = ?";
+        List<Integer> classroomList = new ArrayList<>();
+        Connection conn = null;
+        try {
+            conn = SqliteConnection.getInstance();
+            if (conn == null || conn.isClosed()) {
+                System.err.println("Error getting classroom list: Database connection is closed or null.");
+                return classroomList;
+            }
+            try (PreparedStatement statement = conn.prepareStatement(findClassroomsQuery)) {
+                statement.setString(1, teacherEmail);
+                ResultSet rs = statement.executeQuery();
+
+                while (rs.next()) {
+                    int classroomID = rs.getInt("ClassroomID");
+                    classroomList.add(classroomID);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting classroom list: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return classroomList;
     }
 
     public Timestamp getLastModifiedDate(int materialID, String tableName) {
@@ -472,7 +539,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting last modified date from " + tableName + ": " + e.getMessage());
-
+            e.printStackTrace();
         }
         return null;
     }
@@ -498,7 +565,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting material by week and classroom: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return -1;
     }
@@ -513,8 +580,8 @@ public class ContentDAO implements IContentDAO {
                 System.err.println("Error fetching content table data: Database connection is closed or null for teacher " + teacherEmail);
                 return data;
             }
-            SqliteTeacherDAO TeacherDAO = new SqliteTeacherDAO();
-            List<Integer> classrooms = TeacherDAO.getClassroomList(teacherEmail);
+
+            List<Integer> classrooms = getClassroomList(teacherEmail);
 
             for (int classroomID : classrooms) {
                 if (conn == null || conn.isClosed()) {
@@ -541,7 +608,7 @@ public class ContentDAO implements IContentDAO {
         }
         catch (SQLException e) {
             System.err.println("Error fetching content table data: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return data;
     }
@@ -581,7 +648,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error deleting content from " + tableName + ": " + e.getMessage());
-
+            e.printStackTrace();
         }
         return false;
     }
@@ -606,7 +673,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting learning card content: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return null;
     }
@@ -632,7 +699,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting all cards: " + e.getMessage());
-
+            e.printStackTrace();
         }
         return FXCollections.observableArrayList();
     }
@@ -649,10 +716,11 @@ public class ContentDAO implements IContentDAO {
         List<Integer> weeks = new ArrayList<>();
         String sql = "SELECT DISTINCT week FROM material WHERE ClassroomID = ? AND materialType = 'learningCard' AND week IS NOT NULL ORDER BY week ASC";
         Connection conn = null;
+        System.out.println("DAO: Fetching distinct weeks for classroomId: " + classroomId);
         try {
             conn = SqliteConnection.getInstance();
             if (conn == null || conn.isClosed()) {
-                System.err.println("Error getting distinct weeks: Database connection is closed or null.");
+                System.err.println("DAO Error getting distinct weeks: Database connection is closed or null.");
                 return weeks;
             }
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -661,10 +729,11 @@ public class ContentDAO implements IContentDAO {
                 while (rs.next()) {
                     weeks.add(rs.getInt("week"));
                 }
+                System.out.println("DAO: Found weeks: " + weeks + " for classroomId: " + classroomId);
             }
         } catch (SQLException e) {
-            System.err.println("Error fetching distinct weeks for learning cards: " + e.getMessage());
-
+            System.err.println("DAO Error fetching distinct weeks for learning cards: " + e.getMessage());
+            e.printStackTrace();
         }
         return weeks;
     }
@@ -679,17 +748,16 @@ public class ContentDAO implements IContentDAO {
      */
     public List<StudentCardResponse> getStudentCardResponsesForWeek(int studentId, int classroomId, int week) {
         List<StudentCardResponse> responses = new ArrayList<>();
-        // We need to join StudentCardResponse with Material table to filter by week
-        // and ensure the MaterialID in StudentCardResponse corresponds to a 'learningCard' type.
         String sql = "SELECT scr.ResponseID, scr.StudentID, scr.MaterialID, scr.CardQuestion, scr.IsCorrect, scr.ClassroomID " +
                 "FROM StudentCardResponse scr " +
                 "JOIN material m ON scr.MaterialID = m.materialID " +
                 "WHERE scr.StudentID = ? AND scr.ClassroomID = ? AND m.week = ? AND m.materialType = 'learningCard'";
         Connection conn = null;
+        System.out.println("DAO: Fetching responses for StudentID: " + studentId + ", ClassroomID: " + classroomId + ", Week: " + week);
         try {
             conn = SqliteConnection.getInstance();
             if (conn == null || conn.isClosed()) {
-                System.err.println("Error getting student card responses for week: Database connection is closed or null.");
+                System.err.println("DAO Error getting student card responses for week: Database connection is closed or null.");
                 return responses;
             }
             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -697,6 +765,7 @@ public class ContentDAO implements IContentDAO {
                 pstmt.setInt(2, classroomId);
                 pstmt.setInt(3, week);
                 ResultSet rs = pstmt.executeQuery();
+                int count = 0;
                 while (rs.next()) {
                     StudentCardResponse response = new StudentCardResponse(
                             rs.getInt("ResponseID"),
@@ -705,14 +774,15 @@ public class ContentDAO implements IContentDAO {
                             rs.getString("CardQuestion"),
                             rs.getBoolean("IsCorrect"),
                             rs.getInt("ClassroomID")
-                            // If your StudentCardResponse model doesn't have ResponseTimestamp, this is fine.
                     );
                     responses.add(response);
+                    count++;
                 }
+                System.out.println("DAO: Fetched " + count + " responses for StudentID: " + studentId + ", Week: " + week);
             }
         } catch (SQLException e) {
-            System.err.println("Error fetching student card responses for week " + week + ": " + e.getMessage());
-
+            System.err.println("DAO Error fetching student card responses for week " + week + ": " + e.getMessage());
+            e.printStackTrace();
         }
         return responses;
     }

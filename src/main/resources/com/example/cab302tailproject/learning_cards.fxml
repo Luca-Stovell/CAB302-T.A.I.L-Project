@@ -56,9 +56,13 @@
             <top>
                 <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
 
-                    <HBox HBox.hgrow="ALWAYS" /> <Button fx:id="homeButton" layoutX="420" layoutY="20" onAction="#onHomeClicked" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="H">
-                </Button>
-                    <Button fx:id="settingsButton" layoutX="460" layoutY="20" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="S">
+                    <HBox HBox.hgrow="ALWAYS" />
+                    <Label layoutX="20.0" layoutY="11.0" prefHeight="46.0" prefWidth="200.0" text="Lesson Cards">
+                        <font>
+                            <Font name="System Bold" size="18.0" />
+                        </font>
+                    </Label>
+                    <Button fx:id="logoutButton" onAction="#logoutButtonClicked" layoutX="510" layoutY="20" prefHeight="30" prefWidth="90" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14;" text="Logout">
                     </Button>
                 </AnchorPane>
             </top>

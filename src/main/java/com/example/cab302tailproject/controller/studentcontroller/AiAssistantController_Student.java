@@ -1,6 +1,7 @@
 package com.example.cab302tailproject.controller.studentcontroller;
 
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.UserSession;
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 import io.github.ollama4j.exceptions.OllamaBaseException;
 import javafx.application.Platform;
@@ -17,6 +18,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+
 /**
  * Controller for the Student AI Helper view (student_ai_helper.fxml).
  * This controller enables students to interact with an AI model for assistance,
@@ -27,6 +30,7 @@ import java.io.IOException;
  * @version 1.0
  */
 public class AiAssistantController_Student {
+    @FXML private Button logoutButton;
 
     //<editor-fold desc="FXML UI Element References - Sidebar">
     /**
@@ -318,4 +322,10 @@ public class AiAssistantController_Student {
         alert.showAndWait(); // Show the alert and wait for the user to close it
     }
     //</editor-fold>
+
+    @FXML private void logoutButtonClicked(ActionEvent actionEvent) throws IOException {
+        UserSession.getInstance().logoutUser();
+        System.out.println("Log out successful");
+        loadScene("login_page.fxml", sidebarAnalysisButton, true);
+    }
 }

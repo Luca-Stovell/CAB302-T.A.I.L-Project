@@ -20,6 +20,7 @@ import java.io.IOException;
 import static com.example.cab302tailproject.utils.Alerts.showAlert;
 import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
 import static com.example.cab302tailproject.utils.SceneHandling.navigateToContent;
+import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
 
 /**
@@ -110,6 +111,12 @@ public class LessonGenController {
      * This Label represents the UI element that displays the currently logged-in teacher's name.
      */
     @FXML private Label loggedInTeacherLabel;
+
+    /**
+     * Represents the JavaFX Label used to display the current time.
+     */
+    @FXML
+    private Label timeLabel;
     //</editor-fold>
     //</editor-fold>
 
@@ -122,6 +129,7 @@ public class LessonGenController {
     public void initialize() {
         loggedInTeacherLabel.setText(UserSession.getInstance().getFullName());
         sqliteTeacherDAO = new SqliteTeacherDAO();
+        bindTimeToLabel(timeLabel, "hh:mm a");
         System.out.println("LessonGenController initializing (direct scene switching)...");
         if (generateToggleGroup == null || worksheetRadioButton == null || lessonPlanRadioButton == null || flashCardsRadioButton == null) {
             System.err.println("WARN: One or more generation UI elements (ToggleGroup, RadioButtons) are null. Check FXML fx:id connections.");
@@ -452,7 +460,7 @@ public class LessonGenController {
      */
     @FXML
     private void onSidebarLibraryClicked() throws IOException {
-        loadScene("library-teacher.fxml", sidebarLibraryButton, false);
+        loadScene("library-teacher.fxml", sidebarLibraryButton, true);
     }
 
     /**

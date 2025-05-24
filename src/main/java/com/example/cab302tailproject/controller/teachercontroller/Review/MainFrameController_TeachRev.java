@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import static com.example.cab302tailproject.utils.Alerts.showAlert;
 import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
 public class MainFrameController_TeachRev {
 
@@ -28,6 +29,13 @@ public class MainFrameController_TeachRev {
      * This Label represents the UI element that displays the currently logged-in teacher's name.
      */
     @FXML private Label loggedInTeacherLabel;
+
+    /**
+     * Represents the JavaFX Label used to display the current time.
+     */
+    @FXML
+    private Label timeLabel;
+
     //</editor-fold>
 
     //<editor-fold desc="FXML UI Element References - Navigation & Layout">
@@ -64,6 +72,8 @@ public class MainFrameController_TeachRev {
     public void initialize() {
         loggedInTeacherLabel.setText(UserSession.getInstance().getFullName());
         showOverviewView();
+        bindTimeToLabel(timeLabel, "hh:mm a");
+
     }
 
     private void showOverviewView() {
@@ -127,7 +137,7 @@ public class MainFrameController_TeachRev {
      */
     @FXML
     private void onSidebarLibraryClicked() throws IOException {
-        loadScene("library-teacher.fxml", sidebarLibraryButton, false);
+        loadScene("library-teacher.fxml", sidebarLibraryButton, true);
     }
 
     /**

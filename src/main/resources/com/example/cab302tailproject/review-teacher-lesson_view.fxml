@@ -4,11 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.text.TextFlow?>
 <VBox fx:id="dynamicContentBox" maxHeight="Infinity" maxWidth="Infinity" prefHeight="274.0" prefWidth="510.0"
       style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" VBox.vgrow="ALWAYS"
       xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.example.cab302tailproject.controller.teachercontroller.ReviewTeacherLessonViewController">
+      fx:controller="com.example.cab302tailproject.controller.teachercontroller.Review.ContentViewController__TeachRev">
     <VBox alignment="CENTER">
         <TextField fx:id="topicTextField" alignment="CENTER" editable="false" promptText="Topic name..."
                    style="-fx-font-size: 20; -fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: black;" />
@@ -20,7 +19,7 @@
 
     <VBox alignment="CENTER" prefWidth="510" spacing="15" style="-fx-padding: 0 0 0 0;" VBox.vgrow="ALWAYS">
         <VBox alignment="CENTER" prefWidth="440" VBox.vgrow="ALWAYS">
-            <ScrollPane fx:id="contentScroll" fitToWidth="true" fitToHeight="true" minHeight="180">
+            <ScrollPane fitToWidth="true" fitToHeight="true" minHeight="180">
             <VBox fx:id="generatedTextArea" maxHeight="Infinity" maxWidth="Infinity"
                   style="-fx-alignment: top-left; -fx-font-size: 18;
                       -fx-padding: 0 0 0 50;

@@ -1,12 +1,13 @@
 package com.example.cab302tailproject.DAO;
 
-import com.example.cab302tailproject.model.Teacher;
 import com.example.cab302tailproject.model.UserDetail;
 
 import java.sql.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * SQLite implementation of the {@link TeacherDAO} interface.
@@ -329,5 +330,69 @@ public class SqliteTeacherDAO implements TeacherDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Retrieves a list of classroom IDs associated with a specific teacher's email.
+     * Queries the database to find classrooms where the provided teacher's email is registered.
+     *
+     * @param teacherEmail The email address of the teacher whose associated classrooms are to be retrieved.
+     * @return A list of classroom IDs linked to the provided teacher email. If no classrooms are found
+     * or an error occurs, an empty list is returned.
+     */
+    public List<Integer> getClassroomList(String teacherEmail) {
+        String findClassroomsQuery = "SELECT ClassroomID FROM Classroom WHERE TeacherEmail = ?";
+        List<Integer> classroomList = new ArrayList<>();
+        Connection conn = null;
+        try {
+            conn = SqliteConnection.getInstance();
+            if (conn == null || conn.isClosed()) {
+                System.err.println("Error getting classroom list: Database connection is closed or null.");
+                return classroomList;
+            }
+            try (PreparedStatement statement = conn.prepareStatement(findClassroomsQuery)) {
+                statement.setString(1, teacherEmail);
+                ResultSet rs = statement.executeQuery();
+
+                while (rs.next()) {
+                    int classroomID = rs.getInt("ClassroomID");
+                    classroomList.add(classroomID);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting classroom list: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return classroomList;
+    }
+
+    /**
+     * Retrieves the teacher's unique identifier (TeacherID) based on their email address.
+     *
+     * @param teacherEmail the email address of the teacher whose ID is to be retrieved
+     * @return the TeacherID associated with the provided email address, or -1 if no match is found or an error occurs
+     */
+    public int getTeacherID(String teacherEmail) {
+        String findTeacherQuery = "SELECT TeacherID FROM Teacher WHERE TeacherEmail = ?";
+        Connection conn = null;
+        try {
+            conn = SqliteConnection.getInstance();
+            if (conn == null || conn.isClosed()) {
+                System.err.println("Error getting teacher ID: Database connection is closed or null.");
+                return -1;
+            }
+            try (PreparedStatement statement = conn.prepareStatement(findTeacherQuery)) {
+                statement.setString(1, teacherEmail);
+                ResultSet rs = statement.executeQuery();
+
+                if (rs.next()) {
+                    return rs.getInt("TeacherID");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting teacher ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

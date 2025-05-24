@@ -100,4 +100,12 @@ public interface StudentDAO extends UserDAO { // UserDAO interface would define 
      * @return The StudentID, or -1 if not found or an error occurs.
      */
     int getStudentIDByEmail(String email); // Added this method signature based on LearningCardController usage
+
+    /**
+     * Retrieves a list of classroom IDs associated with a specific student.
+     *
+     * @param StudentID The ID of the student whose classroom list is to be retrieved.
+     * @return A list of integers representing the IDs of the classrooms associated with the given student.
+     */
+    List<Integer> getClassroomList(int StudentID);
 }

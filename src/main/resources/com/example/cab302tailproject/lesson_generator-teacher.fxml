@@ -9,13 +9,9 @@
 
 <BorderPane maxHeight="-Infinity" prefHeight="420" prefWidth="710" style="-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.teachercontroller.LessonGenController">
 
-    <fx:define>
-        <ToggleGroup fx:id="generateToggleGroup" />
-    </fx:define>
-
     <left>
         <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
-            <VBox alignment="TOP_LEFT" prefHeight="120" style="-fx-padding: 25 0 0 30;">
+            <VBox prefHeight="120" style="-fx-padding: 25 0 0 30;">
                 <HBox alignment="CENTER_LEFT" prefWidth="200" spacing="20">
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
                         <Image url="@../../../images/tail_logo.png" /> <clip>
@@ -51,12 +47,9 @@
         <BorderPane>
             <top>
                 <StackPane style="-fx-border-color: #000000; -fx-border-width: 0 0 2 0;">
-                    <AnchorPane maxWidth="510" prefHeight="70" prefWidth="510">
-                        <Button fx:id="filesButton" layoutX="80" layoutY="15" onAction="#onFilesClicked" prefHeight="40" prefWidth="100" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Files" />
+                    <HBox maxWidth="510" prefHeight="70" prefWidth="510" alignment="CENTER">
                         <Button fx:id="studentsButton" layoutX="260" layoutY="15" onAction="#onStudentsClicked" prefHeight="40" prefWidth="115" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Students" />
-                        <Button fx:id="homeButton" layoutX="420" layoutY="20" onAction="#onHomeClicked" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="H" />
-                        <Button fx:id="settingsButton" layoutX="460" layoutY="20" onAction="#onSettingsClicked" prefHeight="30" prefWidth="30" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 50;" text="S" />
-                    </AnchorPane>
+                    </HBox>
                 </StackPane>
             </top>
 

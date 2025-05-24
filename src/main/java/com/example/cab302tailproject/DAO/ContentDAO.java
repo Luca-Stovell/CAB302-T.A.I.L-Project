@@ -47,7 +47,7 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating material table: " + e.getMessage());
-            e.printStackTrace();
+
         }
     }
 
@@ -72,7 +72,7 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating lesson table: " + e.getMessage());
-            e.printStackTrace();
+
         }
     }
 
@@ -97,7 +97,7 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating worksheet table: " + e.getMessage());
-            e.printStackTrace();
+
         }
     }
 
@@ -122,7 +122,7 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating learningCard table: " + e.getMessage());
-            e.printStackTrace();
+
         }
     }
 
@@ -148,7 +148,7 @@ public class ContentDAO implements IContentDAO {
             statement.execute(query);
         } catch (SQLException e) {
             System.err.println("Error creating StudentCardResponse table: " + e.getMessage());
-            e.printStackTrace();
+
         }
     }
     //</editor-fold>
@@ -177,7 +177,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error adding material: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return -1;
     }
@@ -230,7 +230,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error adding content to " + tableName + ": " + e.getMessage());
-            e.printStackTrace();
+
             return -1;
         }
     }
@@ -264,7 +264,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error adding learning card to DB: " + e.getMessage());
-            e.printStackTrace();
+
             return -1;
         }
     }
@@ -293,7 +293,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error adding student card response: " + e.getMessage());
-            e.printStackTrace();
+
             return false;
         }
     }
@@ -319,7 +319,7 @@ public class ContentDAO implements IContentDAO {
         }
         catch (SQLException e) {
             System.err.println("Error setting content for " + tableName + ": " + e.getMessage());
-            e.printStackTrace();
+
             return false;
         }
     }
@@ -341,7 +341,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error updating classroom ID: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return false;
     }
@@ -363,7 +363,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error updating week: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return false;
     }
@@ -400,7 +400,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting material content from " + tableName + ": " + e.getMessage());
-            e.printStackTrace();
+
         }
         return null;
     }
@@ -424,7 +424,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting week: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return -1;
     }
@@ -448,59 +448,9 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting classroom ID: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return -1;
-    }
-
-    public int getTeacherID(String teacherEmail) {
-        String findTeacherQuery = "SELECT TeacherID FROM Teacher WHERE TeacherEmail = ?";
-        Connection conn = null;
-        try {
-            conn = SqliteConnection.getInstance();
-            if (conn == null || conn.isClosed()) {
-                System.err.println("Error getting teacher ID: Database connection is closed or null.");
-                return -1;
-            }
-            try (PreparedStatement statement = conn.prepareStatement(findTeacherQuery)) {
-                statement.setString(1, teacherEmail);
-                ResultSet rs = statement.executeQuery();
-
-                if (rs.next()) {
-                    return rs.getInt("TeacherID");
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error getting teacher ID: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-    public List<Integer> getClassroomList(String teacherEmail) {
-        String findClassroomsQuery = "SELECT ClassroomID FROM Classroom WHERE TeacherEmail = ?";
-        List<Integer> classroomList = new ArrayList<>();
-        Connection conn = null;
-        try {
-            conn = SqliteConnection.getInstance();
-            if (conn == null || conn.isClosed()) {
-                System.err.println("Error getting classroom list: Database connection is closed or null.");
-                return classroomList;
-            }
-            try (PreparedStatement statement = conn.prepareStatement(findClassroomsQuery)) {
-                statement.setString(1, teacherEmail);
-                ResultSet rs = statement.executeQuery();
-
-                while (rs.next()) {
-                    int classroomID = rs.getInt("ClassroomID");
-                    classroomList.add(classroomID);
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("Error getting classroom list: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return classroomList;
     }
 
     public Timestamp getLastModifiedDate(int materialID, String tableName) {
@@ -522,7 +472,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting last modified date from " + tableName + ": " + e.getMessage());
-            e.printStackTrace();
+
         }
         return null;
     }
@@ -548,7 +498,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting material by week and classroom: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return -1;
     }
@@ -563,8 +513,8 @@ public class ContentDAO implements IContentDAO {
                 System.err.println("Error fetching content table data: Database connection is closed or null for teacher " + teacherEmail);
                 return data;
             }
-
-            List<Integer> classrooms = getClassroomList(teacherEmail);
+            SqliteTeacherDAO TeacherDAO = new SqliteTeacherDAO();
+            List<Integer> classrooms = TeacherDAO.getClassroomList(teacherEmail);
 
             for (int classroomID : classrooms) {
                 if (conn == null || conn.isClosed()) {
@@ -591,7 +541,7 @@ public class ContentDAO implements IContentDAO {
         }
         catch (SQLException e) {
             System.err.println("Error fetching content table data: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return data;
     }
@@ -631,7 +581,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error deleting content from " + tableName + ": " + e.getMessage());
-            e.printStackTrace();
+
         }
         return false;
     }
@@ -656,7 +606,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting learning card content: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return null;
     }
@@ -682,7 +632,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error getting all cards: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return FXCollections.observableArrayList();
     }
@@ -714,7 +664,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error fetching distinct weeks for learning cards: " + e.getMessage());
-            e.printStackTrace();
+
         }
         return weeks;
     }
@@ -762,7 +712,7 @@ public class ContentDAO implements IContentDAO {
             }
         } catch (SQLException e) {
             System.err.println("Error fetching student card responses for week " + week + ": " + e.getMessage());
-            e.printStackTrace();
+
         }
         return responses;
     }

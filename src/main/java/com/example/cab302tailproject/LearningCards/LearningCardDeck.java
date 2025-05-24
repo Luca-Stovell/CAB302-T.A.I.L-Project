@@ -182,39 +182,4 @@ public class LearningCardDeck {
         revisedNext(HARD); // Low difficulty means hard, likely to see again sooner
         return getCurrentCard();
     }
-
-    /**
-     * Processes the current card as "Correct" and advances to the next card.
-     * The card is definitively removed from the current session for this path.
-     * @return The content of the next card or empty message.
-     */
-    public String processCorrectAndAdvance() {
-        if (DeckContent.isEmpty()) {
-            return getCurrentCard(); // Will return EMPTY_MESSAGE
-        }
-        LearningCard processedCard = DeckContent.getFirst();
-        processedCard.resetFlip();
-        // Optionally, you could call processedCard.reduceCard(1.0) here if you
-        // want its internal state (like correctStreak) to be updated for long-term stats,
-        // even though it won't be re-inserted in *this* specific interaction path.
-        // For now, per requirement, just remove it.
-        DeckContent.removeFirst();
-        return getCurrentCard();
-    }
-
-    /**
-     * Processes the current card as "Incorrect" and advances to the next card.
-     * The card is definitively removed from the current session for this path.
-     * @return The content of the next card or empty message.
-     */
-    public String processIncorrectAndAdvance() {
-        if (DeckContent.isEmpty()) {
-            return getCurrentCard(); // Will return EMPTY_MESSAGE
-        }
-        LearningCard processedCard = DeckContent.getFirst();
-        processedCard.resetFlip();
-        // Optionally, processedCard.reduceCard(0.0) for stats.
-        DeckContent.removeFirst();
-        return getCurrentCard();
-    }
 }

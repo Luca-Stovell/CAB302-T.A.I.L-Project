@@ -1,28 +1,34 @@
 package com.example.cab302tailproject.controller.studentcontroller;
 
 import com.example.cab302tailproject.DAO.ContentDAO;
-import com.example.cab302tailproject.DAO.SqlStudentDAO; // For student classroom lookup
+import com.example.cab302tailproject.DAO.SqlStudentDAO;
 import com.example.cab302tailproject.LearningCards.LearningCardDeck;
+import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.LearningCardCreator;
-import com.example.cab302tailproject.model.UserSession; // Assuming UserSession exists
+import com.example.cab302tailproject.model.StudentCardResponse;
+import com.example.cab302tailproject.model.UserSession;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Alert; // For showing alerts
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+import javafx.application.Platform;
+
 
 import java.io.IOException;
-import java.util.ArrayList;
-import static com.example.cab302tailproject.utils.Alerts.showAlert;
-import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+import java.net.URL;
+import java.util.ArrayList; // Keep this if LearningCardDeck constructor uses it
+import java.util.List;
 
 public class LearningCardController {
 
-    @FXML private Button logoutButton;
     @FXML private ComboBox<LearningCardCreator> cardList;
-    @FXML private Button sidebarGenerateButton;
+    @FXML private Button sidebarGenerateButton; // This seems to be from a different FXML context, ensure it's correct for this controller
     @FXML private Button sidebarReviewButton;
     @FXML private Button sidebarAnalysisButton;
     @FXML private Button sidebarAiAssistanceButton;
@@ -33,159 +39,181 @@ public class LearningCardController {
     @FXML private Button hardButton;
     @FXML private Button againButton;
     @FXML private Button mediumButton;
-    @FXML private Button nextButton;
+    @FXML private Button nextButton; // Assuming this is a generic "next" if not using correct/incorrect
     @FXML private TextArea cardContent;
 
-    // New FXML fields for Correct/Incorrect buttons
     @FXML private Button correctButton;
     @FXML private Button incorrectButton;
 
 
     private LearningCardDeck deck;
     private ContentDAO contentDAO;
-    private SqlStudentDAO studentDAO; // To get classroom ID for student
+    private SqlStudentDAO studentDAO;
 
     /**
-     * Retrieves a deck from the database by id, and stored it in deck
-     * @param ID Database's materialID of the selected deck
+     * Retrieves a deck from the database by its materialID.
+     * @param materialId The MaterialID of the selected deck.
      */
-    private void getDeck(int ID){
-        if (cardList.getValue() != null) {
-            // Assuming LearningCardCreator's getMaterialID() IS the MaterialID for the deck.
-            com.example.cab302tailproject.model.Material material = contentDAO.getMaterialContent(cardList.getValue().getMaterialID(), "learningCard");
-            if (material != null) {
-                deck = new LearningCardDeck(material.getContent());
-                cardContent.setText(deck.getCurrentCard());
-            } else {
-                cardContent.setText("Error: Could not load deck content.");
-                deck = new LearningCardDeck(""); // Empty deck
-            }
+    private void loadDeckByMaterialId(int materialId){
+        if (contentDAO == null) {
+            contentDAO = new ContentDAO(); // Ensure DAO is initialized
+        }
+        com.example.cab302tailproject.model.Material material = contentDAO.getMaterialContent(materialId, "learningCard");
+        if (material != null && material.getContent() != null && !material.getContent().trim().isEmpty()) {
+            deck = new LearningCardDeck(material.getContent());
+            cardContent.setText(deck.getCurrentCard());
         } else {
-            cardContent.setText("Please select a deck.");
-            deck = new LearningCardDeck(""); // Empty deck
+            String errorMsg = "Error: Could not load deck content for MaterialID: " + materialId;
+            if (material == null) errorMsg += " (Material not found).";
+            else if (material.getContent() == null || material.getContent().trim().isEmpty()) errorMsg += " (Material content is empty).";
+
+            cardContent.setText(errorMsg);
+            System.err.println(errorMsg);
+            deck = new LearningCardDeck(""); // Initialize with an empty deck to avoid NullPointerExceptions
         }
     }
 
-    /**
-     * Retrieves, from the database, a list of all learning card decks
-     * @return a list of topics and ID of the decks
-     */
     private ObservableList<LearningCardCreator> getDeckList(){
-        // Ensure contentDAO is initialized before use
         if (contentDAO == null) {
             contentDAO = new ContentDAO();
         }
         return contentDAO.getAllCards();
     }
 
-    /**
-     * Initialises learning card page by loading in the deck and setting the initial display.
-     * Also finds the list of learning cards, populates the comboBox with it, and defines onAction handling for the comboBox
-     */
     @FXML public void initialize(){
-        contentDAO = new ContentDAO(); // This line triggers the ContentDAO constructor and the table creation errors
-        studentDAO = new SqlStudentDAO();
+        try {
+            contentDAO = new ContentDAO();
+            studentDAO = new SqlStudentDAO();
+        } catch (Exception e) {
+            System.err.println("Error initializing DAOs in LearningCardController: " + e.getMessage());
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Initialization Error", "Could not initialize data services.");
+            return;
+        }
 
-        deck = new LearningCardDeck(new ArrayList<>()
-        {{
-            add(new String[]{"Select a lesson card deck to begin", "(Use the dropdown menu on the right)"});
-        }}
-        );
+
+        deck = new LearningCardDeck(new ArrayList<String[]>()); // Initialize with an empty list for the placeholder
+        LearningCard placeholderCard = new LearningCard("Select a lesson card deck to begin", "(Use the dropdown menu on the right)");
+        deck.addCardDirectly(placeholderCard); // Add a method to LearningCardDeck to add a card if needed for placeholders
+        // Or, ensure the constructor LearningCardDeck(List<String[]>) handles empty list gracefully
+        // and getCurrentCard() returns a default message.
+        // For now, assuming getCurrentCard handles empty deck with EMPTY_MESSAGE
         cardContent.setText(deck.getCurrentCard());
 
+
         ObservableList<LearningCardCreator> options = getDeckList();
-        cardList.setItems(options);
+        if (options != null) {
+            cardList.setItems(options);
+        } else {
+            cardList.setItems(FXCollections.observableArrayList());
+            System.err.println("Warning: getAllCards returned null. ComboBox will be empty.");
+        }
+
 
         cardList.setOnAction(event -> {
             LearningCardCreator selectedCardDeckInfo = cardList.getValue();
             if (selectedCardDeckInfo != null) {
-                // Ensure contentDAO is initialized
-                if (contentDAO == null) {
-                    contentDAO = new ContentDAO();
-                }
-                com.example.cab302tailproject.model.Material material = contentDAO.getMaterialContent(selectedCardDeckInfo.getMaterialID(), "learningCard");
-                if (material != null) {
-                    deck = new LearningCardDeck(material.getContent());
-                    cardContent.setText(deck.getCurrentCard());
-                } else {
-                    cardContent.setText("Error: Deck content not found for MaterialID: " + selectedCardDeckInfo.getMaterialID());
-                    deck = new LearningCardDeck("");
-                }
+                loadDeckByMaterialId(selectedCardDeckInfo.getMaterialID());
             }
         });
     }
 
     @FXML
-    private void onSidebarAiAssistanceClicked() throws IOException {
-        loadScene("ai_assistant-student.fxml", sidebarAiAssistanceButton, true);
+    private void onSidebarAiAssistanceClicked(ActionEvent event) throws IOException {
+        loadScene("ai_assistant-student.fxml");
     }
 
     @FXML
-    private void onSidebarReviewClicked() throws IOException {
-        loadScene("review-student.fxml", sidebarReviewButton, true);
+    private void onSidebarReviewClicked(ActionEvent event) throws IOException {
+        loadScene("review-student.fxml");
     }
 
     @FXML
-    private void onSidebarAnalysisClicked() throws IOException {
-        loadScene("analytics-student.fxml", sidebarAnalysisButton, true);
+    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
+        loadScene("analytics-student.fxml");
+    }
+
+    @FXML
+    private void onHomeClicked(ActionEvent event) throws IOException {
+        loadScene("student-dashboard.fxml");
     }
 
 
     @FXML
     private void onFlipClicked(ActionEvent actionEvent) {
-        if (deck != null) {
+        if (deck != null && !deck.isEmpty()) {
             deck.flip();
             cardContent.setText(deck.getCurrentCard());
+        } else {
+            System.out.println("Flip clicked: Deck is null or empty.");
         }
     }
 
+    // These methods (easy, hard, medium, again, next) might now be primarily driven by correct/incorrect
+    // or could be kept for a different study mode.
     @FXML private void onEasyClicked(ActionEvent actionEvent) {
-        handleCardNavigation(true);
-        if (deck != null) cardContent.setText(deck.easyNext());
+        // saveStudentResponse(true); // Decide if this should also save a response
+        if (deck != null && !deck.isEmpty()) {
+            cardContent.setText(deck.easyNext());
+        }
     }
 
     @FXML private void onHardClicked(ActionEvent actionEvent) {
-        handleCardNavigation(false);
-        if (deck != null) cardContent.setText(deck.hardNext());
+        // saveStudentResponse(false); // Decide if this should also save a response
+        if (deck != null && !deck.isEmpty()) {
+            cardContent.setText(deck.hardNext());
+        }
     }
 
     @FXML private void onMediumClicked(ActionEvent actionEvent) {
-        handleCardNavigation(false);
-        if (deck != null) cardContent.setText(deck.mediumNext());
+        // saveStudentResponse(false); // Decide if this should also save a response
+        if (deck != null && !deck.isEmpty()) {
+            cardContent.setText(deck.mediumNext());
+        }
     }
 
     @FXML private void onAgainClicked(ActionEvent actionEvent) {
-        handleCardNavigation(false);
-        if (deck != null) cardContent.setText(deck.hardNext());
+        // saveStudentResponse(false); // Decide if this should also save a response
+        if (deck != null && !deck.isEmpty()) {
+            cardContent.setText(deck.hardNext());
+        }
     }
 
     @FXML private void onNextClicked(ActionEvent actionEvent) {
-        handleCardNavigation(true);
-        if (deck != null) cardContent.setText(deck.easyNext());
+        // This "Next" button is ambiguous without a correct/incorrect context.
+        // It might be better to remove it if "Correct" and "Incorrect" are the primary interactions.
+        // For now, let's assume it's like an "easy" pass.
+        // saveStudentResponse(true);
+        if (deck != null && !deck.isEmpty()) {
+            cardContent.setText(deck.easyNext());
+        }
     }
 
     @FXML
     private void onCorrectClicked(ActionEvent event) {
         System.out.println("Correct button clicked");
+        if (deck == null || deck.isEmpty() || LearningCardDeck.EMPTY_MESSAGE.equals(deck.getCurrentCard())) {
+            showAlert(Alert.AlertType.INFORMATION, "Deck Finished", "No more cards or no deck selected.");
+            return;
+        }
         saveStudentResponse(true);
-        if (deck != null) {
-            cardContent.setText(deck.easyNext()); // Calls existing method
+        if (deck != null) { // Deck might become empty after saving and processing
+            cardContent.setText(deck.easyNext()); // Use easyNext to advance after correct
         }
     }
 
     @FXML
     private void onIncorrectClicked(ActionEvent event) {
         System.out.println("Incorrect button clicked");
+        if (deck == null || deck.isEmpty() || LearningCardDeck.EMPTY_MESSAGE.equals(deck.getCurrentCard())) {
+            showAlert(Alert.AlertType.INFORMATION, "Deck Finished", "No more cards or no deck selected.");
+            return;
+        }
         saveStudentResponse(false);
-        if (deck != null) {
-            cardContent.setText(deck.hardNext()); // Calls existing method
+        if (deck != null) { // Deck might become empty
+            cardContent.setText(deck.hardNext()); // Use hardNext to advance after incorrect
         }
     }
-
-    private void handleCardNavigation(boolean isCorrect) {
-        System.out.println("Navigating card, marked as: " + (isCorrect ? "Correct" : "Incorrect"));
-    }
-
 
     private void saveStudentResponse(boolean isCorrect) {
         UserSession session = UserSession.getInstance();
@@ -196,8 +224,10 @@ public class LearningCardController {
             showAlert(Alert.AlertType.ERROR, "Error", "No student logged in.");
             return;
         }
+        // Check if deck is null or if the current card is the empty message BEFORE getting question
         if (deck == null || deck.isEmpty() || LearningCardDeck.EMPTY_MESSAGE.equals(deck.getCurrentCard())) {
-            showAlert(Alert.AlertType.WARNING, "No Card", "No card is currently displayed or deck is empty.");
+            // This check is now also at the beginning of onCorrectClicked/onIncorrectClicked
+            // showAlert(Alert.AlertType.WARNING, "No Card", "No card is currently displayed or deck is empty.");
             return;
         }
         if (selectedDeckInfo == null) {
@@ -205,13 +235,8 @@ public class LearningCardController {
             return;
         }
 
-        // Ensure DAOs are initialized
-        if (studentDAO == null) {
-            studentDAO = new SqlStudentDAO();
-        }
-        if (contentDAO == null) {
-            contentDAO = new ContentDAO();
-        }
+        if (studentDAO == null) studentDAO = new SqlStudentDAO();
+        if (contentDAO == null) contentDAO = new ContentDAO();
 
         int studentID = studentDAO.getStudentIDByEmail(studentEmail);
         if (studentID == -1) {
@@ -220,26 +245,18 @@ public class LearningCardController {
         }
         int materialID = selectedDeckInfo.getMaterialID();
 
-        String cardQuestion = deck.getCurrentQuestionText();
+        String cardQuestion = deck.getCurrentQuestionText(); // Get the question text
 
-        if (cardQuestion == null || cardQuestion.equals(deck.getCurrentCard()) && deck.isCurrentCardFlipped()) {
-            if(deck.isCurrentCardFlipped()){
-                deck.flip();
-                cardQuestion = deck.getCurrentQuestionText();
-                deck.flip();
-            } else {
-                cardQuestion = deck.getCurrentQuestionText();
-            }
-            if(cardQuestion == null || cardQuestion.isEmpty() || LearningCardDeck.EMPTY_MESSAGE.equals(cardQuestion)){
-                showAlert(Alert.AlertType.ERROR, "Error", "Could not retrieve current card question.");
-                return;
-            }
+        // This complex logic to get question if flipped might not be needed if getCurrentQuestionText always returns the question.
+        // And if it's null, it means there's no card.
+        if (cardQuestion == null || cardQuestion.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not retrieve current card question. Deck might be empty or card malformed.");
+            return;
         }
 
         int classroomID = studentDAO.getClassroomIDForStudent(studentID);
         if (classroomID == -1) {
-            System.out.println("Warning: Student not associated with a classroom, or error fetching classroom. Saving response without classroom ID.");
-            // classroomID will be handled as potentially NULL by addStudentCardResponse if it's <=0
+            System.out.println("Warning: Student " + studentEmail + " (ID: " + studentID + ") not associated with a classroom, or error fetching classroom. Saving response without classroom ID.");
         }
 
         boolean success = contentDAO.addStudentCardResponse(studentID, materialID, cardQuestion, isCorrect, classroomID);
@@ -251,10 +268,45 @@ public class LearningCardController {
         }
     }
 
-    @FXML private void logoutButtonClicked(ActionEvent actionEvent) throws IOException {
-        UserSession.getInstance().logoutUser();
-        System.out.println("Log out successful");
-        loadScene("login_page.fxml", sidebarAnalysisButton, true);
 
+    private void loadScene(String fxmlFile) throws IOException {
+        // Assuming homeButton is always present to get the scene/window
+        if (homeButton == null || homeButton.getScene() == null) {
+            System.err.println("loadScene: Cannot get scene from homeButton.");
+            return;
+        }
+        Stage stage = (Stage) homeButton.getScene().getWindow();
+        URL fxmlUrl = TailApplication.class.getResource(fxmlFile);
+        if (fxmlUrl == null) {
+            if (!fxmlFile.startsWith("/")) {
+                fxmlUrl = TailApplication.class.getResource("/" + fxmlFile);
+            }
+            if (fxmlUrl == null) {
+                String errorMessage = "Cannot find FXML file: " + fxmlFile;
+                System.err.println(errorMessage);
+                showAlert(Alert.AlertType.ERROR, "Navigation Error", errorMessage);
+                throw new IOException(errorMessage);
+            }
+        }
+        FXMLLoader loader = new FXMLLoader(fxmlUrl);
+        Scene scene = new Scene(loader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
+        // stage.setTitle(title); // Title was removed from this version of loadScene
+        stage.setScene(scene);
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> displayAlertInternal(alertType, title, message));
+        } else {
+            displayAlertInternal(alertType, title, message);
+        }
+    }
+
+    private void displayAlertInternal(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

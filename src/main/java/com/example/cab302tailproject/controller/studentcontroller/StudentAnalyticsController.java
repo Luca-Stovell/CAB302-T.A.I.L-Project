@@ -17,15 +17,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.application.Platform;
-
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
 import static com.example.cab302tailproject.utils.Alerts.showAlert;
-import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
 public class StudentAnalyticsController {
 
@@ -43,20 +40,6 @@ public class StudentAnalyticsController {
     private ContentDAO contentDao;
     private SqlStudentDAO studentDao;
     private UserSession session;
-
-    //<editor-fold desc="FXML UI Element References - Dynamic content">
-    /**
-     * This Label represents the UI element that displays the currently logged-in user's name.
-     */
-    @FXML
-    Label LoggedInName;
-
-    /**
-     * Represents the JavaFX Label used to display the current time.
-     */
-    @FXML
-    private Label timeLabel;
-    //</editor-fold>
 
     private ObservableList<CardPerformanceEntry> cardPerformanceData = FXCollections.observableArrayList();
 
@@ -107,8 +90,6 @@ public class StudentAnalyticsController {
             weekSelectionComboBox.setOnAction(event -> loadCardPerformanceForSelectedWeek());
             populateWeekComboBox();
         }
-        LoggedInName.setText(UserSession.getInstance().getFullName());
-        bindTimeToLabel(timeLabel, "hh:mm a");
 
         System.out.println("StudentAnalyticsController initialized.");
     }

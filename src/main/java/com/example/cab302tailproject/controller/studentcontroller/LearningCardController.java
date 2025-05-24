@@ -20,6 +20,7 @@ import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
 
 public class LearningCardController {
 
+    @FXML private Button logoutButton;
     @FXML private ComboBox<LearningCardCreator> cardList;
     @FXML private Button sidebarGenerateButton;
     @FXML private Button sidebarReviewButton;
@@ -127,11 +128,6 @@ public class LearningCardController {
     @FXML
     private void onSidebarAnalysisClicked() throws IOException {
         loadScene("analytics-student.fxml", sidebarAnalysisButton, true);
-    }
-
-    @FXML
-    private void onHomeClicked() throws IOException {
-        loadScene("student-dashboard.fxml", homeButton, true);
     }
 
 
@@ -255,4 +251,10 @@ public class LearningCardController {
         }
     }
 
+    @FXML private void logoutButtonClicked(ActionEvent actionEvent) throws IOException {
+        UserSession.getInstance().logoutUser();
+        System.out.println("Log out successful");
+        loadScene("login_page.fxml", sidebarAnalysisButton, true);
+
+    }
 }

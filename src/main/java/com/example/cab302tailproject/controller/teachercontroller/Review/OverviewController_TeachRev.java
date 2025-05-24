@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.fetchContent;
 import static com.example.cab302tailproject.utils.SceneHandling.navigateToContent;
 
 public class OverviewController_TeachRev {
@@ -71,11 +72,6 @@ public class OverviewController_TeachRev {
      */
     @FXML
     private VBox dynamicContentBox;
-
-    /**
-     * Represents the unique identifier for the material currently being processed or displayed within LessonPlanController.
-     */
-    private int materialID;
 
     private int weekNumber;
     //</editor-fold>
@@ -193,29 +189,12 @@ public class OverviewController_TeachRev {
      * @param materialType The type of the material to be retrieved and displayed
      *                     (e.g., "Lesson", "Cards", or "Worksheet").
      */
-    private void viewContent(String materialType) {
-        if (classCheckBox.getValue() != null) {
-            try {
-                int classroomID = classCheckBox.getValue();
+    public void viewContent(String materialType) {
+        currentMaterial = fetchContent(weekNumber, classCheckBox, materialType, contentDAO);
 
-                int materialIdOfLesson = contentDAO.getMaterialByWeekAndClassroom(weekNumber, materialType, classroomID);
-                currentMaterial = contentDAO.getMaterialContent(materialIdOfLesson, materialType);
-
-                if (currentMaterial.getContent() != null) {
-                    navigateToContentPage();
-                }
-                else {
-                    showAlert(Alert.AlertType.ERROR, "No content found", "A " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " does not exist. \n Check 'All content' to review available content.");
-                }
-            }
-            catch (Exception e) {
-                System.err.println("Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " (materialID: " + currentMaterial.getMaterialID() + ").");
-                showAlert(Alert.AlertType.ERROR, "Retrieval error", "Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + ". \n Check 'All content' to review available content.");
-            }
-        }
-        else {
-            System.out.println("No classroom selected");
-            showAlert(Alert.AlertType.WARNING, "No classroom selected", "No classroom selected. Please select a classroom to view the content, or navigate to 'Students' to create a classroom.");
+        // Navigate to content page if the material is valid
+        if (currentMaterial != null) {
+            navigateToContentPage();
         }
     }
 

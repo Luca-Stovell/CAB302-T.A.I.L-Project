@@ -12,10 +12,11 @@
             maxHeight = "-Infinity"
             prefHeight = "420"
             prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.studentcontroller.AiAssistantController_Student" style= "-fx-background-color: white;">
+            fx:controller="com.example.cab302tailproject.controller.studentcontroller.AiAssistantController_Student"
+            style="-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2">
     <left>
-        <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 2;">
-            <VBox alignment="TOP_LEFT" prefHeight="120" style="-fx-padding: 25 0 0 30;">
+        <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
+            <VBox prefHeight="120" style="-fx-padding: 25 0 0 30;">
                 <HBox alignment="CENTER_LEFT" prefWidth="200" spacing="20">
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
                         <Image url="@../../../images/tail_logo.png" /> <clip>
@@ -24,8 +25,8 @@
                     </ImageView>
 
                     <VBox alignment="CENTER_LEFT" prefWidth="80">
-                        <Label style="-fx-font-weight: bold; -fx-text-fill: #757575" text="Max"> <font> <Font size="16" /> </font> </Label>
-                        <Label style="-fx-text-fill: #B3B3B3" text="Class 9C"> <font> <Font size="16" /> </font> </Label>
+                        <Label fx:id="LoggedInName" style="-fx-font-weight: bold; -fx-text-fill: #757575" text="Student">
+                            <font> <Font size="16" /> </font> </Label>
                     </VBox>
                 </HBox>
 
@@ -33,37 +34,42 @@
                     <padding>
                         <Insets bottom="10" left="5" right="5" top="10" />
                     </padding>
-                    <Label style="-fx-text-fill: #B3B3B3" text="Week 5">
-                        <font> <Font size="12" /> </font> </Label>
-                    <Label style="-fx-text-fill: #B3B3B3" text="Time 12:34pm">
+                    <Label fx:id="timeLabel" style="-fx-text-fill: #B3B3B3" text="Time 12:34 am">
                         <font> <Font size="12" /> </font>
                     </Label>
                 </VBox>
             </VBox>
 
-            <Button fx:id="sidebarGenerateButton" onAction="#onSidebarGenerateClicked" maxHeight="81.0" minHeight="60" prefHeight="81.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Lesson Cards" />
-            <Button fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" />
-            <Button fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" />
-            <Button fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked" maxHeight="80.0" minHeight="60" prefHeight="80.0" prefWidth="196.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" />
+            <Button fx:id="sidebarGenerateButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarGenerateClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Lesson Cards" VBox.vgrow="ALWAYS" />
+            <Button fx:id="sidebarReviewButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarReviewClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" VBox.vgrow="ALWAYS" />
+            <Button fx:id="sidebarAnalysisButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarAnalysisClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" VBox.vgrow="ALWAYS" />
+            <Button fx:id="sidebarAiAssistanceButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarAiAssistanceClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black;                 -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" VBox.vgrow="ALWAYS" />
         </VBox>
     </left>
 
     <center>
         <BorderPane>
             <top>
-                <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
-                    <Label layoutX="20.0" layoutY="11.0" prefHeight="46.0" prefWidth="200.0" text="AI Assistance">
+                <HBox alignment="CENTER" prefHeight="70" prefWidth="510"
+                      style="-fx-border-color: #000000; -fx-border-width: 0 0 2 0; -fx-padding: 0 20 0 20;">
+                    <Label prefHeight="46.0" prefWidth="200.0" text="AI Assistance">
                         <font>
-                            <Font name="System Bold" size="18.0" />
+                            <Font size="28.0" />
                         </font>
                     </Label>
-                    <Button fx:id="logoutButton" onAction="#logoutButtonClicked" layoutX="510" layoutY="20" prefHeight="30" prefWidth="90" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14;" text="Logout">
+                    <HBox HBox.hgrow="ALWAYS" />
+                    <Button fx:id="logoutButton" onAction="#logoutButtonClicked" prefHeight="30" prefWidth="90"
+                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14;" text="Logout">
                     </Button>
-                </AnchorPane>
+
+                    <padding>
+                        <Insets right="20" />
+                    </padding>
+                </HBox>
             </top>
 
             <center>
-                <VBox alignment="TOP_CENTER" prefHeight="353.0" prefWidth="533.0" style="-fx-border-color: #000000; -fx-border-width: 0 2 2 0;" spacing="10">
+                <VBox alignment="TOP_CENTER" prefHeight="353.0" prefWidth="533.0" style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" spacing="10">
                     <padding>
                         <Insets top="15.0" right="15.0" bottom="15.0" left="15.0"/>
                     </padding>

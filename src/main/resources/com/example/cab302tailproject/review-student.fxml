@@ -7,82 +7,62 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            maxHeight = "-Infinity"
-            prefHeight = "420"
-            prefWidth="710"
-            fx:controller="com.example.cab302tailproject.controller.studentcontroller.Review.MainFrameController_StudRev"
-            style= "-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2">
+<BorderPane maxHeight="-Infinity" prefHeight="420" prefWidth="710" style="-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.studentcontroller.Review.MainFrameController_StudRev">
 
     <left>
-        <VBox prefHeight="420" prefWidth="200"
-              style = "-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
+        <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
             <VBox prefHeight="120" style="-fx-padding: 25 0 0 30;">
-                <HBox alignment="CENTER_LEFT" spacing="20" prefWidth="200">
+                <HBox alignment="CENTER_LEFT" prefWidth="200" spacing="20">
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
                         <Image url="@../../../images/tail_logo.png" /> <clip>
-                        <Circle radius="20" centerX="20" centerY="20"/>
+                        <Circle centerX="20" centerY="20" radius="20" />
                     </clip>
                     </ImageView>
                     <VBox alignment="CENTER_LEFT" prefWidth="80">
-                        <Label text = "Max" style="-fx-font-weight: bold; -fx-text-fill: #757575" fx:id="LoggedInName" >
-                            <font> <Font size="16" /> </font> </Label>
-                        <Label text = "Class 9C" style="-fx-text-fill: #B3B3B3">
+                        <Label fx:id="LoggedInName" style="-fx-font-weight: bold; -fx-text-fill: #757575" text="Student">
                             <font> <Font size="16" /> </font> </Label>
                     </VBox>
                 </HBox>
                 <VBox>
                     <padding>
-                        <Insets top="10" right="5" bottom="10" left="5" />
+                        <Insets bottom="10" left="5" right="5" top="10" />
                     </padding>
-                    <Label text = "Week 5" style="-fx-text-fill: #B3B3B3">
-                        <font> <Font size="12" /> </font> </Label>
-                    <Label text = "Time 12:34pm" style="-fx-text-fill: #B3B3B3">
+                    <Label fx:id="timeLabel" style="-fx-text-fill: #B3B3B3" text="Time 12:34 am">
                         <font> <Font size="12" /> </font>
                     </Label>
                 </VBox>
             </VBox>
 
-            <Button text="Lesson Cards" fx:id="sidebarCardsButton" onAction="#onSidebarCardsClicked"
-                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
-                    VBox.vgrow="ALWAYS"/>
-            <Button text="Review" fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked"
-                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
-                    VBox.vgrow="ALWAYS"/>
-            <Button text="Analysis" fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked"
-                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
-                    VBox.vgrow="ALWAYS"/>
-            <Button text="A.I. Assistance" fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked"
-                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black;
-                -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
-                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
-                    VBox.vgrow="ALWAYS"/>
+            <Button fx:id="sidebarCardsButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarCardsClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Lesson Cards" VBox.vgrow="ALWAYS" />
+            <Button fx:id="sidebarReviewButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarReviewClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" VBox.vgrow="ALWAYS" />
+            <Button fx:id="sidebarAnalysisButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarAnalysisClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" VBox.vgrow="ALWAYS" />
+            <Button fx:id="sidebarAiAssistanceButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarAiAssistanceClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black;                 -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" VBox.vgrow="ALWAYS" />
         </VBox>
     </left>
 
     <center>
         <BorderPane>
             <top>
-                <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
-
-                    <HBox HBox.hgrow="ALWAYS" />
-                    <Label layoutX="20.0" layoutY="11.0" prefHeight="46.0" prefWidth="200.0" text="Worksheets">
+                <HBox alignment="CENTER" prefHeight="70" prefWidth="510"
+                      style="-fx-border-color: #000000; -fx-border-width: 0 0 2 0; -fx-padding: 0 20 0 20;">
+                    <Label prefHeight="46.0" prefWidth="200.0" text="Worksheets">
                         <font>
-                            <Font name="System Bold" size="18.0" />
+                            <Font size="28.0" />
                         </font>
                     </Label>
-                    <Button fx:id="logoutButton" onAction="#logoutButtonClicked" layoutX="510" layoutY="20" prefHeight="30" prefWidth="90" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14;" text="Logout">
+                    <HBox HBox.hgrow="ALWAYS" />
+                    <Button fx:id="logoutButton" onAction="#logoutButtonClicked" prefHeight="30" prefWidth="90"
+                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14;" text="Logout">
                     </Button>
-                </AnchorPane>
+
+                    <padding>
+                        <Insets right="20" />
+                    </padding>
+                </HBox>
             </top>
 
             <center>
-                <VBox alignment="TOP_CENTER" prefHeight="350" prefWidth="510" VBox.vgrow="ALWAYS"
-                      style = "-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" fx:id="dynamicContentBox">
+                <VBox fx:id="dynamicContentBox" alignment="TOP_CENTER" prefHeight="350" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" VBox.vgrow="ALWAYS">
                 </VBox>
             </center>
         </BorderPane>

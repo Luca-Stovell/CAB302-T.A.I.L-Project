@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import static com.example.cab302tailproject.utils.Alerts.showAlert;
 import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
 
 public class MainFrameController_StudRev {
@@ -30,7 +31,14 @@ public class MainFrameController_StudRev {
      * This Label represents the UI element that displays the currently logged-in user's name.
      */
     @FXML Label LoggedInName;
+
+    /**
+     * Represents the JavaFX Label used to display the current time.
+     */
+    @FXML
+    private Label timeLabel;
     //</editor-fold>
+
     @FXML private Button sidebarCardsButton;
     @FXML private Button sidebarAnalysisButton;
     @FXML private Button sidebarReviewButton;
@@ -39,6 +47,7 @@ public class MainFrameController_StudRev {
     //<editor-fold desc="Initialisation">
     public void initialize() {
         LoggedInName.setText(UserSession.getInstance().getFullName());
+        bindTimeToLabel(timeLabel, "hh:mm a");
         showOverviewView();
     }
 

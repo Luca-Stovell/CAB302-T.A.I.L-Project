@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
+
 public class StudentAnalyticsController {
 
     @FXML private Button sidebarBackButton; // For navigating back
@@ -31,8 +34,6 @@ public class StudentAnalyticsController {
     @FXML private Button learningCardsButton; // Example sidebar button
     @FXML private Button aiAssistantButton;   // Example sidebar button
 
-    @FXML private Button homeButton;
-    @FXML private Button settingsButton;
 
     @FXML private ComboBox<Integer> weekSelectionComboBox;
     @FXML private TableView<CardPerformanceEntry> cardPerformanceTableView;
@@ -42,6 +43,20 @@ public class StudentAnalyticsController {
     private ContentDAO contentDao;
     private SqlStudentDAO studentDao;
     private UserSession session;
+
+    //<editor-fold desc="FXML UI Element References - Dynamic content">
+    /**
+     * This Label represents the UI element that displays the currently logged-in user's name.
+     */
+    @FXML
+    Label LoggedInName;
+
+    /**
+     * Represents the JavaFX Label used to display the current time.
+     */
+    @FXML
+    private Label timeLabel;
+    //</editor-fold>
 
     private ObservableList<CardPerformanceEntry> cardPerformanceData = FXCollections.observableArrayList();
 
@@ -92,6 +107,9 @@ public class StudentAnalyticsController {
             weekSelectionComboBox.setOnAction(event -> loadCardPerformanceForSelectedWeek());
             populateWeekComboBox();
         }
+        LoggedInName.setText(UserSession.getInstance().getFullName());
+        bindTimeToLabel(timeLabel, "hh:mm a");
+
         System.out.println("StudentAnalyticsController initialized.");
     }
 
@@ -206,6 +224,7 @@ public class StudentAnalyticsController {
 
 
     // Updated loadScene method to be more robust
+    // TODO: replace this with utils method. Utils method has borrowed some of your null checks - title change is probably not needed
     private void loadScene(ActionEvent event, String fxmlFile, String title) throws IOException {
         Stage stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         URL fxmlUrl = TailApplication.class.getResource(fxmlFile);
@@ -229,22 +248,5 @@ public class StudentAnalyticsController {
         stage.setTitle(title);
         stage.setScene(scene);
         System.out.println("Successfully switched scene to: " + fxmlFile);
-    }
-
-
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> displayAlertInternal(alertType, title, message));
-        } else {
-            displayAlertInternal(alertType, title, message);
-        }
-    }
-
-    private void displayAlertInternal(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

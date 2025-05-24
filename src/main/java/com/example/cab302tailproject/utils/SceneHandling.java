@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 
 import static com.example.cab302tailproject.utils.Alerts.showAlert;
 
@@ -29,7 +30,20 @@ public class SceneHandling {
      * @throws IOException If the FXML file cannot be loaded.
      */
     public static void loadScene(String fxmlFile, Button button, boolean setScene) throws IOException {
+        if (fxmlFile == null || fxmlFile.trim().isEmpty()) {
+            throw new IllegalArgumentException("FXML file path cannot be null or empty.");
+        }
+        if (button == null || button.getScene() == null || button.getScene().getWindow() == null) {
+            throw new IllegalArgumentException("Button or its associated stage cannot be null.");
+        }
+
         Stage stage = (Stage) button.getScene().getWindow();
+        URL resource = TailApplication.class.getResource(fxmlFile);
+        if (resource == null) {
+            throw new IOException("FXML file not found: " + fxmlFile +
+                    ". Ensure the file exists and the path is correct.");
+        }
+
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource(fxmlFile));
         if (setScene) {     // If you want the window size to be reset
             Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);

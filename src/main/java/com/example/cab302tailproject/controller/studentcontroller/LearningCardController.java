@@ -8,15 +8,13 @@ import com.example.cab302tailproject.model.UserSession; // Assuming UserSession 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Alert; // For showing alerts
+import javafx.scene.control.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import static com.example.cab302tailproject.utils.Alerts.showAlert;
 import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
 public class LearningCardController {
 
@@ -44,6 +42,20 @@ public class LearningCardController {
     private LearningCardDeck deck;
     private ContentDAO contentDAO;
     private SqlStudentDAO studentDAO; // To get classroom ID for student
+
+    //<editor-fold desc="FXML UI Element References - Dynamic content">
+    /**
+     * This Label represents the UI element that displays the currently logged-in user's name.
+     */
+    @FXML
+    Label LoggedInName;
+
+    /**
+     * Represents the JavaFX Label used to display the current time.
+     */
+    @FXML
+    private Label timeLabel;
+    //</editor-fold>
 
     /**
      * Retrieves a deck from the database by id, and stored it in deck
@@ -85,6 +97,8 @@ public class LearningCardController {
     @FXML public void initialize(){
         contentDAO = new ContentDAO(); // This line triggers the ContentDAO constructor and the table creation errors
         studentDAO = new SqlStudentDAO();
+        LoggedInName.setText(UserSession.getInstance().getFullName());
+        bindTimeToLabel(timeLabel, "hh:mm a");
 
         deck = new LearningCardDeck(new ArrayList<>()
         {{
@@ -122,7 +136,7 @@ public class LearningCardController {
 
     @FXML
     private void onSidebarReviewClicked() throws IOException {
-        loadScene("review-student.fxml", sidebarReviewButton, true);
+        loadScene("review-student.fxml", sidebarReviewButton, false);
     }
 
     @FXML

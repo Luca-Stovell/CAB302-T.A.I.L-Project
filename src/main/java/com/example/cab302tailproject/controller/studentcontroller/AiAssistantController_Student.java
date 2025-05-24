@@ -10,15 +10,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
 import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
 /**
  * Controller for the Student AI Helper view (student_ai_helper.fxml).
@@ -77,6 +77,20 @@ public class AiAssistantController_Student {
     @FXML private TextArea aiResponseArea;
     //</editor-fold>
 
+    //<editor-fold desc="FXML UI Element References - Dynamic content">
+        /**
+     * This Label represents the UI element that displays the currently logged-in user's name.
+     */
+    @FXML
+    Label LoggedInName;
+
+    /**
+     * Represents the JavaFX Label used to display the current time.
+     */
+    @FXML
+    private Label timeLabel;
+    //</editor-fold>
+
     /**
      * Initializes the controller after its root element has been completely processed.
      * This method sets up the initial state of the UI elements, such as prompt text
@@ -94,88 +108,34 @@ public class AiAssistantController_Student {
             // Allow pressing Enter in the text field to trigger the help request
             userInputTextField.setOnAction(this::onSendHelpClicked);
         }
+
+        LoggedInName.setText(UserSession.getInstance().getFullName());
+        bindTimeToLabel(timeLabel, "hh:mm a");
     }
 
-    //<editor-fold desc="Event Handlers - Sidebar Navigation">
-    /**
-     * Handles action events for the "Generate" button in the sidebar.
-     * This is a placeholder and should be implemented with actual navigation or functionality.
-     * @param event The {@link ActionEvent} triggered by the button click.
-     */
+    //<editor-fold desc="Sidebar Buttons">
     @FXML
-    private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("learning_cards.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+    public void onSidebarGenerateClicked() throws IOException {
+        loadScene("learning_cards.fxml", sidebarGenerateButton, true);
     }
 
-    /**
-     * Handles action events for the "Review" button in the sidebar.
-     * Placeholder for navigation or review functionality.
-     * @param event The {@link ActionEvent} triggered by the button click.
-     */
     @FXML
-    private void onSidebarReviewClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-student.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+    private void onSidebarReviewClicked() throws IOException {
+        loadScene("review-student.fxml", sidebarReviewButton, false);
     }
 
-    /**
-     * Handles action events for the "Analysis" button in the sidebar.
-     * Placeholder for navigation or analysis functionality.
-     * @param event The {@link ActionEvent} triggered by the button click.
-     */
     @FXML
-    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-student.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
+    private void onSidebarAnalysisClicked() throws IOException {
+        loadScene("analytics-student.fxml", sidebarAnalysisButton, true);
     }
 
-    /**
-     * Handles action events for the "A.I. Assistance" button in the sidebar.
-     * As this controller manages the AI assistance view, this action might refresh
-     * the current view or clear the input/output fields.
-     * @param event The {@link ActionEvent} triggered by the button click.
-     */
     @FXML
-    private void onSidebarAiAssistanceClicked(ActionEvent event) {
-        System.out.println("Student Sidebar: A.I. Assistance button clicked (current view).");
-        if (userInputTextField != null) userInputTextField.clear();
-        if (aiResponseArea != null) {
-            aiResponseArea.clear();
-            aiResponseArea.setPromptText("Hi Max! How can I help you study today? Ask a question above.");
-        }
-        // TODO: Add any specific logic for re-activating or resetting this view
+    private void onSidebarAiAssistanceClicked() throws IOException { // TODO: Add any specific logic for re-activating or resetting this view
+        loadScene("ai_assistant-student.fxml", sidebarAiAssistanceButton, true);
     }
     //</editor-fold>
 
-    //<editor-fold desc="Event Handlers - Top Navigation">
-    /**
-     * Handles action events for the "Home" button in the top navigation bar.
-     * Placeholder for navigation to the student's main dashboard or home screen.
-     * @param event The {@link ActionEvent} triggered by the button click.
-     */
-    @FXML
-    private void onHomeClicked(ActionEvent event) {
-        System.out.println("Student Top Nav: Home button clicked - Navigation or action needed.");
-        // TODO: Implement navigation to the student home/dashboard view
-    }
 
-    /**
-     * Handles action events for the "Settings" button in the top navigation bar.
-     * Placeholder for navigation to a student-specific settings or preferences page.
-     * @param event The {@link ActionEvent} triggered by the button click.
-     */
-    @FXML
-    private void onSettingsClicked(ActionEvent event) {
-        System.out.println("Student Top Nav: Settings button clicked - Navigation or action needed.");
-        // TODO: Implement navigation to student settings view
-    }
     //</editor-fold>
 
     //<editor-fold desc="Event Handler - AI Interaction">
@@ -284,42 +244,6 @@ public class AiAssistantController_Student {
         // --- Start the Background Task ---
         // The AI call is executed on a new thread to keep the UI responsive
         new Thread(aiHelpTask).start();
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="Utility Methods">
-    /**
-     * Displays a standard JavaFX Alert dialog to the user.
-     * This method ensures that the alert is shown on the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert (e.g., {@link Alert.AlertType#INFORMATION}, {@link Alert.AlertType#WARNING}, {@link Alert.AlertType#ERROR}).
-     * @param title     The title for the alert window.
-     * @param message   The main content message for the alert.
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        if (!Platform.isFxApplicationThread()) {
-            // If not on the FX thread, schedule the alert to be shown on it
-            Platform.runLater(() -> displayAlertInternal(alertType, title, message));
-        } else {
-            // Already on the FX thread, display directly
-            displayAlertInternal(alertType, title, message);
-        }
-    }
-
-    /**
-     * Internal helper method to create and show an alert.
-     * This method should only be called from the JavaFX Application Thread.
-     *
-     * @param alertType The type of alert.
-     * @param title     The title of the alert.
-     * @param message   The content message of the alert.
-     */
-    private void displayAlertInternal(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null); // No header text for a simpler alert
-        alert.setContentText(message);
-        alert.showAndWait(); // Show the alert and wait for the user to close it
     }
     //</editor-fold>
 

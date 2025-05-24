@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            maxHeight = "-Infinity"
+            prefHeight = "420"
+            prefWidth="710"
+            fx:controller="com.example.cab302tailproject.controller.teachercontroller.Review.MainFrameController_TeachRev"
+            style= "-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2">
+
+    <left>
+        <VBox prefHeight="420" prefWidth="200"
+              style = "-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
+            <VBox prefHeight="120" style="-fx-padding: 25 0 0 30;">
+                <HBox alignment="CENTER_LEFT" spacing="20" prefWidth="200">
+                    <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                        <Image url="@../../../images/tail_logo.png" /> <clip>
+                        <Circle radius="20" centerX="20" centerY="20"/>
+                    </clip>
+                    </ImageView>
+                    <VBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="105.0">
+                        <Label fx:id="loggedInTeacherLabel" prefHeight="57.0" prefWidth="107.0" style="-fx-font-weight: bold; -fx-text-fill: #757575">
+                            <font> <Font size="16" /> </font> </Label>
+                    </VBox>
+                </HBox>
+                <VBox>
+                    <padding>
+                        <Insets top="10" right="5" bottom="10" left="5" />
+                    </padding>
+                    <Label fx:id="timeLabel" text="Time 12:34 am" style="-fx-text-fill: #B3B3B3">
+                        <font> <Font size="12" /> </font>
+                    </Label>
+                </VBox>
+            </VBox>
+
+            <Button text="Generate" fx:id="sidebarGenerateButton" onAction="#onSidebarGenerateClicked"
+                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
+            <Button text="Review" fx:id="sidebarReviewButton" onAction="#onSidebarReviewClicked"
+                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
+            <Button text="Analysis" fx:id="sidebarAnalysisButton" onAction="#onSidebarAnalysisClicked"
+                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
+            <Button text="A.I. Assistance" fx:id="sidebarAiAssistanceButton" onAction="#onSidebarAiAssistanceClicked"
+                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black;
+                    -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
+            <Button text="Library" fx:id="sidebarLibraryButton" onAction="#onSidebarLibraryClicked"
+                    style="-fx-background-color: #E3E3E3; -fx-text-fill:black;
+                    -fx-font-size: 16;-fx-border-color: #000000; -fx-border-width: 1 0 0 0;"
+                    prefWidth="200" prefHeight="60" minHeight="60" maxHeight="Infinity"
+                    VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+
+    <center>
+        <BorderPane>
+            <top>
+                <StackPane style = "-fx-border-color: #000000; -fx-border-width: 0 0 2 0;">
+                    <HBox maxWidth="510" prefHeight="70" prefWidth="510" alignment="CENTER">
+                        <Button fx:id="studentsButton" layoutX="260" layoutY="15" onAction="#onStudentsClicked" prefHeight="40" prefWidth="115" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Students" />
+                    </HBox>
+                </StackPane>
+            </top>
+
+            <center>
+                <VBox alignment="TOP_CENTER" prefHeight="350" prefWidth="510" VBox.vgrow="ALWAYS"
+                      style = "-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" fx:id="dynamicContentBox">
+                </VBox>
+            </center>
+        </BorderPane>
+    </center>
+</BorderPane>

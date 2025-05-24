@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.layout.StackPane?>
+<BorderPane maxHeight="-Infinity" prefHeight="420" prefWidth="710" style="-fx-background-color: white; -fx-border-color: #000000; -fx-border-width: 2 2 2 2" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.teachercontroller.ClassroomViewController">
+   <left>
+      <VBox prefHeight="420" prefWidth="200" style="-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
+         <VBox prefHeight="120" style="-fx-padding: 25 0 0 30;">
+            <HBox alignment="CENTER_LEFT" prefWidth="200" spacing="20">
+               <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
+                  <Image url="@../../../images/tail_logo.png" /> <clip>
+                  <Circle centerX="20" centerY="20" radius="20" />
+               </clip>
+               </ImageView>
+               <VBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="105.0">
+                  <Label fx:id="loggedInTeacherLabel" prefHeight="57.0" prefWidth="107.0" style="-fx-font-weight: bold; -fx-text-fill: #757575">
+                     <font> <Font size="16" /> </font> </Label>
+               </VBox>
+            </HBox>
+            <VBox>
+               <padding>
+                  <Insets bottom="10" left="5" right="5" top="10" />
+               </padding>
+               <Label fx:id="timeLabel" text="Time 12:34 am" style="-fx-text-fill: #B3B3B3">
+                  <font> <Font size="12" /> </font>
+               </Label>
+            </VBox>
+         </VBox>
+
+         <Button fx:id="sidebarGenerateButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarGenerateClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Generate" VBox.vgrow="ALWAYS" />
+         <Button fx:id="sidebarReviewButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarReviewClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Review" VBox.vgrow="ALWAYS" />
+         <Button fx:id="sidebarAnalysisButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarAnalysisClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Analysis" VBox.vgrow="ALWAYS" />
+         <Button fx:id="sidebarAiAssistanceButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarAiAssistanceClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black;                     -fx-font-size: 16; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="A.I. Assistance" VBox.vgrow="ALWAYS" />
+         <Button fx:id="sidebarLibraryButton" maxHeight="Infinity" minHeight="60" onAction="#onSidebarLibraryClicked" prefHeight="60" prefWidth="200" style="-fx-background-color: #E3E3E3; -fx-text-fill:black;                     -fx-font-size: 16;-fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="Library" VBox.vgrow="ALWAYS" />
+      </VBox>
+   </left>
+   <center>
+      <BorderPane>
+         <top>
+            <StackPane style="-fx-border-color: #000000; -fx-border-width: 0 0 2 0;">
+               <HBox maxWidth="510" prefHeight="70" prefWidth="510" alignment="CENTER">
+                  <Button fx:id="studentsButton" layoutX="260" layoutY="15" onAction="#onStudentsClicked" prefHeight="40" prefWidth="115" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Students" />
+               </HBox>
+            </StackPane>
+         </top>
+         <center>
+            <VBox alignment="TOP_CENTER" prefHeight="353.0" prefWidth="533.0" spacing="10" style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+               <children>
+                  <AnchorPane prefHeight="351.0" prefWidth="478.0">
+                     <children>
+                        <ListView fx:id="classroomDisplayListview" fixedCellSize="50.0" layoutX="269.0" layoutY="61.0" prefHeight="270.0" prefWidth="209.0" />
+                        <Button fx:id="createClassroomButton" layoutX="344.0" layoutY="-4.0" onAction="#onCreateClassRoom" prefHeight="36.0" prefWidth="134.0" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 14; -fx-background-radius: 10;" text="Create Classroom">
+                           <font>
+                              <Font size="4.0" />
+                           </font>
+                        </Button>
+                        <ComboBox fx:id="classroomComboBox" prefHeight="34.0" prefWidth="139.0" promptText="Select Classroom" style="-fx-background-radius: 10;" />
+                        <ListView fx:id="allStudentsListView" fixedCellSize="50.0" layoutX="5.0" layoutY="62.0" prefHeight="269.0" prefWidth="208.0" />
+                        <Label alignment="CENTER" layoutX="1.0" layoutY="34.0" prefHeight="29.0" prefWidth="216.0" text="All Students">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Label>
+                        <Button fx:id="assignStudentButton" layoutX="217.0" layoutY="122.0" mnemonicParsing="false" onAction="#onAssignStudentToClassroom" prefHeight="44.0" prefWidth="45.0" style="-fx-background-radius: 100; -fx-text-fill: white; -fx-background-color: #2C2C2C;" text="+">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="removeStudentButton" layoutX="217.0" layoutY="197.0" mnemonicParsing="false" onAction="#onRemoveStudentFromClassroom" prefHeight="44.0" prefWidth="45.0" style="-fx-background-radius: 100; -fx-text-fill: white; -fx-background-color: #2C2C2C;" text="-">
+                           <font>
+                              <Font size="20.0" />
+                           </font></Button>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </VBox>
+         </center>
+      </BorderPane>
+   </center>
+</BorderPane>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" prefHeight="420" prefWidth="710" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.cab302tailproject.controller.studentcontroller.StudentAnalyticsController">
+    <left>
+        <VBox prefHeight="420" prefWidth="50.0" style="-fx-border-color: #000000; -fx-border-width: 2;">
+            <Button fx:id="sidebarBackButton" onAction="#onSidebarBackClicked" prefHeight="59.0" prefWidth="112.0" style="-fx-background-color: #E3E3E3; -fx-text-fill:black; -fx-font-size: 12; -fx-border-color: #000000; -fx-border-width: 1 0 0 0;" text="← Back" />
+            <Line endX="50.0" startX="-50.0" strokeWidth="2.0">
+                <fill>
+                    <javafx.scene.paint.RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                        <stops>
+                            <javafx.scene.paint.Stop offset="0.0">
+                                <color>
+                                    <Color red="0.8" green="0.8" blue="0.8" />
+                                </color>
+                            </javafx.scene.paint.Stop>
+                            <javafx.scene.paint.Stop offset="1.0">
+                                <color>
+                                    <Color red="1.0" green="1.0" blue="1.0" />
+                                </color>
+                            </javafx.scene.paint.Stop>
+                        </stops>
+                    </javafx.scene.paint.RadialGradient>
+                </fill>
+            </Line>
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefHeight="377.0" prefWidth="102.0" vbarPolicy="AS_NEEDED" />
+        </VBox>
+    </left>
+
+    <center>
+        <BorderPane>
+            <top>
+                <AnchorPane prefHeight="70" prefWidth="510" style="-fx-border-color: #000000; -fx-border-width: 2 2 2 0;">
+                    <HBox HBox.hgrow="ALWAYS" />
+                    <Label layoutX="20.0" layoutY="11.0" prefHeight="46.0" prefWidth="200.0" text="My Performance">
+                        <font>
+                            <Font name="System Bold" size="18.0" />
+                        </font>
+                    </Label>
+                </AnchorPane>
+            </top>
+            <center>
+                <ScrollPane fitToWidth="true" hbarPolicy="NEVER" style="-fx-border-color: #000000; -fx-border-width: 0 2 2 0;" vbarPolicy="AS_NEEDED">
+                    <content>
+                        <VBox alignment="TOP_CENTER" prefWidth="640.0" spacing="15.0">
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="15.0" />
+                            </padding>
+                            <children>
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 16.0;" text="Learning Card Performance" />
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <Label text="Select Week:" />
+                                    <ComboBox fx:id="weekSelectionComboBox" prefWidth="200.0" promptText="Choose Week" />
+                                </HBox>
+                                <TableView fx:id="cardPerformanceTableView" prefHeight="250.0" VBox.vgrow="ALWAYS">
+                                    <columns>
+                                        <TableColumn fx:id="cardQuestionColumn" prefWidth="450.0" text="Card Question" />
+                                        <TableColumn fx:id="resultColumn" prefWidth="150.0" text="Your Result" />
+                                    </columns>
+                                    <placeholder>
+                                        <Label text="No performance data available for the selected week." />
+                                    </placeholder>
+                                </TableView>
+                            </children>
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </center>
+        </BorderPane>
+    </center>
+</BorderPane>

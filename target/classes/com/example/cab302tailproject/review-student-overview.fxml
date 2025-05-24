@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="Infinity" maxWidth="Infinity" prefHeight="274.0" prefWidth="510.0"
+      style="-fx-border-color: #000000; -fx-border-width: 0 0 0 0;" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.cab302tailproject.controller.studentcontroller.Review.OverviewController_StudRev">
+
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox maxWidth="144">
+            <HBox alignment="CENTER_RIGHT" maxHeight="20" maxWidth="144.0" minWidth="144" prefWidth="144.0">
+                <Label text="Classroom:   "/>
+                <ChoiceBox fx:id="classCheckBox" prefWidth="70.0" />
+            </HBox>
+
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="Infinity" maxWidth="144.0" minHeight="100" minWidth="50.0" prefHeight="274" prefWidth="144.0" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+                <VBox style="-fx-padding: 0;">
+                    <Button fx:id="week1Button" prefHeight="65" prefWidth="144" text="Week 1" />
+                    <Button fx:id="week2Button" prefHeight="65" prefWidth="144" text="Week 2" />
+                    <Button fx:id="week3Button" prefHeight="65" prefWidth="144" text="Week 3" />
+                    <Button fx:id="week4Button" prefHeight="65" prefWidth="144" text="Week 4" />
+                    <Button fx:id="week5Button" prefHeight="65" prefWidth="144" text="Week 5" />
+                    <Button fx:id="week6Button" prefHeight="65" prefWidth="144" text="Week 6" />
+                    <Button fx:id="week7Button" prefHeight="65" prefWidth="144" text="Week 7" />
+                    <Button fx:id="week8Button" prefHeight="65" prefWidth="144" text="Week 8" />
+                    <Button fx:id="week9Button" prefHeight="65" prefWidth="144" text="Week 9" />
+                    <Button fx:id="week10Button" prefHeight="65" prefWidth="144" text="Week 10" />
+                    <Button fx:id="week11Button" prefHeight="65" prefWidth="144" text="Week 11" />
+                    <Button fx:id="week12Button" prefHeight="65" prefWidth="144" text="Week 12" />
+                    <Button fx:id="week13Button" prefHeight="65" prefWidth="144" text="Week 13" />
+                </VBox>
+            </ScrollPane>
+        </VBox>
+
+
+        <VBox alignment="CENTER" prefWidth="510" spacing="15" style="-fx-padding: 0 0 0 0;" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+            <VBox alignment="CENTER">
+                <TextField fx:id="topicTextField" alignment="CENTER" editable="false" promptText="Select a week to view worksheet..."
+                           style="-fx-font-size: 20; -fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: black;" />
+            </VBox>
+            <VBox alignment="TOP_CENTER" prefWidth="440" VBox.vgrow="ALWAYS">
+                <ScrollPane fitToWidth="true" fitToHeight="true" minHeight="210">
+                    <VBox fx:id="generatedTextArea" maxHeight="Infinity" maxWidth="Infinity"
+                          style="-fx-alignment: top-left; -fx-font-size: 18;
+                              -fx-padding: 0 0 0 0;
+                              -fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: black;"
+                          VBox.vgrow="ALWAYS"/>
+                </ScrollPane>
+            </VBox>
+        </VBox>
+    </HBox>
+</VBox>

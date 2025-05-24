@@ -1,19 +1,18 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
 import com.example.cab302tailproject.DAO.*;
-import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.Classroom;
 import com.example.cab302tailproject.model.Student;
 import com.example.cab302tailproject.model.UserSession;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.List;
+
+import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
 /**
  * Controller for the teacher's classroom view.
@@ -28,7 +27,6 @@ public class ClassroomViewController {
     @FXML private Button sidebarAnalysisButton;
     @FXML private Button sidebarAiAssistanceButton;
     @FXML private Button studentsButton;
-    @FXML private Button homeButton;
 
     // Classroom controls
     @FXML private ComboBox<Classroom> classroomComboBox;
@@ -43,6 +41,10 @@ public class ClassroomViewController {
     private TeacherDAO teacherDao;
     private StudentDAO studentDao;
     private ClassroomDAO classroomDao;
+
+    // --- FXML UI Element references for dynamic labels ---
+    @FXML private Label loggedInTeacherLabel;
+    @FXML private Label timeLabel;
 
     /**
      * Constructor for ClassroomViewController.
@@ -69,6 +71,8 @@ public class ClassroomViewController {
                 loadStudentsInClass(selectedClassroom.getClassroomID());
             }
         });
+        loggedInTeacherLabel.setText(UserSession.getInstance().getFullName());
+        bindTimeToLabel(timeLabel, "hh:mm a");
     }
 
     /**
@@ -163,112 +167,59 @@ public class ClassroomViewController {
 
     // --- Navigation Handlers ---
 
+    //<editor-fold desc="Navigation - Direct Scene Switching">
     /**
-     * Navigates to the AI assistance view.
-     *
-     * @param event The action event triggered by the sidebar button.
-     * @throws IOException If the FXML cannot be loaded.
+     * Handles clicks on the "Generate" button in the sidebar.
+     * Reloads the lesson generation view on the current stage.
      */
     @FXML
-    private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
-        loadScene("lesson_generator-teacher.fxml");
+    private void onSidebarGenerateClicked() throws IOException {
+        loadScene("lesson_generator-teacher.fxml", sidebarGenerateButton, false);
     }
 
     /**
-     * Navigates to the review view.
-     *
-     * @param event The action event triggered by the sidebar button.
-     * @throws IOException If the FXML cannot be loaded.
+     * Handles clicks on the "Review" button in the sidebar.
+     * Loads the teacher review view on the current stage.
      */
     @FXML
-    private void onSidebarReviewClicked(ActionEvent event) throws IOException {
-        loadScene("review-student.fxml");
+    private void onSidebarReviewClicked() throws IOException {
+        loadScene("review-teacher.fxml", sidebarReviewButton, false);
     }
 
     /**
-     * Navigates to the analysis view.
-     *
-     * @param event The action event triggered by the sidebar button.
-     * @throws IOException If the FXML cannot be loaded.
+     * Handles clicks on the "Analysis" button in the sidebar.
+     * Loads the teacher analysis view on the current stage.
      */
     @FXML
-    private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
-        loadScene("analytics-teacher.fxml");
+    private void onSidebarAnalysisClicked() throws IOException {
+        loadScene("analytics-teacher.fxml", sidebarAnalysisButton, true);
     }
 
     /**
-     * Navigates to the AI assistant view.
-     *
-     * @param event The action event triggered by the sidebar button.
-     * @throws IOException If the FXML cannot be loaded.
+     * Handles clicks on the "A.I. Assistance" button in the sidebar.
+     * Loads the teacher AI assistance view on the current stage.
      */
     @FXML
-    private void onSidebarAiAssistanceClicked(ActionEvent event) throws IOException {
-        loadScene("ai_assistant-teacher.fxml");
+    private void onSidebarAiAssistanceClicked() throws IOException {
+        loadScene("ai_assistant-teacher.fxml", sidebarAiAssistanceButton, true);
     }
 
     /**
-     * Navigates to the library view.
-     *
-     * @param event The action event triggered by the sidebar button.
-     * @throws IOException If the FXML cannot be loaded.
+     * Handles clicks on the "Library" button in the sidebar.
+     * Loads the teacher library view on the current stage.
      */
     @FXML
-    private void onSidebarLibraryClicked(ActionEvent event) throws IOException {
-        loadScene("library-teacher.fxml");
+    private void onSidebarLibraryClicked() throws IOException {
+        loadScene("library-teacher.fxml", sidebarLibraryButton, true);
     }
 
     /**
-     * Navigates back to the classroom view.
-     *
-     * @param event The action event triggered by the sidebar button.
-     * @throws IOException If the FXML cannot be loaded.
+     * Handles clicks on the "Students" button in the top navigation.
+     * Loads a students view on the current stage.
      */
     @FXML
-    private void onStudentsClicked(ActionEvent event) throws IOException {
-        loadScene("classroom-teacher-view.fxml");
+    private void onStudentsClicked() throws IOException {
+        loadScene("classroom-teacher-view.fxml", studentsButton, true);
     }
-
-    /**
-     * Stub for the home button click handler.
-     *
-     * @param event The action event triggered by the home button.
-     */
-    @FXML
-    private void onHomeClicked(ActionEvent event) {
-        System.out.println("Home button clicked.");
-    }
-
-    /**
-     * Stub for the files button click handler.
-     *
-     * @param event The action event triggered by the files button.
-     */
-    @FXML
-    private void onFilesClicked(ActionEvent event) {
-        System.out.println("Files button clicked.");
-    }
-
-    /**
-     * Stub for the settings button click handler.
-     *
-     * @param event The action event triggered by the settings button.
-     */
-    @FXML
-    private void onSettingsClicked(ActionEvent event) {
-        System.out.println("Settings button clicked.");
-    }
-
-    /**
-     * Loads and switches to the specified FXML scene.
-     *
-     * @param fxml The FXML file name to load.
-     * @throws IOException If the file cannot be loaded.
-     */
-    private void loadScene(String fxml) throws IOException {
-        Stage stage = (Stage) studentsButton.getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(TailApplication.class.getResource(fxml));
-        Scene scene = new Scene(loader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
+    //</editor-fold>
 }

@@ -1,11 +1,14 @@
 package com.example.cab302tailproject.utils;
 
+import com.example.cab302tailproject.DAO.IContentDAO;
 import com.example.cab302tailproject.TailApplication;
+import com.example.cab302tailproject.model.Material;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -38,6 +41,24 @@ public class SceneHandling {
     }
 
 
+    /**
+     * Navigates to a new content view by loading the specified FXML file, initialising its controller,
+     * and replacing the current content in a given container. Optionally, the current view can be saved
+     * before navigation.
+     *
+     * @param fxmlPath       The path to the FXML file to be loaded for the new view.
+     * @param dynamicContent The container whose children will be replaced with the new view's content.
+     * @param previousView   The container to store the current content, allowing it to be restored later.
+     *                       Can be null if the current view does not need to be recalled (or if using an alternative
+     *                       previousView initialisation).
+     * @param currentMaterial The material object required for the new view. Included in this method to verify
+     *                        that currentMaterial is set up correctly.
+     * @param initController A functional interface for initialising the controller of the newly loaded FXML view
+     *                       with the necessary attributes of a successful view change.
+     *                       Use "(ExampleController controller) ->
+     *                         controller.initData(currentMaterial, dynamicContentBox, previousView)"
+     * @param <T>            The type of the controller associated with the new view.
+     */
     public static <T> void navigateToContent(String fxmlPath,
                                              VBox dynamicContent,
                                              VBox previousView,
@@ -74,6 +95,7 @@ public class SceneHandling {
 
     /**
      * A functional interface for initializing controllers.
+     * Used as a helper method for navigateToContent.
      *
      * @param <T> The type of the controller being initialized.
      */
@@ -81,5 +103,67 @@ public class SceneHandling {
     public interface ControllerInitializer<T> {
         void initialize(T controller);
     }
+
+    public static Material fetchContent(
+            int weekNumber,
+            ChoiceBox<Integer> classCheckBox,
+            String materialType,
+            IContentDAO contentDAO) {
+
+        if (classCheckBox.getValue() != null) {
+            try {
+                // Retrieve classroom ID from the choice box
+                int classroomID = classCheckBox.getValue();
+
+                // Fetch material ID and content
+                int materialID = contentDAO.getMaterialByWeekAndClassroom(weekNumber, materialType, classroomID);
+                Material material = contentDAO.getMaterialContent(materialID, materialType);
+
+                // Check for valid material content
+                if (material.getContent() != null) {
+                    return material; // Successfully found and fetched content
+                } else {
+                    // Show an alert if no content exists for the requested type
+                    showAlert(Alert.AlertType.ERROR,
+                            "No content found",
+                            String.format("""
+                                            A %s does not exist in week %d for classroom %d.\s
+                                            \s
+                                             \
+                                            A teacher must generate the %s or assign it via 'Review' -> 'All content'.""",
+                                    materialType, classroomID, weekNumber, materialType));
+                    return null;
+                }
+            } catch (Exception e) {
+                // Log and alert errors during retrieval
+                System.err.printf(
+                        "Error retrieving %s for classroom %d in week %d.%n",
+                        materialType, classCheckBox.getValue(), weekNumber);
+                showAlert(Alert.AlertType.ERROR,
+                        "No content found",
+                        String.format("""
+                                        A %s does not exist in week %d for classroom %d.\s
+                                        \s
+                                         \
+                                        A teacher must generate the %s or assign it via 'Review' -> 'All content'.""",
+                                materialType, classCheckBox.getValue(), weekNumber, materialType));
+                return null;
+            }
+        } else {
+            // Alert when no classroom is selected
+            showAlert(Alert.AlertType.WARNING,
+                    "No classroom selected",
+                    """
+                            No classroom selected. Please select a classroom to view the content.\s
+                            \s
+                             \
+                            If no classrooms are available, a teacher must assign one in their 'Students' dashboard.""");
+            return null;
+        }
+    }
+
+
+
+
 
 }

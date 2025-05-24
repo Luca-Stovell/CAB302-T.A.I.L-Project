@@ -1,22 +1,19 @@
 package com.example.cab302tailproject.controller.teachercontroller;
 
-import com.example.cab302tailproject.TailApplication;
-import javafx.application.Platform;
+import com.example.cab302tailproject.model.UserSession;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import com.example.cab302tailproject.ollama4j.OllamaSyncResponse;
 import io.github.ollama4j.exceptions.OllamaBaseException;
-import javafx.stage.Stage;
 
 import java.io.IOException;
+
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
+import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
 
 /**
@@ -34,16 +31,16 @@ public class AiAssistantController {
     @FXML private Button sidebarLibraryButton;
 
     // --- FXML UI Element References for Top Navigation ---
-    @FXML private Button filesButton;
     @FXML private Button studentsButton;
-    @FXML private Button homeButton;
-    @FXML private Button settingsButton;
 
     // --- FXML UI Element References for Main AI Assistant Content ---
     @FXML private TextField userInputTextField; // For user to type their question
     @FXML private Button sendHelpRequestButton; // Button to send the question
     @FXML private TextArea aiResponseArea;   // To display the AI's response
 
+    // --- FXML UI Element references for dynamic labels ---
+    @FXML private Label loggedInTeacherLabel;
+    @FXML private Label timeLabel;
 
     /**
      * Initializes the controller class. This method is automatically called
@@ -59,54 +56,66 @@ public class AiAssistantController {
         if (userInputTextField != null) {
             userInputTextField.setOnAction(this::onSendHelpRequestClicked); // Allow Enter key to send
         }
+        loggedInTeacherLabel.setText(UserSession.getInstance().getFullName());
+        bindTimeToLabel(timeLabel, "hh:mm a");
     }
 
-    // --- Event Handlers for Sidebar Buttons ---
-    // TODO (Placeholder implementations - add actual navigation/logic)
-    @FXML private void onSidebarGenerateClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarGenerateButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("lesson_generator-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
-    @FXML private void onSidebarReviewClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarReviewButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
-    @FXML private void onSidebarAnalysisClicked(ActionEvent event) throws IOException {
-        Stage stage = (Stage) sidebarAnalysisButton.getScene().getWindow();
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("analytics-teacher.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        stage.setScene(scene);
-    }
-    @FXML private void onSidebarAiAssistanceClicked(ActionEvent event) {
-        System.out.println("Sidebar A.I. Assistance button clicked (current view).");
-        if (userInputTextField != null) userInputTextField.clear();
-        if (aiResponseArea != null) {
-            aiResponseArea.clear();
-            aiResponseArea.setPromptText("AI response will appear here. Ask a question above and click 'Help'.");
-        }
-    }
-    @FXML private void onSidebarLibraryClicked(ActionEvent event) { System.out.println("Sidebar Library button clicked."); }
-
-    // --- Event Handlers for Top Navigation Buttons ---
-    // TODO (Placeholder implementations - add actual navigation/logic)
-    @FXML private void onFilesClicked(ActionEvent event) { System.out.println("Files button clicked."); }
-
+    // --- Event Handlers for Sidebar/Top Buttons ---
+    //<editor-fold desc="Navigation - Direct Scene Switching">
+    /**
+     * Handles clicks on the "Generate" button in the sidebar.
+     * Reloads the lesson generation view on the current stage.
+     */
     @FXML
-    private void onStudentsClicked(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("classroom-teacher-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), TailApplication.WIDTH, TailApplication.HEIGHT);
-        Stage stage = (Stage) studentsButton.getScene().getWindow();
-        stage.setScene(scene);
+    private void onSidebarGenerateClicked() throws IOException {
+        loadScene("lesson_generator-teacher.fxml", sidebarGenerateButton, false);
     }
 
+    /**
+     * Handles clicks on the "Review" button in the sidebar.
+     * Loads the teacher review view on the current stage.
+     */
+    @FXML
+    private void onSidebarReviewClicked() throws IOException {
+        loadScene("review-teacher.fxml", sidebarReviewButton, false);
+    }
 
-    @FXML private void onHomeClicked(ActionEvent event) { System.out.println("Home button clicked."); }
-    @FXML private void onSettingsClicked(ActionEvent event) { System.out.println("Settings button clicked."); }
+    /**
+     * Handles clicks on the "Analysis" button in the sidebar.
+     * Loads the teacher analysis view on the current stage.
+     */
+    @FXML
+    private void onSidebarAnalysisClicked() throws IOException {
+        loadScene("analytics-teacher.fxml", sidebarAnalysisButton, true);
+    }
 
+    /**
+     * Handles clicks on the "A.I. Assistance" button in the sidebar.
+     * Loads the teacher AI assistance view on the current stage.
+     */
+    @FXML
+    private void onSidebarAiAssistanceClicked() throws IOException {
+        loadScene("ai_assistant-teacher.fxml", sidebarAiAssistanceButton, true);
+    }
+
+    /**
+     * Handles clicks on the "Library" button in the sidebar.
+     * Loads the teacher library view on the current stage.
+     */
+    @FXML
+    private void onSidebarLibraryClicked() throws IOException {
+        loadScene("library-teacher.fxml", sidebarLibraryButton, true);
+    }
+
+    /**
+     * Handles clicks on the "Students" button in the top navigation.
+     * Loads a students view on the current stage.
+     */
+    @FXML
+    private void onStudentsClicked() throws IOException {
+        loadScene("classroom-teacher-view.fxml", studentsButton, true);
+    }
+    //</editor-fold>
 
     /**
      * Handles the action when the "Help" button is clicked or Enter is pressed in the input field.
@@ -194,26 +203,5 @@ public class AiAssistantController {
 
         // --- Start the Background Task ---
         new Thread(aiHelpTask).start();
-    }
-
-    /**
-     * Helper method to display a standard JavaFX Alert dialog.
-     * Ensures the alert is shown on the JavaFX Application Thread.
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> displayAlertInternal(alertType, title, message));
-        } else {
-            displayAlertInternal(alertType, title, message);
-        }
-    }
-
-    /** Displays the actual alert. Should only be called from the FX thread. */
-    private void displayAlertInternal(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

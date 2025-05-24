@@ -27,9 +27,7 @@
                     <padding>
                         <Insets bottom="10" left="5" right="5" top="10" />
                     </padding>
-                    <Label style="-fx-text-fill: #B3B3B3" text="Week 5">
-                        <font> <Font size="12" /> </font> </Label>
-                    <Label style="-fx-text-fill: #B3B3B3" text="Time 12:34pm">
+                    <Label fx:id="timeLabel" text="Time 12:34 am" style="-fx-text-fill: #B3B3B3">
                         <font> <Font size="12" /> </font>
                     </Label>
                 </VBox>

@@ -18,7 +18,7 @@
     <left>
         <VBox prefHeight="420" prefWidth="200"
               style = "-fx-border-color: #000000; -fx-border-width: 0 2 0 0;">
-            <VBox prefHeight="120" alignment="TOP_LEFT" style="-fx-padding: 25 0 0 30;">
+            <VBox prefHeight="120" style="-fx-padding: 25 0 0 30;">
                 <HBox alignment="CENTER_LEFT" spacing="20" prefWidth="200">
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true">
                         <Image url="@../../../images/tail_logo.png" /> <clip>
@@ -34,9 +34,7 @@
                     <padding>
                         <Insets top="10" right="5" bottom="10" left="5" />
                     </padding>
-                    <Label text = "Week 5" style="-fx-text-fill: #B3B3B3">
-                        <font> <Font size="12" /> </font> </Label>
-                    <Label text = "Time 12:34pm" style="-fx-text-fill: #B3B3B3">
+                    <Label fx:id="timeLabel" text="Time 12:34 am" style="-fx-text-fill: #B3B3B3">
                         <font> <Font size="12" /> </font>
                     </Label>
                 </VBox>

@@ -18,6 +18,7 @@ import javafx.scene.text.TextFlow;
 import java.util.List;
 
 import static com.example.cab302tailproject.utils.Alerts.showAlert;
+import static com.example.cab302tailproject.utils.SceneHandling.fetchContent;
 import static com.example.cab302tailproject.utils.TextFormatting.formatTextWithBold;
 
 public class OverviewController_StudRev {
@@ -113,35 +114,27 @@ public class OverviewController_StudRev {
      * and current week.
      */
     private void viewContent() {
-        if (classCheckBox.getValue() != null) {
-            try {
-                if (generatedTextArea == null) {System.err.println("generatedTextArea is null");}
-
-                int classroomID = classCheckBox.getValue();
-                int materialIdOfLesson = contentDAO.getMaterialByWeekAndClassroom(weekNumber, materialType, classroomID);
-                currentMaterial = contentDAO.getMaterialContent(materialIdOfLesson, materialType);
-
-                if (currentMaterial != null) {
-                    TextFlow formattedContent = formatTextWithBold(currentMaterial.getContent());
-                    generatedTextArea.getChildren().add(formattedContent);
-                    topicTextField.setText(currentMaterial.getTopic());
-                }
-                else {
-                    System.err.println("Workshop is null");
-                    showAlert(Alert.AlertType.WARNING, "No content found", "No content found for the selected classroom and week. \n Ask your teacher when it will be available.");
-                }
-            }
-            catch (Exception e) {
-                System.err.println("Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + " (materialID: " + currentMaterial.getMaterialID() + ").");
-                showAlert(Alert.AlertType.ERROR, "Retrieval error", "Error retrieving " + materialType + " for classroom " + classCheckBox.getValue() + " in week " + weekNumber + ".");
-            }
-        }
-        else {
-            generatedTextArea.getChildren().add(formatTextWithBold("No classroom selected. \n Please verify your enrolment with your teacher.") );
-            System.out.println("No classroom selected");
-            showAlert(Alert.AlertType.ERROR, "No classroom selected", "Could not update classroom. Error: ");
+        currentMaterial = fetchContent(weekNumber, classCheckBox, materialType, contentDAO);
+        if (currentMaterial != null){
+            updateContentView();
         }
     }
+
+    /**
+     * Helper for viewContent. Updates the view by refreshing the displayed content and
+     * corresponding topic.
+     * Clears the existing content in the `generatedTextArea` and formats the new content from
+     * `currentMaterial` using the `formatTextWithBold` method. Additionally,
+     * it updates the `topicTextField` with the topic associated with the
+     * `currentMaterial`.
+     */
+    private void updateContentView(){
+        generatedTextArea.getChildren().clear();
+        TextFlow formattedContent = formatTextWithBold(currentMaterial.getContent());
+        generatedTextArea.getChildren().add(formattedContent);
+        topicTextField.setText(currentMaterial.getTopic());
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Class selection">

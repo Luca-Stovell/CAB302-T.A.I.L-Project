@@ -1,7 +1,14 @@
 package com.example.cab302tailproject.utils;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.util.Duration;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class TextFormatting {
     //<editor-fold desc="Text formatting">
@@ -44,4 +51,25 @@ public class TextFormatting {
         return textFlow;
     }
     //</editor-fold>
+
+
+    /**
+     * Binds the current system time to a JavaFX Label, formatting the time according to the specified time format.
+     * The label's text is updated every second to display the current time.
+     *
+     * @param label      the JavaFX Label to which the current time will be bound and displayed.
+     * @param timeFormat the format pattern for the time, specified as a string compatible with {@link DateTimeFormatter}.
+     */
+    public static void bindTimeToLabel(Label label, String timeFormat) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(timeFormat);
+
+        // Update the label's text periodically
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+            String currentTime = LocalTime.now().format(formatter);
+            label.setText("Time " + currentTime);
+        }));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+
 }

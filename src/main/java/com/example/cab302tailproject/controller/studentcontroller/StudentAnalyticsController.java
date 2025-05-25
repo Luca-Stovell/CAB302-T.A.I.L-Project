@@ -183,7 +183,7 @@ public class StudentAnalyticsController {
     @FXML
     private void onSidebarBackClicked(ActionEvent event) throws IOException {
         // Navigate to the previous relevant student screen, e.g., student dashboard
-        loadScene(event, "ai_assistant-student.fxml", "TAIL - Student Dashboard");
+        loadScene(event, "learning_cards.fxml", "TAIL - Student Dashboard");
     }
 
     @FXML

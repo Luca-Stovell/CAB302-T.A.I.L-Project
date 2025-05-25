@@ -165,7 +165,7 @@ public class LoginController {
             if (studentDao.checkEmail(email) && studentDao.checkPassword(email, password)) {
                 loginSuccess = true;
                 userDetails = studentDao.getUserNameDetails(email);
-                targetFxml = "ai_assistant-student.fxml"; // Your student's main page
+                targetFxml = "learning_cards.fxml"; // Your student's main page
                 windowTitle = "TAIL - Student Dashboard";
             }
         }

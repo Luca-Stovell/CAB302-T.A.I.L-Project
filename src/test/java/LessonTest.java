@@ -7,7 +7,7 @@ import java.time.Instant;
 public class LessonTest {
     private static final String TOPIC1 = "Modern history";
     private static final String TOPIC2 = "Algebra";
-    private static final String LESSON_CONTENT_ONE = "Modern history content, which is a bit long and may include all kinds of (4352) topics and $other things & too.";
+    private static final String LESSON_CONTENT_ONE = "**Lesson Title:** Exploring Magnets\n\n**Grade Level:** 3-6\n\n**Objectives:**\n\n* Students will understand the basic properties of magnets.\n* Students will be able to identify different types of magnets and their characteristics.\n* Students will learn how to create a magnetic field using various materials.\n\n**Materials:**\n\n* Magnets (strong and weak)\n* Bar magnets\n* Iron filings\n* Copper wire\n* Needle magnet\n* Paper clips\n* Scissors\n* Pencils\n* Chart paper\n\n**Lesson Plan:**\n\n**Introduction (10 minutes)**\n\n1. Begin by asking students if they have ever seen or interacted with magnets before.\n2. Show a few examples of different types of magnets, such as bar magnets, iron filings, and needle magnets.\n3. Explain that magnets are objects that produce a force when placed near other magnets.\n\n**Direct Instruction (15 minutes)**\n\n1. Show students how to create a magnetic field using various materials.\n2. Demonstrate the concept of electromagnetism by using copper wire to create a simple electric current.\n3. Explain how magnets can be used to attract and repel objects.\n4. Use bar magnets to demonstrate the strength of different types of magnets.\n\n**Guided Practice (15 minutes)**\n\n1. Distribute iron filings to students and have them spread it out in a circle around the magnets.\n2. Ask students to observe what happens when they try to move the needle magnet over the iron filings without touching it.\n3. Have students record their observations on chart paper.\n\n**Independent Practice (20 minutes)**\n\n1. Provide each student with a few materials, such as paper clips and scissors, and ask them to create a simple magnetic system using these materials.\n2. Encourage students to experiment and observe how the magnets interact with each other.\n\n**Assessment:**\n\n* Observe students during guided and independent practice activities to assess their understanding of magnet properties and behavior.\n* Review student charts for accuracy and completeness.\n\n**Conclusion (5 minutes)**\n\n1. Summarize the key concepts learned in the lesson, including the basic properties of magnets and how they interact with each other.\n2. Ask students to share any questions or observations they have about magnets.\n\n**Extensions:**\n\n* Create a magnet museum in the classroom or school hallway.\n* Conduct further experiments to explore the properties of different types of magnets.\n* Research real-world applications of magnets, such as electric motors and magnetic resonance imaging (MRI) machines.\n\n**Interactive Fun Activities:**\n\n* \"Pin the Magnets on the Board\": Adapt the classic game to use magnets instead of paper clips.\n* \"Magnet Scavenger Hunt\": Hide different types of magnets around the classroom or school hallway and have students find them using a list of characteristics.\n* \"Magnetic Maze\": Create a maze with magnetic shapes and challenge students to navigate through it without touching the walls.";
     private static final String LESSON_CONTENT_TWO = "Algebra content, which is a bit long and may include all kinds of (4352) topics and $other things & too.";
     private static final int VALID_ID1 = 12345678;
     private static final int VALID_ID2 = 62;
@@ -115,5 +115,15 @@ public class LessonTest {
     public void testSetMaterialID_Lesson2() {
         lesson2.setMaterialID(VALID_ID1);
         assertEquals(VALID_ID1, lesson2.getMaterialID());
+    }
+
+    @Test
+    public void BadMaterialID() {
+        assertThrows(IllegalArgumentException.class, () -> lesson2.setMaterialID(-1));
+    }
+
+    @Test
+    public void BadTeacherID() {
+        assertThrows(IllegalArgumentException.class, () -> lesson2.setTeacherID(-1));
     }
 }

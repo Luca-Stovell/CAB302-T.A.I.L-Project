@@ -12,7 +12,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.Node;
-import javafx.application.Platform; // For showAlert
 
 import java.io.IOException;
 import java.net.URL; // For FXML loading
@@ -20,6 +19,8 @@ import java.net.URL; // For FXML loading
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
+
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
 
 /**
  * Controller for the login view (login_page.fxml).
@@ -212,30 +213,6 @@ public class LoginController {
         } else {
             System.err.println("Login Error (Label not available): " + message);
             showAlert(Alert.AlertType.ERROR, "Login Failed", message); // Fallback alert
-        }
-    }
-
-    /**
-     * Helper method to display alerts.
-     * @param alertType The type of alert.
-     * @param title The title.
-     * @param message The message.
-     */
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(alertType);
-                alert.setTitle(title);
-                alert.setHeaderText(null);
-                alert.setContentText(message);
-                alert.showAndWait();
-            });
-        } else {
-            Alert alert = new Alert(alertType);
-            alert.setTitle(title);
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
         }
     }
 }

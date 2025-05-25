@@ -44,11 +44,25 @@
     <center>
         <BorderPane>
             <top>
-                <StackPane style="-fx-border-color: #000000; -fx-border-width: 0 0 2 0;">
-                    <HBox maxWidth="510" prefHeight="70" prefWidth="510" alignment="CENTER">
-                        <Button fx:id="studentsButton" layoutX="260" layoutY="15" onAction="#onStudentsClicked" prefHeight="40" prefWidth="115" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Students" />
-                    </HBox>
-                </StackPane>
+                <HBox alignment="CENTER" prefHeight="70" prefWidth="510" spacing="20"
+                      style="-fx-border-color: #000000; -fx-border-width: 0 0 2 0; -fx-padding: 0 20 0 20;">
+                    <Label prefHeight="46.0" prefWidth="250.0" text="Generate">
+                        <font>
+                            <Font size="28.0" />
+                        </font>
+                    </Label>
+                    <HBox HBox.hgrow="ALWAYS" />
+                    <Button fx:id="studentsButton" onAction="#onStudentsClicked" prefHeight="40" prefWidth="100" style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Students" />
+                    <padding>
+                        <Insets right="20" />
+                    </padding>
+                    <Button onAction="#logoutButtonClicked" prefHeight="40" prefWidth="100"
+                            style="-fx-background-color: #2C2C2C; -fx-text-fill: white; -fx-font-size: 16; -fx-background-radius: 10;" text="Logout">
+                    </Button>
+                    <padding>
+                        <Insets right="20" />
+                    </padding>
+                </HBox>
             </top>
 
             <center>

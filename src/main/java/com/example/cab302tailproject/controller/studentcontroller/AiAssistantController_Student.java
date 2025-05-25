@@ -131,7 +131,7 @@ public class AiAssistantController_Student {
 
     @FXML
     private void onSidebarAiAssistanceClicked() throws IOException { // TODO: Add any specific logic for re-activating or resetting this view
-        loadScene("ai_assistant-student.fxml", sidebarAiAssistanceButton, true);
+        loadScene("ai_assistant-student.fxml", sidebarAiAssistanceButton, false);
     }
     //</editor-fold>
 

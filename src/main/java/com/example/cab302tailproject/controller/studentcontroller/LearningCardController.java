@@ -131,7 +131,7 @@ public class LearningCardController {
 
     @FXML
     private void onSidebarAiAssistanceClicked() throws IOException {
-        loadScene("ai_assistant-student.fxml", sidebarAiAssistanceButton, true);
+        loadScene("ai_assistant-student.fxml", sidebarAiAssistanceButton, false);
     }
 
     @FXML

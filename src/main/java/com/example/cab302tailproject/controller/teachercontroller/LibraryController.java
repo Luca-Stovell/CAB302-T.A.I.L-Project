@@ -135,7 +135,7 @@ public class LibraryController {
      */
     @FXML
     private void onSidebarAiAssistanceClicked() throws IOException {
-        loadScene("ai_assistant-teacher.fxml", sidebarAiAssistanceButton, true);
+        loadScene("ai_assistant-teacher.fxml", sidebarAiAssistanceButton, false);
     }
 
     /**

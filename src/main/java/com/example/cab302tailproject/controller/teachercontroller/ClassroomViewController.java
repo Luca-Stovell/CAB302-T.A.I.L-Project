@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import java.io.IOException;
 import java.util.List;
 
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
 import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
 import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
@@ -220,6 +221,13 @@ public class ClassroomViewController {
     @FXML
     private void onStudentsClicked() throws IOException {
         loadScene("classroom-teacher-view.fxml", studentsButton, true);
+    }
+
+    @FXML private void logoutButtonClicked(ActionEvent actionEvent) throws IOException {
+        UserSession.getInstance().logoutUser();
+        System.out.println("Log out successful");
+        loadScene("login_page.fxml", studentsButton, true);
+        showAlert(Alert.AlertType.INFORMATION, "Log Out Successful", "You have been logged out successfully.");
     }
     //</editor-fold>
 }

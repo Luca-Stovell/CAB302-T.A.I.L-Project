@@ -268,7 +268,7 @@ public class LearningCardController {
     @FXML private void logoutButtonClicked(ActionEvent actionEvent) throws IOException {
         UserSession.getInstance().logoutUser();
         System.out.println("Log out successful");
-        loadScene("login_page.fxml", sidebarAnalysisButton, true);
-
+        loadScene("login_page.fxml", logoutButton, true);
+        showAlert(Alert.AlertType.INFORMATION, "Log Out Successful", "You have been logged out successfully.");
     }
 }

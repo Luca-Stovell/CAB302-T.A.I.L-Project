@@ -8,6 +8,7 @@ import com.example.cab302tailproject.model.UserSession;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -20,6 +21,7 @@ import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.example.cab302tailproject.utils.Alerts.showAlert;
 import static com.example.cab302tailproject.utils.SceneHandling.loadScene;
 import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel;
 
@@ -152,6 +154,13 @@ public class LibraryController {
     @FXML
     private void onStudentsClicked() throws IOException {
         loadScene("classroom-teacher-view.fxml", studentsButton, true);
+    }
+
+    @FXML private void logoutButtonClicked() throws IOException {
+        UserSession.getInstance().logoutUser();
+        System.out.println("Log out successful");
+        loadScene("login_page.fxml", studentsButton, true);
+        showAlert(Alert.AlertType.INFORMATION, "Log Out Successful", "You have been logged out successfully.");
     }
     //</editor-fold>
 }

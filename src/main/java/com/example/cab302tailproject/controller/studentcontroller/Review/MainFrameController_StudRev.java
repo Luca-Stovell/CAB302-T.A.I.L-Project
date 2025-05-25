@@ -2,7 +2,6 @@ package com.example.cab302tailproject.controller.studentcontroller.Review;
 
 import com.example.cab302tailproject.TailApplication;
 import com.example.cab302tailproject.model.UserSession;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
@@ -18,7 +17,7 @@ import static com.example.cab302tailproject.utils.TextFormatting.bindTimeToLabel
 
 
 public class MainFrameController_StudRev {
-    @FXML private Button logoutButton;
+
     //<editor-fold desc="FXML UI Element References - Dynamic content">
     /**
      * A VBox container dynamically populated with content for managing and displaying
@@ -43,6 +42,7 @@ public class MainFrameController_StudRev {
     @FXML private Button sidebarAnalysisButton;
     @FXML private Button sidebarReviewButton;
     @FXML private Button sidebarAiAssistanceButton;
+    @FXML private Button logoutButton;
 
     //<editor-fold desc="Initialisation">
     public void initialize() {
@@ -90,11 +90,12 @@ public class MainFrameController_StudRev {
     private void onSidebarAiAssistanceClicked() throws IOException {
         loadScene("ai_assistant-student.fxml", sidebarAiAssistanceButton, true);
     }
-    //</editor-fold>
-    @FXML private void logoutButtonClicked(ActionEvent actionEvent) throws IOException {
+
+    @FXML private void logoutButtonClicked() throws IOException {
         UserSession.getInstance().logoutUser();
         System.out.println("Log out successful");
-        loadScene("login_page.fxml", sidebarAnalysisButton, true);
-
+        loadScene("login_page.fxml", logoutButton, true);
+        showAlert(Alert.AlertType.INFORMATION, "Log Out Successful", "You have been logged out successfully.");
     }
+    //</editor-fold>
 }

@@ -251,5 +251,6 @@ public class AiAssistantController_Student {
         UserSession.getInstance().logoutUser();
         System.out.println("Log out successful");
         loadScene("login_page.fxml", sidebarAnalysisButton, true);
+        showAlert(Alert.AlertType.INFORMATION, "Log Out Successful", "You have been logged out successfully.");
     }
 }

@@ -148,6 +148,13 @@ public class MainFrameController_TeachRev {
     private void onStudentsClicked() throws IOException {
         loadScene("classroom-teacher-view.fxml", studentsButton, true);
     }
+
+    @FXML private void logoutButtonClicked() throws IOException {
+        UserSession.getInstance().logoutUser();
+        System.out.println("Log out successful");
+        loadScene("login_page.fxml", studentsButton, true);
+        showAlert(Alert.AlertType.INFORMATION, "Log Out Successful", "You have been logged out successfully.");
+    }
     //</editor-fold>
 
 }

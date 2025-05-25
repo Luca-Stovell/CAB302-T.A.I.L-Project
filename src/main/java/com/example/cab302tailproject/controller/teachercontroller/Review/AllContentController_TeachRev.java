@@ -116,15 +116,12 @@ public class AllContentController_TeachRev {
     private void onBackClicked() throws IOException {
         if (previousView != null) {
             if (previousView.getChildren().size() == 1) {
-                //System.out.println("Restoring previous view with children: " + previousView.getChildren().size());
                 dynamicContentBox.getChildren().clear();
                 dynamicContentBox.getChildren().addAll(previousView.getChildren());
                 return;
             }
-            //System.out.println("Previous view exists but has children: " + previousView.getChildren().size());
         }
         // Moving to new view
-        //System.out.println("Loading new view: review-teacher-overview.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(TailApplication.class.getResource("review-teacher-overview.fxml"));
         VBox layout = fxmlLoader.load();
 

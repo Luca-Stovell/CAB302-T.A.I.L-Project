@@ -1,6 +1,6 @@
 package com.example.cab302tailproject.LearningCards;
 
-public class LearningCard { // Changed from 'class' to 'public class'
+class LearningCard { // Changed from 'public class' back to 'class'
     private final String question;
     private final String answer;
     private boolean isFlipped = false;

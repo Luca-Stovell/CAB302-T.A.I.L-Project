@@ -33,7 +33,7 @@ public class LearningCardDeckTest {
 
     @Test
     public void testTurnStringIntoReadableFormat(){
-        String input = "question::answer,,question2::answer2,,question3::answer3";
+        String input = "question\nanswer\n\nquestion2\nanswer2\n\nquestion3\nanswer3";
         List<String[]> expected = new ArrayList<String[]>() {
             {
                 add(new String[]{"question", "answer"});
@@ -106,6 +106,7 @@ public class LearningCardDeckTest {
         deck.flip();
         deck.hardNext();
         deck.next();
+        deck.next();
         assertEquals("question1", deck.getCurrentCard());
     }
 
@@ -124,6 +125,12 @@ public class LearningCardDeckTest {
         assertEquals("question8", deck.getCurrentCard());
     }
 
+    @Test
+    public void testGetQuestionText(){
+        assertEquals("question1", deck.getCurrentQuestionText());
+        deck.flip();
+        assertEquals("question1", deck.getCurrentQuestionText());
+    }
 
 }
 

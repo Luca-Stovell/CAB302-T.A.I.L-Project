@@ -1,12 +1,8 @@
 package com.example.cab302tailproject.model;
 
-import java.time.Instant;
-// many problems with this, but used for testing right now
 public class LearningCardCreator {
-    private String topic;   // Topic of worksheet
-    private String content; // Actual content of the worksheet
-    //private Instant lastModifiedDate;
-    //private int teacherID;
+    private String topic;   // Topic of cards
+    private String content; // Actual content of the cards
     private int materialID;
 
     /**
@@ -20,6 +16,7 @@ public class LearningCardCreator {
 
     }
 
+    // Used nowhere, other than unit tests
     public LearningCardCreator(String topic, String content,  int materialID) {
         this.topic = topic;
         this.content = content;
@@ -45,8 +42,6 @@ public class LearningCardCreator {
     public void setMaterialID(int materialID) {
         this.materialID = materialID;
     }
-
-
 
     public String getTopic() {
         return topic;

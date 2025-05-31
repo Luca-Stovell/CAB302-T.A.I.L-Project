@@ -25,31 +25,31 @@ class ContentTableDataTest {
 
     @Test
     void getLastModified() {
-        assertEquals(lastModified, data.lastModified());
+        assertEquals(lastModified, data.getLastModified());
     }
 
     @Test
     void getWeek() {
-        assertEquals(week, data.week());
+        assertEquals(week, data.getWeek());
     }
 
     @Test
     void getTopic() {
-        assertEquals(topic, data.topic());
+        assertEquals(topic, data.getTopic());
     }
 
     @Test
     void getType() {
-        assertEquals(type, data.type());
+        assertEquals(type, data.getType());
     }
 
     @Test
     void getClassroom() {
-        assertEquals(classroom, data.classroom());
+        assertEquals(classroom, data.getClassroom());
     }
 
     @Test
     void getMaterialID() {
-        assertEquals(materialID, data.materialID());
+        assertEquals(materialID, data.getMaterialID());
     }
 }

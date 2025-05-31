@@ -223,6 +223,11 @@ public class ClassroomViewController {
         loadScene("classroom-teacher-view.fxml", studentsButton, true);
     }
 
+    /**
+     * Handles actions performed when the logout button is clicked.
+     * This method logs out the currently logged-in user, switches the view
+     * to the login page, and displays a confirmation message.
+     */
     @FXML private void logoutButtonClicked(ActionEvent actionEvent) throws IOException {
         UserSession.getInstance().logoutUser();
         System.out.println("Log out successful");

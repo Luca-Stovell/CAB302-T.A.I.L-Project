@@ -143,8 +143,8 @@ public class AllContentController_TeachRev {
                     "Please select an item from the table to view.");
             return;
         }
-        String type = selectedItem.type();
-        int materialID = selectedItem.materialID();
+        String type = selectedItem.getType();
+        int materialID = selectedItem.getMaterialID();
 
         currentMaterial = new Material(materialID, type);
         navigateToContentPage();
@@ -164,8 +164,8 @@ public class AllContentController_TeachRev {
                         "Please select an item from the table to view.");
                 return;
             }
-            int materialID = selectedItem.materialID();
-            String selectedType = selectedItem.type();
+            int materialID = selectedItem.getMaterialID();
+            String selectedType = selectedItem.getType();
 
             System.out.println("Deleting content with materialID: " + materialID);
             contentDAO.deleteContent(materialID, selectedType);

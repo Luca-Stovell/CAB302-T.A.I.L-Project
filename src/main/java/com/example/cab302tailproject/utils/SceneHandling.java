@@ -118,11 +118,29 @@ public class SceneHandling {
         void initialize(T controller);
     }
 
+    /**
+     * Fetches the material content for a specific week, classroom, and material type.
+     * If the material content is not found, displays an alert with appropriate messages.
+     *
+     * @param weekNumber The week number for which content is to be fetched.
+     * @param classCheckBox A ChoiceBox containing the classroom ID. The selected classroom will be used to fetch the material.
+     * @param materialType The type of the material to fetch (e.g., "Quiz", "Assignment").
+     * @param contentDAO The data access object used to fetch material data from the database.
+     * @return The material content if found, or null if no matching content exists or an error occurs.
+     */
     public static Material fetchContent(
             int weekNumber,
             ChoiceBox<Integer> classCheckBox,
             String materialType,
             IContentDAO contentDAO) {
+
+        if (classCheckBox == null) {
+            throw new IllegalArgumentException("ChoiceBox is null.");
+        }
+        // Check if no value is selected
+        if (classCheckBox.getValue() == null) {
+            throw new IllegalArgumentException("No value selected in ChoiceBox.");
+        }
 
         if (classCheckBox.getValue() != null) {
             try {
